@@ -340,3 +340,6 @@ docs/_book
 
 # TODO: where does this rule come from?
 test/
+
+Elasticsearch/data/*
+Elasticsearch/logs/*
