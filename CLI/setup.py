@@ -31,7 +31,7 @@ def main():
           include_package_data=True,
           entry_points={
               "console_scripts": [
-                    "media = media_cli.main:main",
+                  "media = media_cli.main:main",
               ]
           }
           )
