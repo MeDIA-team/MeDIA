@@ -31,8 +31,8 @@ def parse_args():
 
     query_parser = subparsers.add_parser(
         "query",
-        help="Search the data for each entity.",
-        description="Search the data for each entity.")
+        help="Search the entry.",
+        description="Search the entry.")
     query_parser.set_defaults(subcommand="query")
     query_parser.add_argument(
         "-e",
@@ -54,8 +54,8 @@ def parse_args():
 
     delete_parser = subparsers.add_parser(
         "delete",
-        help="Delete the data for each entity.",
-        description="Delete the data for each entity.")
+        help="Delete the entry.",
+        description="Delete the entry.")
     delete_parser.set_defaults(subcommand="delete")
     delete_parser.add_argument(
         "-e",
@@ -65,8 +65,8 @@ def parse_args():
         help=f"Entity type ({', '.join(ENTITY_TYPE)})"
     )
     delete_parser.add_argument(
-        "id",
-        help="ID to delete"
+        "entry_id",
+        help="Entry ID to delete"
     )
 
     args = parser.parse_args()

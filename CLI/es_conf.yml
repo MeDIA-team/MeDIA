@@ -1,2 +1,4 @@
-es_host: "localhost"
-es_port: 9200
+host: "localhost"
+port: 9200
+num_of_shards: 1
+num_of_replicas: 0
