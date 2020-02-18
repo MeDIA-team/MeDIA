@@ -18,7 +18,7 @@ def read_requirements_txt():
 def main():
     setup(name="media_cli",
           version="1.0.0",
-          description="",
+          description="CLI tool for operating Elasticsearch of MeDIA",
           author="",
           author_email="",
           url="",
