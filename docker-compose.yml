@@ -49,4 +49,5 @@ services:
     volumes:
       - ${PWD}/Elasticsearch/data:/usr/share/elasticsearch/data
       - ${PWD}/Elasticsearch/logs:/usr/share/elasticsearch/logs
+      - ${PWD}/Elasticsearch/elasticsearch.yml:/etc/elasticsearch/elasticsearch.yml
     restart: always

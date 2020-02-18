@@ -1,0 +1,7 @@
+# Default
+# index.number_of_shards: 5
+# index.number_of_replicas: 1
+
+# Develop
+index.number_of_shards: 1
+index.number_of_replicas: 0
