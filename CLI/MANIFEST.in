@@ -1,1 +1,2 @@
 include es_conf.yml
+include media_cli/data_schema.yml

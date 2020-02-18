@@ -3,49 +3,57 @@ title: MeDIA CLI Load Data Schema
 type: object
 properties:
   project:
-    type: object
-    properties:
-      id:
-        type: string
-      name:
-        type: string
-      abbreviation:
-        type: string
-      start_date:
-        type: string
-      end_date:
-        type: string
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        abbreviation:
+          type: string
+        start_date:
+          type: string
+        end_date:
+          type: string
   patient:
-    type: object
-    properties:
-      id:
-        type: string
-      sex:
-        type: string
-        pattern: "^(male|female)$"
-      birth_date:
-        type: string
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+        sex:
+          type: string
+          pattern: "^(male|female)$"
+        birth_date:
+          type: string
   project_patient:
-    type: object
-    properties:
-      id:
-        type: string
-      project_id:
-        type: string
-      patient_id:
-        type: string
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+        project_id:
+          type: string
+        patient_id:
+          type: string
   data:
-    type: object
-    properties:
-      id:
-        type: string
-      data_type:
-        type: string
-      project_patint_id:
-        type: string
-      sampling_date:
-        type: string
-      url:
-        type: string
-      metadata:
-        type: object
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: string
+        data_type:
+          type: string
+        project_patint_id:
+          type: string
+        sampling_date:
+          type: string
+        url:
+          type: string
+        metadata:
+          type: object
