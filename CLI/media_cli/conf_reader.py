@@ -59,7 +59,7 @@ def load_yaml(yaml_file_path):
 
 def load_json(json_file_path):
     with json_file_path.open(mode="r") as f:
-        data = json.loads(f)
+        data = json.loads(f.read())
 
     return data
 

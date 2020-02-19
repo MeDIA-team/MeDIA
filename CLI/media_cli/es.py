@@ -3,6 +3,7 @@
 
 import sys
 import traceback
+from uuid import uuid4
 
 import jsonschema
 from elasticsearch import Elasticsearch
@@ -30,7 +31,7 @@ def load_data(host, port, json_file):
       - hit_false: create 処理を行うとする
     """
 
-    print("Start load json...")
+    print("Start load data...")
     client = _generate_client(host, port)
     _check_es_connection(client)
     _check_cluster_status(client)
@@ -40,10 +41,43 @@ def load_data(host, port, json_file):
     _create_not_existing_indices(client)
 
     data = load_json(json_file_path)
-    for index_name, content_array in data.items():
-        pass
+    for index, content_array in data.items():
+        for ele in content_array:
+            if ele["id"] != "":
+                result = _search_by_id(client, index, ele["id"])
+                if result is not None:
+                    _update(client, index, ele)
+                else:
+                    _create(client, index, ele)
+            else:
+                result = _search_by_other(client, index, ele)
+                if result is not None:
+                    _update(client, index, ele)
+                else:
+                    ele["id"] = str(uuid4)
+                    _create(client, index, ele)
 
-    print("Finish load json...")
+    print("Finish load data...")
+
+
+def _search_by_id(client, index, id):
+    return None
+
+
+def _search_by_other(client, index, ele):
+    return None
+
+
+def _update(client, index, ele):
+    pass
+
+
+def _create(client, index, ele):
+    ele_id = ele["id"]
+    del ele["id"]
+    for key, value in ele.items():
+        ele[key] = None if value == "" else value
+    client.index(index=index, id=ele_id, body=ele)
 
 
 def search_document(host, port, index, key, value):

@@ -187,8 +187,8 @@ def _random_date(start, end):
 
 def dump_data(projects, patients, project_patient, data):
     all_data = {
-        "projects": projects,
-        "patients": patients,
+        "project": projects,
+        "patient": patients,
         "project_patient": project_patient,
         "data": data
     }
