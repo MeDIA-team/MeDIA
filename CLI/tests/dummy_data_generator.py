@@ -46,6 +46,7 @@ from datetime import date, timedelta
 from pathlib import Path
 from random import choice, randint, random, randrange, sample
 from uuid import uuid4
+
 from media_cli.conf_reader import DATA_SCHEMA
 from media_cli.es import _validate_json_file
 

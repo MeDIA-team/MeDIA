@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # coding: utf-8
-from media_cli.conf_reader import read_all_index
 import argparse
+
+from media_cli.conf_reader import read_all_index
 
 
 def parse_args():

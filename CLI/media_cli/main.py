@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 # coding: utf-8
+import sys
+
 from media_cli.arg_parser import parse_args
 from media_cli.conf_reader import read_conf
 from media_cli.es import delete_document, load_data, search_document
-import sys
 
 
 def main():
