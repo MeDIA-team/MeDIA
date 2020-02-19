@@ -1,0 +1,67 @@
+{
+  "project": [
+    {
+      "name": "Retrospective clinical data",
+      "abbreviation": "U",
+      "id": "RCD",
+      "start_date": "2012-01-01",
+      "end_date": "2014-12-31"
+    },
+    {
+      "name": "Microbiome",
+      "abbreviation": "K",
+      "id": "K999",
+      "start_date": "2013-04-01",
+      "end_date": ""
+    },
+    {
+      "name": "Bleach bath",
+      "abbreviation": "ADc-KO",
+      "id": "ADc-KO99",
+      "start_date": "2016-04-01",
+      "end_date": "2017-04-01"
+    },
+    {
+      "name": "Maemuki",
+      "abbreviation": "M",
+      "id": "M999",
+      "start_date": "2015-11-01",
+      "end_date": ""
+    },
+    {
+      "name": "Biomaker",
+      "abbreviation": "P",
+      "id": "P999",
+      "start_date": "2017-07-01",
+      "end_date": "2019-03-31"
+    },
+    {
+      "name": "Microbiome with intervation",
+      "abbreviation": "W",
+      "id": "WWWW0000",
+      "start_date": "2013-07-01",
+      "end_date": "2015-09-30"
+    },
+    {
+      "name": "Genome",
+      "abbreviation": "G",
+      "id": "Genome0001",
+      "start_date": "2015-01-01",
+      "end_date": ""
+    },
+    {
+      "name": "Mobile app",
+      "abbreviation": "A",
+      "id": "A9920",
+      "start_date": "2016-01-01",
+      "end_date": "2019-03-31"
+    },
+    {
+      "name": "Tight juction",
+      "abbreviation": "TJ",
+      "id": "TJ111",
+      "start_date": "2011-01-01",
+      "end_date": "2013-12-31"
+    }
+  ]
+}

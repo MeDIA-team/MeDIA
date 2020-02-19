@@ -8,6 +8,7 @@ Priority:
 4. Defalt Value in This File
 """
 
+import json
 import os
 import sys
 from pathlib import Path
@@ -52,6 +53,13 @@ def check_and_resolve_file_path(str_path):
 def load_yaml(yaml_file_path):
     with yaml_file_path.open(mode="r") as f:
         data = yaml.safe_load(f)
+
+    return data
+
+
+def load_json(json_file_path):
+    with json_file_path.open(mode="r") as f:
+        data = json.loads(f)
 
     return data
 

@@ -2,7 +2,7 @@
 # coding: utf-8
 from media_cli.arg_parser import parse_args
 from media_cli.conf_reader import read_conf
-from media_cli.es import delete_document, load_json, search_document
+from media_cli.es import delete_document, load_data, search_document
 import sys
 
 
@@ -18,7 +18,7 @@ def main():
         print(f"Elasticsearch Host: {host}")
         print(f"Elasticsearch Port: {port}")
         if args.subcommand == "load":
-            load_json(host, port, args.json_file)
+            load_data(host, port, args.json_file)
         elif args.subcommand == "search":
             search_document(host, port, args.index, args.key, args.value)
         elif args.subcommand == "delete":

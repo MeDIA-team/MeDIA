@@ -31,7 +31,7 @@
 ```json
 [
   {
-    "project_patint_id": "string",
+    "id": "string",
     "project_id": "string (e.g.ADc-KO9)",
     "patient_id": "string (e.g.64ID or AID)"
   }

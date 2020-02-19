@@ -4,16 +4,16 @@
 import sys
 import traceback
 
+import jsonschema
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import ConnectionError
 
-import jsonschema
 from media_cli.conf_reader import (DATA_SCHEMA, check_and_resolve_file_path,
-                                   load_yaml)
+                                   load_json, load_yaml)
 from media_cli.es_index_mapping import INDEX_MAPPING
 
 
-def load_json(host, port, json_file):
+def load_data(host, port, json_file):
     """
     Bulk API は replace が行われる場合があるため、使用しない
 
@@ -27,7 +27,7 @@ def load_json(host, port, json_file):
     を行うとする。
     (2) の場合、other attr を用いて検索し、
       - hit_true: update 処理
-      - exists_false: create 処理を行うとする
+      - hit_false: create 処理を行うとする
     """
 
     print("Start load json...")
@@ -39,7 +39,7 @@ def load_json(host, port, json_file):
     _validate_json_file(json_file_path, schema_file_path)
     _create_not_existing_indices(client)
 
-    data = load_yaml(json_file_path)
+    data = load_json(json_file_path)
     for index_name, content_array in data.items():
         pass
 
@@ -98,7 +98,7 @@ def _delete_index(client, index_name):
 
 
 def _validate_json_file(job_file_path, schema_file_path):
-    job = load_yaml(job_file_path)
+    job = load_json(job_file_path)
     schema = load_yaml(schema_file_path)
     try:
         jsonschema.validate(instance=job, schema=schema)
