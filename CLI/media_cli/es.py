@@ -2,17 +2,15 @@
 # coding: utf-8
 
 import sys
-import yaml
-from pathlib import Path
-import jsonschema
+import traceback
+
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import ConnectionError
-import traceback
+
+import jsonschema
+from media_cli.conf_reader import (DATA_SCHEMA, check_and_resolve_file_path,
+                                   load_yaml)
 from media_cli.es_index_mapping import INDEX_MAPPING
-
-
-MODULE_DIR = Path(__file__).resolve().parent
-DATA_SCHEMA = MODULE_DIR.joinpath("data_schema.yml")
 
 
 def load_json(host, port, json_file):
@@ -36,37 +34,36 @@ def load_json(host, port, json_file):
     client = _generate_client(host, port)
     _check_es_connection(client)
     _check_cluster_status(client)
-    json_file_path = _check_and_resolve_file_path(json_file)
-    schema_file_path = _check_and_resolve_file_path(DATA_SCHEMA)
+    json_file_path = check_and_resolve_file_path(json_file)
+    schema_file_path = check_and_resolve_file_path(DATA_SCHEMA)
     _validate_json_file(json_file_path, schema_file_path)
     _create_not_existing_indices(client)
 
-    with json_file_path.open(mode="r") as f:
-        data = yaml.safe_load(f.read())
+    data = load_yaml(json_file_path)
     for index_name, content_array in data.items():
         pass
 
     print("Finish load json...")
 
 
-def query_entry(host, port, entity, key, value):
-    print("Start query entry...")
+def search_document(host, port, index, key, value):
+    print("Start query document...")
     client = _generate_client(host, port)
     _check_es_connection(client)
     _check_cluster_status(client)
     _create_not_existing_indices(client)
 
-    print("Finish query entry...")
+    print("Finish query document...")
 
 
-def delete_entry(host, port, entity, entry_id):
-    print("Start delete entry...")
+def delete_document(host, port, index, document_id):
+    print("Start delete document...")
     client = _generate_client(host, port)
     _check_es_connection(client)
     _check_cluster_status(client)
     _create_not_existing_indices(client)
 
-    print("Finish delete entry...")
+    print("Finish delete document...")
 
 
 def _generate_client(host, port):
@@ -84,7 +81,7 @@ def _check_es_connection(client):
 
 def _check_cluster_status(client):
     health = client.cluster.health()
-    if health["status"] != "green":
+    if health["status"] == "red":
         print(f"[Error] Elasticsearch cluster's status is {health['status']}\n"
               "Please check your cluster (e.g. unassigned_shards)")
         sys.exit(1)
@@ -100,20 +97,9 @@ def _delete_index(client, index_name):
     client.indices.delete(index_name, ignore=[400, 404])
 
 
-def _check_and_resolve_file_path(str_path):
-    path = Path(str_path).resolve()
-    if path.exists() is False:
-        print(f"[Error] Your JSON file {path} does not exist.")
-        sys.exit(1)
-
-    return path
-
-
 def _validate_json_file(job_file_path, schema_file_path):
-    with job_file_path.open(mode="r") as f_j:
-        job = yaml.safe_load(f_j)
-    with schema_file_path.open(mode="r") as f_s:
-        schema = yaml.safe_load(f_s)
+    job = load_yaml(job_file_path)
+    schema = load_yaml(schema_file_path)
     try:
         jsonschema.validate(instance=job, schema=schema)
     except Exception:

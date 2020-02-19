@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-from media_cli.conf_reader import (read_number_of_replicas,
-                                   read_number_of_shards)
+from media_cli.conf_reader import read_conf
 
 INDEX_SETTINGS = {
-    "number_of_shards": read_number_of_shards(),
-    "number_of_replicas": read_number_of_replicas()
+    "number_of_shards": read_conf("num_of_shards"),
+    "number_of_replicas": read_conf("num_of_replicas")
 }
 
 INDEX_MAPPING = {

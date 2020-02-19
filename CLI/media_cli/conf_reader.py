@@ -9,60 +9,54 @@ Priority:
 """
 
 import os
+import sys
 from pathlib import Path
 
 import yaml
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+MODULE_DIR = Path(__file__).resolve().parent
 ES_CONF = BASE_DIR.joinpath("es_conf.yml")
+DATA_SCHEMA = MODULE_DIR.joinpath("data_schema.yml")
 
-DEFAULT_HOST = "localhost"
-DEFAULT_PORT = 9200
-DEFAULT_NUM_OF_SHARDS = 5
-DEFAULT_NUM_OF_REPLICAS = 1
-
-
-def read_default_host():
-    if "ES_HOST" in os.environ:
-        return os.environ["ES_HOST"]
-
-    if ES_CONF.exists():
-        with ES_CONF.open(mode="r") as f:
-            data = yaml.safe_load(f.read())
-        if "host" in data:
-            return data["host"]
-
-    return DEFAULT_HOST
+DEFAULT_VALUE = {
+    "host": "localhost",
+    "port": 9200,
+    "num_of_shards": 5,
+    "num_of_replicas": 1
+}
 
 
-def read_default_port():
-    if "ES_PORT" in os.environ:
-        return os.environ["ES_PORT"]
+def read_conf(key_name):
+    env_key = "ES_" + key_name.upper()
+    if env_key in os.environ:
+        return os.environ[env_key]
 
     if ES_CONF.exists():
-        with ES_CONF.open(mode="r") as f:
-            data = yaml.safe_load(f.read())
-        if "port" in data:
-            return data["port"]
+        data = load_yaml(ES_CONF)
+        if key_name in data:
+            return data[key_name]
 
-    return DEFAULT_PORT
-
-
-def read_number_of_shards():
-    if ES_CONF.exists():
-        with ES_CONF.open(mode="r") as f:
-            data = yaml.safe_load(f.read())
-        if "num_of_shards" in data:
-            return data["num_of_shards"]
-
-    return DEFAULT_NUM_OF_SHARDS
+    return DEFAULT_VALUE.get(key_name, None)
 
 
-def read_number_of_replicas():
-    if ES_CONF.exists():
-        with ES_CONF.open(mode="r") as f:
-            data = yaml.safe_load(f.read())
-        if "num_of_replicas" in data:
-            return data["num_of_replicas"]
+def check_and_resolve_file_path(str_path):
+    path = Path(str_path).resolve()
+    if path.exists() is False:
+        print(f"[Error] Your JSON file {path} does not exist.")
+        sys.exit(1)
 
-    return DEFAULT_NUM_OF_REPLICAS
+    return path
+
+
+def load_yaml(yaml_file_path):
+    with yaml_file_path.open(mode="r") as f:
+        data = yaml.safe_load(f)
+
+    return data
+
+
+def read_all_index():
+    schema_file_path = check_and_resolve_file_path(DATA_SCHEMA)
+
+    return load_yaml(schema_file_path)["properties"].keys()

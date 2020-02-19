@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
+from media_cli.conf_reader import read_all_index
 import argparse
-
-ENTITY_TYPE = ["project", "patient", "project_patient", "data"]
 
 
 def parse_args():
@@ -29,44 +28,44 @@ def parse_args():
                              help="Json file to insert",
                              metavar="JSON")
 
-    query_parser = subparsers.add_parser(
-        "query",
-        help="Search the entry.",
-        description="Search the entry.")
-    query_parser.set_defaults(subcommand="query")
-    query_parser.add_argument(
-        "-e",
-        "--entity",
-        choices=ENTITY_TYPE,
+    search_parser = subparsers.add_parser(
+        "search",
+        help="Search for each document.",
+        description="Search for each document.")
+    search_parser.set_defaults(subcommand="search")
+    search_parser.add_argument(
+        "-i",
+        "--index",
+        choices=read_all_index(),
         required=True,
-        help=f"Entity type ({', '.join(ENTITY_TYPE)})"
+        help=f"Index type ({', '.join(read_all_index())})"
     )
-    query_parser.add_argument(
+    search_parser.add_argument(
         "-k",
         "--key",
         default="id",
-        help="Key of the attribute to query"
+        help="Key of the attribute to search"
     )
-    query_parser.add_argument(
+    search_parser.add_argument(
         "value",
-        help="Value of the attribute to query"
+        help="Value of the attribute to search"
     )
 
     delete_parser = subparsers.add_parser(
         "delete",
-        help="Delete the entry.",
-        description="Delete the entry.")
+        help="Delete the document.",
+        description="Delete the document.")
     delete_parser.set_defaults(subcommand="delete")
     delete_parser.add_argument(
-        "-e",
-        "--entity",
-        choices=ENTITY_TYPE,
+        "-i",
+        "--index",
+        choices=read_all_index(),
         required=True,
-        help=f"Entity type ({', '.join(ENTITY_TYPE)})"
+        help=f"Index type ({', '.join(read_all_index())})"
     )
     delete_parser.add_argument(
-        "entry_id",
-        help="Entry ID to delete"
+        "document_id",
+        help="Document ID to delete"
     )
 
     args = parser.parse_args()
