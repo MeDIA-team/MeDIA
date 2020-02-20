@@ -1,7 +1,8 @@
-FROM python:3.6-slim
+FROM python:3.7-slim
 
 RUN apt update && \
     apt install -y --no-install-recommends \
+    build-essential \
     curl \
     tini && \
     apt clean &&\

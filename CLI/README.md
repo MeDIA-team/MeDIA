@@ -2,7 +2,7 @@
 
 - ストレージから収集したデータを Elasticsearch に投入するための CLI Tool
 
-Python Container Base Image として `python:3.6-slim` を使っている。
+Python Container Base Image として `python:3.7-slim` を使っている。
 
 - 投入したい data を JSON 形式でまとめた後、この CLI Tool を用いて Elasticsearch に投入する
   - 機関や Project、Data Type に応じて、Crawl の方法が異なるため、それぞれに適した言語で JSON 形式の data を作成する方が効率かつ柔軟にデータの投入が行える
