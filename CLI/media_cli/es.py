@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # coding: utf-8
-
 import sys
 import traceback
+from pprint import pprint
 from uuid import uuid4
 
 import jsonschema
@@ -32,6 +32,7 @@ def load_data(host, port, json_file):
     """
 
     print("Start load data...")
+
     client = _generate_client(host, port)
     _check_es_connection(client)
     _check_cluster_status(client)
@@ -46,13 +47,14 @@ def load_data(host, port, json_file):
             if ele["id"] != "":
                 result = _search_by_id(client, index, ele["id"])
                 if result is not None:
-                    _update(client, index, ele)
+                    _update(client, index, ele["id"], ele)
                 else:
                     _create(client, index, ele)
             else:
-                result = _search_by_other(client, index, ele)
+                result = _search_data_by_other(client, index, ele)
                 if result is not None:
-                    _update(client, index, ele)
+                    ele_id = result
+                    _update(client, index, ele_id, ele)
                 else:
                     ele["id"] = str(uuid4)
                     _create(client, index, ele)
@@ -60,16 +62,51 @@ def load_data(host, port, json_file):
     print("Finish load data...")
 
 
-def _search_by_id(client, index, id):
+def _search_by_id(client, index, doc_id):
+    result = client.get(index=index, id=doc_id, ignore=[404])
+
+    return result["_source"] if result["found"] else None
+
+
+def _search_data_by_other(client, index, ele):
+    """
+    ele が data であると仮定
+    また、id 以外の部分が存在すると仮定する
+    """
+    if index != "data":
+        return None
+    result = client.search(index=index,
+                           body={
+                               "query": {"match":
+                                         {"project_patient_id":
+                                             ele["project_patient_id"]}
+                                         }},
+                           ignore=[404])
+    hits = result["hits"]["hits"]
+    if len(hits) == 0:
+        return None
+    for hit in hits:
+        source = hit["_source"]
+        if source["data_type"] == ele["data_type"] and \
+                source["sampling_date"] == ele["sampling_date"]:
+            return hit["_id"]
+
     return None
 
 
-def _search_by_other(client, index, ele):
-    return None
+def _search_by_key_value(client, index, key, value):
+    result = client.search(index=index,
+                           body={"query": {"match": {key: value}}},
+                           ignore=[404])
+
+    return result["hits"]
 
 
-def _update(client, index, ele):
-    pass
+def _update(client, index, ele_id, ele):
+    del ele["id"]
+    for key, value in ele.items():
+        ele[key] = None if value == "" else value
+    client.index(index=index, id=ele_id, body=ele)
 
 
 def _create(client, index, ele):
@@ -82,20 +119,35 @@ def _create(client, index, ele):
 
 def search_document(host, port, index, key, value):
     print("Start query document...")
+
     client = _generate_client(host, port)
     _check_es_connection(client)
     _check_cluster_status(client)
     _create_not_existing_indices(client)
+    print(f"Index: {index}")
+    print(f"Key: {key}")
+    print(f"Value: {value}")
+    if key == "id":
+        result = _search_by_id(client, index, value)
+    else:
+        result = _search_by_key_value(client, index, key, value)
+    pprint(result)
 
     print("Finish query document...")
 
 
 def delete_document(host, port, index, document_id):
     print("Start delete document...")
+
     client = _generate_client(host, port)
     _check_es_connection(client)
     _check_cluster_status(client)
     _create_not_existing_indices(client)
+    client.delete(
+        index=index,
+        id=document_id,
+        ignore=[404]
+    )
 
     print("Finish delete document...")
 
