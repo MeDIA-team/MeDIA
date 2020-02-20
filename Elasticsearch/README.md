@@ -3,18 +3,19 @@
 - RESTful な API を提供する分散型検索/分析エンジン
 - データを格納する DB としても動作する
 
-Elasticsearch のコンテナ image として `docker.elastic.co/elasticsearch/elasticsearch:7.6.0` を使っている。
+Elasticsearch Container Image として `docker.elastic.co/elasticsearch/elasticsearch:7.6.0` を使っている。
 
-## 設定
+## Settings
 
 基本的に single node での稼働を想定している。
 
 いくつかの設定は `../docker-compose.yml` の environment において指定している。
 
 ```yaml
-discovery.type: "single-node"
-ELASTIC_PASSWORD: "media_elasticsearch_passwd"
-ES_JAVA_OPTS: "-Xms512m -Xmx512m" # TODO for development
+environment:
+  discovery.type: "single-node"
+  ELASTIC_PASSWORD: "media_elasticsearch_passwd"
+  ES_JAVA_OPTS: "-Xms512m -Xmx512m" # TODO for development
 ```
 
 また、 `./elasticsearch.yml` において、primary/replicate shard の数を指定している。この file は container 内において `/etc/elasticsearch/elasticsearch.yml` に mount されている。
@@ -89,3 +90,13 @@ green  open   .kibana_1                JNFfWkEVQbOfPqfiL7AXPA   1   0         10
 ```
 
 Index は Kibana 起動時や MeDIA CLI での data load 時に自動的に作成される。そのため、初期起動時は存在しない。
+
+## 初期化
+
+Host Server 側の `./data` を Container 側の `/usr/share/elasticsearch/data` に mount することによりデータの永続化を行っている。
+
+Data を初期化したい場合は、以下の Dir を削除すれば良い
+
+## Log
+
+Host Server 側の `./log` を Container 側の `/usr/share/elasticsearch/logs` に mount している。
