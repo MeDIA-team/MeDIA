@@ -31,9 +31,9 @@ $ docker-compose exec cli media load /opt/MeDIA_CLI/data/your_data.json
 
 Docker を使わない環境構築や様々な設定方法について、より詳細なドキュメントとして以下を参照する。
 
-- [MeDIA_CLI](https://github.com/suecharo/MeDIA/blob/develop/CLI/README.md)
+- [MeDIA CLI](https://github.com/suecharo/MeDIA/blob/develop/CLI/README.md)
 - [Elasticsarch](https://github.com/suecharo/MeDIA/blob/develop/Elasticsearch/README.md)
-- [MeDIA_Web](https://github.com/suecharo/MeDIA/blob/develop/Web/README.md)
+- [MeDIA Web](https://github.com/suecharo/MeDIA/blob/develop/Web/README.md)
 
 <!-- TODO Develop な URL であるため、後々変更が必要 -->
 
