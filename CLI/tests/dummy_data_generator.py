@@ -1,41 +1,27 @@
 #!/usr/bin/env python3
 # coding: utf-8
 """
-結構場当たり的な実装が多いコマンド
-リファクタリングするかどうかは微妙なとこ
-
 # Project
-- とりあえず、ランダムで生成は無理
-- dummy_data_project にそれっぽいのを作成した
+- project_list.json に記載
 - id は常に存在するものとする
-- end_data が存在しない場合があるとする
+- end_data が存在しない場合がある
 
 # Patient
 - ランダムで生成する
 - id は常に存在するものとする
-  - 存在しない場合は、cli を使う前の data を作る段階で付与すればいいのではないか
-  - cli の search command で id が存在するかどうかを追うことも出来るはず
-    - sex と birth date しか attr がないため、識別が難しいと思われる
-    - そもそも個人情報を破棄したデータであるため識別が難しく、id をどこかでふるべきだと思われる
-  - patient_id は 64ID とか AID と呼ばれるもの
-    - string 型で適当に 16 進法 64 桁生成しておく
-    - 2 ** 256 も人間は存在しないと思うが、、、
 
 # Project * Patient
-- Project と Patient から適当に抜き出して、生成する
-- Project * Patient 数分生成する
-- ID は Primary ID という形で管理していた
-    - Project の abbreviation に対して連番の int を振っていくとする
+- 生成した Project と Patient を組み合わせて生成する
+- ID は Project の abbreviation に対して連番の int を振っていく
 
 # Data
-- id はある場合と無い場合があるとする
-  - uuid
-  - ない場合は、CLI の方で発行する
-- 全ての project_patient_id に対して生成する
-- data_type は random.choice する、数は random
-- sampling_date は project の start - end の間にする
-- url はそれっぽいのを生成する
-- metadata はどうすればいいか迷っている
+- ID は存在する場合と存在しない場合がある
+  - ID として UUID4 を使用
+  - 存在しない場合は、MeDIA CLI にて発行する
+- 全ての Project * Patient に対して生成する
+- data_type は、前もって作成した List から選択する
+- sampling_date は、Project の start_date - end_data の間である
+- url は Project などに基づいて生成する
 """
 
 import hashlib

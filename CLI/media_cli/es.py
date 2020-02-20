@@ -18,17 +18,17 @@ def load_data(host, port, json_file):
     """
     Bulk API は replace が行われる場合があるため、使用しない
 
-    基本的に data_json は、
-    (1) id と other attr の両方が存在するデータと、
-    (2) other attr のみが存在するデータ
+    それぞれの Data の Load は以下の手順で行われる
+
+    (1) ID とその他の Attribute の両方が存在するデータと、
+    (2) その他の Attribute のみが存在するデータ
     が存在するとする。
     (1) の場合、id を用いて検索し、
-      - exists_true: update 処理
-      - exists_false: create 処理
-    を行うとする。
-    (2) の場合、other attr を用いて検索し、
-      - hit_true: update 処理
-      - hit_false: create 処理を行うとする
+    - exists_true: update 処理
+    - exists_false: create 処理
+    (2) の場合、その他の Attribute を用いて検索し、
+    - hit_true: update 処理
+    - hit_false: create 処理
     """
 
     print("Start load data...")
