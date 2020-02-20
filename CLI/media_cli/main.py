@@ -4,7 +4,8 @@ import sys
 
 from media_cli.arg_parser import parse_args
 from media_cli.conf_reader import read_conf
-from media_cli.es import delete_document, load_data, search_document
+from media_cli.es import (delete_document, load_data, search_document,
+                          validate_data)
 
 
 def main():
@@ -20,6 +21,8 @@ def main():
         print(f"Elasticsearch Port: {port}")
         if args.subcommand == "load":
             load_data(host, port, args.json_file)
+        elif args.subcommand == "validate":
+            validate_data(args.json_file)
         elif args.subcommand == "search":
             search_document(host, port, args.index, args.key, args.value)
         elif args.subcommand == "delete":

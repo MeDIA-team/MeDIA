@@ -117,6 +117,14 @@ def _create(client, index, ele):
     client.index(index=index, id=ele_id, body=ele)
 
 
+def validate_data(json_file):
+    json_file_path = check_and_resolve_file_path(json_file)
+    schema_file_path = check_and_resolve_file_path(DATA_SCHEMA)
+    _validate_json_file(json_file_path, schema_file_path)
+
+    print("OK!!")
+
+
 def search_document(host, port, index, key, value):
     print("Start query document...")
 

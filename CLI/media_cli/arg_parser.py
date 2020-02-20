@@ -22,12 +22,21 @@ def parse_args():
 
     load_parser = subparsers.add_parser(
         "load",
-        help="Insert the data to specify the JSON file.",
-        description="Insert the data to specify the JSON file.")
+        help="Load the data to specify the JSON file.",
+        description="Load the data to specify the JSON file.")
     load_parser.set_defaults(subcommand="load")
     load_parser.add_argument("json_file",
                              help="Json file to insert",
                              metavar="JSON")
+
+    validate_parser = subparsers.add_parser(
+        "validate",
+        help="Validate the JSON file to load.",
+        description="Validate the JSON file to load.")
+    validate_parser.set_defaults(subcommand="validate")
+    validate_parser.add_argument("json_file",
+                                 help="Json file to validate",
+                                 metavar="JSON")
 
     search_parser = subparsers.add_parser(
         "search",
