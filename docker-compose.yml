@@ -6,6 +6,11 @@ services:
       dockerfile: Dockerfile
     image: media_cli:v1.0.0
     container_name: media_cli
+    environment:
+      ES_HOST: "db"
+      ES_PORT: 9200
+      ES_NUM_OF_SHARDS: 1 # TODO for development
+      ES_NUM_OF_REPLICAS: 0 # TODO for development
     volumes:
       - ${PWD}/CLI:/opt/MeDIA_CLI
     command: ["tail", "-f", "/dev/null"]
@@ -17,8 +22,8 @@ services:
       dockerfile: Dockerfile
     image: media_web:v1.0.0
     container_name: media_web
-    # ports:
-    #   - 80:80
+    ports:
+      - 8080:80 # TODO for development
     #   - 443:443
     volumes:
       - ${PWD}/Web:/opt/MeDIA_Web
@@ -31,8 +36,8 @@ services:
     networks:
       - default
     ports:
-      - 9200:9200
-      - 9300:9300
+      - 9200:9200 # TODO for development
+      - 9300:9300 # TODO for development
     environment:
       bootstrap.memory_lock: "true"
       discovery.type: "single-node"
@@ -52,7 +57,7 @@ services:
       - ${PWD}/Elasticsearch/elasticsearch.yml:/etc/elasticsearch/elasticsearch.yml
     restart: always
 
-  kibana:
+  kibana: # TODO for development
     image: docker.elastic.co/kibana/kibana:7.6.0
     container_name: media_kibana
     networks:
