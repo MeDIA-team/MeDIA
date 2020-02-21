@@ -13,7 +13,6 @@ services:
       ES_NUM_OF_REPLICAS: 0 # TODO for development
     volumes:
       - ${PWD}/CLI:/opt/MeDIA_CLI
-    command: ["tail", "-f", "/dev/null"]
     restart: always
 
   web:
@@ -23,8 +22,7 @@ services:
     image: media_web:v1.0.0
     container_name: media_web
     ports:
-      - 8080:80 # TODO for development
-    #   - 443:443
+      - 8080:8080 # TODO for development
     volumes:
       - ${PWD}/Web:/opt/MeDIA_Web
     command: ["tail", "-f", "/dev/null"]
