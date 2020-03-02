@@ -4,9 +4,9 @@
     <div class="ml-2">Export Table</div>
   </v-btn>
 </template>
+
 <script>
 export default {
-  name: "ExportTableButton",
   methods: {
     exportTable() {
       confirm("Clicked Export Table Button")

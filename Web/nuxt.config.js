@@ -17,13 +17,13 @@ export default {
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
   },
   loading: { color: "#fff" },
-  css: [],
-  plugins: [],
+  // css: [
+  //   "~/assets/css/style.css",
+  // ],
   buildModules: ["@nuxtjs/eslint-module", "@nuxtjs/vuetify"],
   modules: ["@nuxtjs/axios"],
-  axios: {},
   vuetify: {
-    customVariables: ["~/assets/variables.scss"],
+    // customVariables: ["~/assets/variables.scss"],
     theme: {
       themes: {
         light: {
@@ -32,8 +32,6 @@ export default {
       }
     }
   },
-  build: {
-    extend(config, ctx) {}
-  },
-  srcDir: "./src/"
+  srcDir: "./src/",
+  watch: ["~/util/*.js"]
 }
