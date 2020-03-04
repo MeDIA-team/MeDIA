@@ -1,0 +1,4 @@
+.dockerignore
+.nuxt
+Dockerfile
+node_modules
