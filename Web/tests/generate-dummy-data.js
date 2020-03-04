@@ -142,7 +142,7 @@ const main = () => {
   const { projects, dataTypes } = readListFiles()
   const patients = generatePatients()
   const data = generateData(projects, dataTypes, patients)
-  fs.writeFileSync("./tests/dummy-data.json", JSON.stringify(data))
+  fs.writeFileSync("./tests/dummy-data.json", JSON.stringify(data, null, 2))
   console.log("Finish generate dummy data")
 }
 
