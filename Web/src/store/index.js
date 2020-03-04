@@ -4,6 +4,7 @@ import {
   getDataTypes,
   getDataTypesMetaDataKeys
 } from "~/util/data-fetcher"
+import { defaultColumns } from "~/components/selectors/DefaultColumnsSelector"
 
 export const state = () => ({
   projects: getProjects(),
@@ -19,7 +20,7 @@ export const state = () => ({
   dataTypes: getDataTypes(),
   selectedDataTypes: [],
   dataTypesMetaDataKeys: getDataTypesMetaDataKeys(),
-  selectedDefaultColumns: [],
+  selectedDefaultColumns: defaultColumns,
   selectedDataTypesColumnIDs: getDataTypes()
 })
 
