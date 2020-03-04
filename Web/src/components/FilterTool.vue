@@ -6,7 +6,7 @@
       class="d-flex flex-column"
     >
       <div class="d-flex flex-row">
-        <div class="d-flex align-center" style="min-width: 130px;">
+        <div class="d-flex align-center" style="min-width: 140px;">
           <span class="grey--text text--darken-3 font-weight-medium">
             {{ filterKey }}
           </span>
@@ -14,9 +14,14 @@
         <project-check-box v-if="filterKey === 'Project'"></project-check-box>
         <patient-id-text-field
           v-else-if="filterKey === 'Patient ID'"
+          class="my-2"
         ></patient-id-text-field>
         <sex-check-box v-else-if="filterKey === 'Sex'"></sex-check-box>
         <age-text-field v-else-if="filterKey === 'Age'"></age-text-field>
+        <sample-id-text-field
+          v-else-if="filterKey === 'Sample ID'"
+          class="my-2"
+        ></sample-id-text-field>
         <sampling-date-text-field
           v-else-if="filterKey === 'Sampling Date'"
         ></sampling-date-text-field>
@@ -33,6 +38,7 @@ import ProjectCheckBox from "~/components/filters/ProjectCheckBox"
 import PatientIDTextField from "~/components/filters/PatientIDTextField"
 import SexCheckBox from "~/components/filters/SexCheckBox"
 import AgeTextField from "~/components/filters/AgeTextField"
+import SampleIDTextField from "~/components/filters/SampleIDTextField"
 import SamplingDateTextField from "~/components/filters/SamplingDateTextField"
 import DataTypeCheckBox from "~/components/filters/DataTypeCheckBox"
 
@@ -42,6 +48,7 @@ export default {
     "patient-id-text-field": PatientIDTextField,
     SexCheckBox,
     AgeTextField,
+    "sample-id-text-field": SampleIDTextField,
     SamplingDateTextField,
     DataTypeCheckBox
   },
@@ -52,6 +59,7 @@ export default {
         "Patient ID",
         "Sex",
         "Age",
+        "Sample ID",
         "Sampling Date",
         "Data Type"
       ]

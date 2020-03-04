@@ -1,16 +1,18 @@
 <template>
-  <div class="px-10 pb-4">
-    <v-treeview
-      v-model="selection"
-      :items="items"
-      :selection-type="selectionType"
-      selectable
-      return-object
-      open-all
-    ></v-treeview>
+  <div>
+    <default-columns-selector></default-columns-selector>
+    <data-type-columns-selector class="mt-2"></data-type-columns-selector>
   </div>
 </template>
 
 <script>
-export default {}
+import DefaultColumnsSelector from "~/components/selectors/DefaultColumnsSelector.vue"
+import DataTypeColumnsSelector from "~/components/selectors/DataTypeColumnsSelector.vue"
+
+export default {
+  components: {
+    DefaultColumnsSelector,
+    DataTypeColumnsSelector
+  }
+}
 </script>

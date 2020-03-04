@@ -7,8 +7,8 @@
       :value="dataType"
       :label="dataType"
       hide-details
-      class="shrink my-0 mr-6 pt-0 align-center"
-      style="width: 220px; height: 52px;"
+      class="shrink my-0 mr-4 pt-0 align-center"
+      style="width: 200px; height: 52px;"
     ></v-checkbox>
   </div>
 </template>

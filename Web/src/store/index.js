@@ -1,4 +1,9 @@
-import { getProjects, getSexes, getDataTypes } from "~/util/data-fetcher"
+import {
+  getProjects,
+  getSexes,
+  getDataTypes,
+  getDataTypesMetaDataKeys
+} from "~/util/data-fetcher"
 
 export const state = () => ({
   projects: getProjects(),
@@ -8,10 +13,14 @@ export const state = () => ({
   selectedSexes: [],
   inputtedBottomAge: null,
   inputtedUpperAge: null,
+  inputtedSampleID: null,
   inputtedBottomSamplingDate: null,
   inputtedUpperSamplingDate: null,
   dataTypes: getDataTypes(),
-  selectedDataTypes: []
+  selectedDataTypes: [],
+  dataTypesMetaDataKeys: getDataTypesMetaDataKeys(),
+  selectedDefaultColumns: [],
+  selectedDataTypesColumnIDs: getDataTypes()
 })
 
 export const mutations = {
@@ -30,6 +39,9 @@ export const mutations = {
   updateInputtedUpperAge(state, payload) {
     state.inputtedUpperAge = payload
   },
+  updateInputtedSampleID(state, payload) {
+    state.inputtedSampleID = payload
+  },
   updateInputtedBottomSamplingDate(state, payload) {
     state.inputtedBottomSamplingDate = payload
   },
@@ -38,6 +50,12 @@ export const mutations = {
   },
   updateSelectedDataTypes(state, payload) {
     state.selectedDataTypes = payload
+  },
+  updateSelectedDefaultColumns(state, payload) {
+    state.selectedDefaultColumns = payload
+  },
+  updateSelectedDataTypesColumnIDs(state, payload) {
+    state.selectedDataTypesColumnIDs = payload
   }
 }
 

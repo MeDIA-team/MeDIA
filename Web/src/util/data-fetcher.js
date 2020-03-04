@@ -25,3 +25,24 @@ export const getDataTypes = () => {
 export const getSexes = () => {
   return ["Male", "Female"]
 }
+
+const getMetaDataKeys = (dataType) => {
+  if (dataType === "Skin Picture") {
+    return ["FilePath", "MetaData1"]
+  } else if (dataType === "RNAseq(tissue)") {
+    return ["FilePath", "MetaData1", "MetaData2"]
+  }
+
+  return ["FilePath"]
+}
+
+export const getDataTypesMetaDataKeys = () => {
+  const dataTypes = getDataTypes()
+
+  const retList = dataTypes.reduce((acc, val) => {
+    acc[val] = getMetaDataKeys(val)
+    return acc
+  }, {})
+
+  return retList
+}
