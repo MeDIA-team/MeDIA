@@ -17,14 +17,14 @@
 export default {
   computed: {
     dataTypes() {
-      return this.$store.state.dataTypes
+      return this.$store.state.init.dataTypes
     },
     selectedDataTypes: {
       get() {
-        return this.$store.state.selectedDataTypes
+        return this.$store.state.filter.selectedDataTypes
       },
       set(value) {
-        this.$store.commit("updateSelectedDataTypes", value)
+        this.$store.dispatch("filter/updateSelectedDataTypes", value)
       }
     }
   }

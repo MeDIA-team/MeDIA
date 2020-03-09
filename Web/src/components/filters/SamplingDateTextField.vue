@@ -33,18 +33,18 @@ export default {
   computed: {
     inputtedBottomSamplingDate: {
       get() {
-        return this.$store.state.inputtedBottomSamplingDate
+        return this.$store.state.filter.inputtedBottomSamplingDate
       },
       set(value) {
-        this.$store.commit("updateInputtedBottomSamplingDate", value)
+        this.$store.dispatch("filter/updateInputtedBottomSamplingDate", value)
       }
     },
     inputtedUpperSamplingDate: {
       get() {
-        return this.$store.state.inputtedUpperSamplingDate
+        return this.$store.state.filter.inputtedUpperSamplingDate
       },
       set(value) {
-        this.$store.commit("updateInputtedUpperSamplingDate", value)
+        this.$store.dispatch("filter/updateInputtedUpperSamplingDate", value)
       }
     }
   }

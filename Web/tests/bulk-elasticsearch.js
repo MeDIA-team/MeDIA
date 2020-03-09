@@ -12,7 +12,44 @@ const main = async () => {
   console.log("Start bulk to elasticsearch")
 
   await client.indices.create({
-    index: "data"
+    index: "data",
+    body: {
+      mappings: {
+        properties: {
+          age: {
+            type: "long"
+          },
+          dataType: {
+            type: "keyword"
+          },
+          filePath: {
+            type: "keyword"
+          },
+          patientID: {
+            type: "keyword"
+          },
+          projectID: {
+            type: "keyword"
+          },
+          projectName: {
+            type: "keyword"
+          },
+          sampleID: {
+            type: "keyword"
+          },
+          samplingDate: {
+            type: "date"
+          },
+          sex: {
+            type: "keyword"
+          }
+        }
+      },
+      settings: {
+        number_of_shards: 1,
+        number_of_replicas: 1
+      }
+    }
   })
   const data = JSON.parse(fs.readFileSync(DUMMY_DATA_PATH, "utf8"))
   const body = []

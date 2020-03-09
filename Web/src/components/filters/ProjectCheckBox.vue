@@ -17,14 +17,14 @@
 export default {
   computed: {
     projects() {
-      return this.$store.state.projects
+      return this.$store.state.init.projects
     },
     selectedProjects: {
       get() {
-        return this.$store.state.selectedProjects
+        return this.$store.state.filter.selectedProjects
       },
       set(value) {
-        this.$store.commit("updateSelectedProjects", value)
+        this.$store.dispatch("filter/updateSelectedProjects", value)
       }
     }
   }

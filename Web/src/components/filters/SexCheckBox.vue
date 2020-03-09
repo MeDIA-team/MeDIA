@@ -17,14 +17,14 @@
 export default {
   computed: {
     sexes() {
-      return this.$store.state.sexes
+      return this.$store.state.init.sexes
     },
     selectedSexes: {
       get() {
-        return this.$store.state.selectedSexes
+        return this.$store.state.filter.selectedSexes
       },
       set(value) {
-        this.$store.commit("updateSelectedSexes", value)
+        this.$store.dispatch("filter/updateSelectedSexes", value)
       }
     }
   }

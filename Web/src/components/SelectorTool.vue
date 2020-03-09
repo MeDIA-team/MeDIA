@@ -1,18 +1,18 @@
 <template>
   <div>
     <default-columns-selector></default-columns-selector>
-    <data-type-columns-selector class="mt-2"></data-type-columns-selector>
+    <data-types-columns-selector class="mt-2"></data-types-columns-selector>
   </div>
 </template>
 
 <script>
 import DefaultColumnsSelector from "~/components/selectors/DefaultColumnsSelector.vue"
-import DataTypeColumnsSelector from "~/components/selectors/DataTypeColumnsSelector.vue"
+import DataTypesColumnsSelector from "~/components/selectors/DataTypesColumnsSelector.vue"
 
 export default {
   components: {
     DefaultColumnsSelector,
-    DataTypeColumnsSelector
+    DataTypesColumnsSelector
   }
 }
 </script>

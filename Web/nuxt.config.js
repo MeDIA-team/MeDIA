@@ -22,12 +22,16 @@ export default {
   // ],
   buildModules: ["@nuxtjs/eslint-module", "@nuxtjs/vuetify"],
   modules: ["@nuxtjs/axios"],
+  axios: {
+    baseURL: "http://db:9200",
+    browserBaseURL: "http://localhost:9200"
+  },
   vuetify: {
     // customVariables: ["~/assets/variables.scss"],
     theme: {
       themes: {
         light: {
-          primary: colors.blue.darken2,
+          primary: colors.blue.darken2
         }
       }
     }

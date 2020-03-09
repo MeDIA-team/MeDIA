@@ -14,30 +14,28 @@
 </template>
 
 <script>
-export const defaultColumns = [
-  "Data ID",
-  "Project ID",
-  "Project Name",
-  "Patient ID",
-  "Sex",
-  "Age",
-  "Sample ID",
-  "Sampling Date"
-]
-
 export default {
   data() {
     return {
-      defaultColumns
+      defaultColumns: [
+        "Project Name",
+        "Project ID",
+        "Patient ID",
+        "Sex",
+        "Age",
+        "Sample ID",
+        "Sampling Date",
+        "Data ID"
+      ]
     }
   },
   computed: {
     selectedDefaultColumns: {
       get() {
-        return this.$store.state.selectedDefaultColumns
+        return this.$store.state.selector.selectedDefaultColumns
       },
       set(value) {
-        this.$store.commit("updateSelectedDefaultColumns", value)
+        this.$store.dispatch("selector/updateSelectedDefaultColumns", value)
       }
     }
   }

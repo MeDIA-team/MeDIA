@@ -33,18 +33,18 @@ export default {
   computed: {
     inputtedBottomAge: {
       get() {
-        return this.$store.state.inputtedBottomAge
+        return this.$store.state.filter.inputtedBottomAge
       },
       set(value) {
-        this.$store.commit("updateInputtedBottomAge", value)
+        this.$store.dispatch("filter/updateInputtedBottomAge", value)
       }
     },
     inputtedUpperAge: {
       get() {
-        return this.$store.state.inputtedUpperAge
+        return this.$store.state.filter.inputtedUpperAge
       },
       set(value) {
-        this.$store.commit("updateInputtedUpperAge", value)
+        this.$store.dispatch("filter/updateInputtedUpperAge", value)
       }
     }
   }

@@ -41,6 +41,12 @@ export default {
     ExportTableButton,
     ToolCard
   },
+  async fetch({ store }) {
+    await store.dispatch("init/initProjects")
+    await store.dispatch("init/initSexes")
+    await store.dispatch("init/initDataTypes")
+    await store.dispatch("init/initDataTypesMetadataFields")
+  },
   data() {
     return {
       titleText: "MeDIA",

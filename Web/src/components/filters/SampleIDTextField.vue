@@ -18,10 +18,10 @@ export default {
   computed: {
     inputtedSampleID: {
       get() {
-        return this.$store.state.inputtedSampleID
+        return this.$store.state.filter.inputtedSampleID
       },
       set(value) {
-        this.$store.commit("updateInputtedSampleID", value)
+        this.$store.dispatch("filter/updateInputtedSampleID", value)
       }
     }
   }
