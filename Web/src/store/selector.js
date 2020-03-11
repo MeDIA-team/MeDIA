@@ -6,8 +6,7 @@ export const state = () => ({
     "Sex",
     "Age",
     "Sample ID",
-    "Sampling Date",
-    "Data ID"
+    "Sampling Date"
   ],
   selectedDataTypesColumns: []
 })

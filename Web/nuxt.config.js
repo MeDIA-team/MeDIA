@@ -17,17 +17,17 @@ export default {
     link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }]
   },
   loading: { color: "#fff" },
-  // css: [
-  //   "~/assets/css/style.css",
-  // ],
   buildModules: ["@nuxtjs/eslint-module", "@nuxtjs/vuetify"],
-  modules: ["@nuxtjs/axios"],
-  axios: {
-    baseURL: "http://db:9200",
-    browserBaseURL: "http://localhost:9200"
+  modules: ["@nuxtjs/axios", "@nuxtjs/proxy"],
+  proxy: {
+    "/api": {
+      target: "http://db:9200",
+      pathRewrite: {
+        "^/api": "/"
+      }
+    }
   },
   vuetify: {
-    // customVariables: ["~/assets/variables.scss"],
     theme: {
       themes: {
         light: {
@@ -37,5 +37,5 @@ export default {
     }
   },
   srcDir: "./src/",
-  watch: ["~/util/*.js"]
+  watch: ["@/util/*.js"]
 }

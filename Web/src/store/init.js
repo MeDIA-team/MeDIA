@@ -1,7 +1,8 @@
 import {
   fetchAggregatedValues,
   fetchFields,
-  fetchDataTypesMetadataFields
+  fetchDataTypesMetadataFields,
+  fetchTotalEntriesNum
 } from "~/util/data-fetcher"
 
 export const state = () => ({
@@ -18,7 +19,8 @@ export const state = () => ({
     "sampleID",
     "samplingDate",
     "dataType"
-  ]
+  ],
+  totalEntryNum: null
 })
 
 export const getters = {}
@@ -35,6 +37,9 @@ export const mutations = {
   },
   setDataTypesMetadataFields(state, data) {
     state.dataTypesMetadataFields = data
+  },
+  setTotalEntryNum(state, data) {
+    state.totalEntryNum = data
   }
 }
 
@@ -63,5 +68,9 @@ export const actions = {
       metadataFields
     )
     commit("setDataTypesMetadataFields", dataTypesMetadataFields)
+  },
+  async initTotalEntryNum({ commit }) {
+    const totalEntryNum = await fetchTotalEntriesNum(this.$axios)
+    commit("setTotalEntryNum", totalEntryNum)
   }
 }

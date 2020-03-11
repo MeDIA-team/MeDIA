@@ -74,15 +74,28 @@ const fetchDataTypesMetadataFields = async (dataTypes, metadataFields) => {
   return dataTypesMetadataFields
 }
 
+const fetchTotalEntriesNum = async () => {
+  const res = await axios.get(url + "/data/_count")
+
+  return res.data.count
+}
+
+const fetchEntries = async () => {
+  const from = 100
+  const size = 20
+  const query = {
+    bool: {
+      should: []
+    }
+  }
+
+  const res = await axios.get(url + "/data/_count")
+
+  return res.data.count
+}
+
 const main = async () => {
   try {
-    const dataTypes = await fetchAggregatedValues("dataType")
-    const metadataFields = await fetchFields()
-    const dataTypesMetadataFields = await fetchDataTypesMetadataFields(
-      dataTypes,
-      metadataFields
-    )
-    console.log(dataTypesMetadataFields)
   } catch (err) {
     console.log(err)
   }

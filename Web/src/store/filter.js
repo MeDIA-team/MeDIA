@@ -1,12 +1,12 @@
 export const state = () => ({
   selectedProjects: [],
-  inputtedPatientID: null,
+  inputtedPatientID: "",
   selectedSexes: [],
-  inputtedBottomAge: null,
-  inputtedUpperAge: null,
-  inputtedSampleID: null,
-  inputtedBottomSamplingDate: null,
-  inputtedUpperSamplingDate: null,
+  inputtedBottomAge: "",
+  inputtedUpperAge: "",
+  inputtedSampleID: "",
+  inputtedBottomSamplingDate: "",
+  inputtedUpperSamplingDate: "",
   selectedDataTypes: []
 })
 
@@ -43,7 +43,6 @@ export const mutations = {
 }
 
 export const actions = {
-  async nuxtServerInit() {},
   updateSelectedProjects({ commit }, data) {
     commit("setSelectedProjects", data)
   },
