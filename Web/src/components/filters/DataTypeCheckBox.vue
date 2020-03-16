@@ -27,7 +27,8 @@ export default {
         this.$store.dispatch("filter/updateSelectedDataTypes", value)
       }
     }
-  }
+  },
+  mounted() {}
 }
 </script>
 

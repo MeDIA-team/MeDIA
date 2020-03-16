@@ -1,41 +1,27 @@
 <template>
-  <!-- <div>
-    <v-data-table
-      :headers="headers"
-      :items="entries"
-      :options.sync="options"
-      :server-items-length="entryNum"
-      :loading="loading"
-      class="elevation-2"
-      calculate-widths
-      disable-filtering
-      item-key="selectedEntries"
-      multi-sort
-      show-select
-    ></v-data-table>
-  </div> -->
-
-  <div>
-    <v-data-table
-      :headers="headers"
-      :items="entries"
-      class="elevation-2"
-      calculate-widths
-      disable-filtering
-      item-key="selectedEntries"
-      multi-sort
-      show-select
-    ></v-data-table>
-  </div>
+  <v-data-table
+    :headers="headers"
+    :items="entries"
+    :options.sync="options"
+    :server-items-length="entryNum"
+    :loading="loading"
+    class="elevation-2"
+    calculate-widths
+    disable-filtering
+    multi-sort
+    :footer-props="footerProps"
+  ></v-data-table>
 </template>
 
 <script>
 export default {
-  // data() {
-  //   return {
-  //     options: {}
-  //   }
-  // },
+  data() {
+    return {
+      options: {},
+      loading: true,
+      footerProps: { "items-per-page-options": [10, 30, -1] }
+    }
+  },
   computed: {
     headers() {
       return this.$store.state.entry.headers
@@ -46,9 +32,6 @@ export default {
     entryNum() {
       return this.$store.state.entry.entryNum
     },
-    // loading() {
-    //   return this.$store.state.entry.loading
-    // },
     selectedEntries: {
       get() {
         return this.$store.state.entry.selectedEntries
@@ -58,24 +41,24 @@ export default {
       }
     }
   },
-  // watch: {
-  //   options: {
-  //     handler() {
-  //       this.updateOption()
-  //     },
-  //     deep: true
-  //   }
-  // },
+  watch: {
+    options: {
+      handler() {
+        this.fetchEntriesFromES()
+      },
+      deep: true
+    }
+  },
   mounted() {
     this.$store.subscribe((mutation, state) => {
-      if (filterMutations.includes(mutation.type)) {
-        this.fetchEntriesFromElasticsearch()
-      } else if (selectorMutations.includes(mutation.type)) {
+      if (selectorMutations.includes(mutation.type)) {
         this.updateHeaders()
+      } else if (filterMutations.includes(mutation.type)) {
+        this.fetchEntriesFromES()
       }
     })
     this.updateHeaders()
-    this.fetchEntriesFromElasticsearch()
+    this.fetchEntriesFromES()
   },
   methods: {
     updateHeaders() {
@@ -97,28 +80,29 @@ export default {
           headers.push({
             text: ele.replace("_", " "),
             align: "start",
-            sortable: true,
+            sortable: false,
             value: ele
           })
         } else if (!childDataTypes.includes(ele)) {
           headers.push({
             text: ele,
             align: "start",
-            sortable: true,
+            sortable: false,
             value: ele
           })
         }
       })
       this.$store.dispatch("entry/updateHeaders", headers)
     },
-    async fetchEntriesFromElasticsearch() {
-      // this.$store.dispatch("entry/updateLoading", true)
-      // await this.$store.dispatch("entry/updateEntries", this.options)
-      // this.$store.dispatch("entry/updateLoading", false)
-
-      await this.$store.dispatch("entry/updateEntries")
+    async fetchEntriesFromES() {
+      this.loading = true
+      const queue = [
+        this.$store.dispatch("entry/updateEntryNum"),
+        this.$store.dispatch("entry/updateEntries", this.options)
+      ]
+      await Promise.all(queue)
+      this.loading = false
     }
-    // updateOption() {}
   }
 }
 
@@ -139,51 +123,26 @@ const selectorMutations = [
   "selector/setSelectedDataTypesColumns"
 ]
 
-// "Project Name" や "Project ID" は Elasticsearch のなかでは、
-// "projectName" や "projectID" のように管理されている。
-// Label など人が見る場合は、前者のほうが都合がよく、
-// Elasticsearch の中などでは、後者のほうが都合がよい。
-// そのため、変換用の関数を定義する。
+const labelAndID = {
+  "Project Name": "projectName",
+  "Project ID": "projectID",
+  "Patient ID": "patientID",
+  Sex: "sex",
+  Age: "age",
+  "Sample ID": "sampleID",
+  "Sampling Date": "samplingDate"
+}
+
+const IDAndLabel = Object.keys(labelAndID).reduce(
+  (acc, cur) => ({ ...acc, [labelAndID[cur]]: cur }),
+  {}
+)
 
 export const labelToID = (label) => {
-  switch (label) {
-    case "Project Name":
-      return "projectName"
-    case "Project ID":
-      return "projectID"
-    case "Patient ID":
-      return "patientID"
-    case "Sex":
-      return "sex"
-    case "Age":
-      return "age"
-    case "Sample ID":
-      return "sampleID"
-    case "Sampling Date":
-      return "samplingDate"
-    default:
-      return label
-  }
+  return labelAndID[label] ? labelAndID[label] : label
 }
 
 export const IDToLabel = (ID) => {
-  switch (ID) {
-    case "projectName":
-      return "Project Name"
-    case "projectID":
-      return "Project ID"
-    case "patientID":
-      return "Patient ID"
-    case "sex":
-      return "Sex"
-    case "age":
-      return "Age"
-    case "sampleID":
-      return "Sample ID"
-    case "samplingDate":
-      return "Sampling Date"
-    default:
-      return ID
-  }
+  return IDAndLabel[ID] ? IDAndLabel[ID] : ID
 }
 </script>

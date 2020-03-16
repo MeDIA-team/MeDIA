@@ -42,13 +42,17 @@ export default {
     ToolCard
   },
   async fetch({ store }) {
-    const queue = []
-    queue.push(store.dispatch("init/initProjects"))
-    queue.push(store.dispatch("init/initSexes"))
-    queue.push(store.dispatch("init/initDataTypes"))
-    queue.push(store.dispatch("init/initDataTypesMetadataFields"))
-    queue.push(store.dispatch("init/initTotalEntryNum"))
+    const queue = [
+      store.dispatch("init/initProjects"),
+      store.dispatch("init/initSexes"),
+      store.dispatch("init/initDataTypes"),
+      store.dispatch("init/initDataTypesMetadataFields"),
+      store.dispatch("init/initTotalEntryNum")
+    ]
     await Promise.all(queue)
+    store.dispatch("filter/initSelectedProjects")
+    store.dispatch("filter/initSelectedSexes")
+    store.dispatch("filter/initSelectedDataTypes")
   },
   data() {
     return {

@@ -10,6 +10,7 @@
     "start": "nuxt start",
     "generate": "nuxt generate",
     "lint": "eslint --ext .js,.vue .",
+    "lint:fix": "eslint --fix --ext .js,.vue .",
     "dummy:generate": "./tests/generate-dummy-data.js",
     "dummy:bulk": "./tests/bulk-elasticsearch.js"
   },

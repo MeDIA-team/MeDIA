@@ -69,5 +69,14 @@ export const actions = {
   },
   updateSelectedDataTypes({ commit }, data) {
     commit("setSelectedDataTypes", data)
+  },
+  initSelectedProjects({ commit, rootState }) {
+    commit("setSelectedProjects", rootState.init.projects)
+  },
+  initSelectedSexes({ commit, rootState }) {
+    commit("setSelectedSexes", rootState.init.sexes)
+  },
+  initSelectedDataTypes({ commit, rootState }) {
+    commit("setSelectedDataTypes", rootState.init.dataTypes)
   }
 }

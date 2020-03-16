@@ -1,6 +1,7 @@
 import {
-  fetchAggregatedValues,
-  fetchFields,
+  fetchProjects,
+  fetchSexes,
+  fetchDataTypes,
   fetchDataTypesMetadataFields,
   fetchTotalEntriesNum
 } from "~/util/data-fetcher"
@@ -10,16 +11,6 @@ export const state = () => ({
   sexes: [],
   dataTypes: [],
   dataTypesMetadataFields: {},
-  defaultFields: [
-    "projectName",
-    "projectID",
-    "patientID",
-    "sex",
-    "age",
-    "sampleID",
-    "samplingDate",
-    "dataType"
-  ],
   totalEntryNum: null
 })
 
@@ -45,27 +36,20 @@ export const mutations = {
 
 export const actions = {
   async initProjects({ commit }) {
-    const projects = await fetchAggregatedValues(this.$axios, "projectName")
+    const projects = await fetchProjects(this.$axios)
     commit("setProjects", projects)
   },
   async initSexes({ commit }) {
-    const sexes = await fetchAggregatedValues(this.$axios, "sex")
+    const sexes = await fetchSexes(this.$axios)
     commit("setSexes", sexes)
   },
   async initDataTypes({ commit }) {
-    const dataTypes = await fetchAggregatedValues(this.$axios, "dataType")
+    const dataTypes = await fetchDataTypes(this.$axios)
     commit("setDataTypes", dataTypes)
   },
-  async initDataTypesMetadataFields({ state, commit }) {
-    const dataTypes = await fetchAggregatedValues(this.$axios, "dataType")
-    const fields = await fetchFields(this.$axios)
-    const metadataFields = fields.filter(
-      (field) => !state.defaultFields.includes(field)
-    )
+  async initDataTypesMetadataFields({ commit }) {
     const dataTypesMetadataFields = await fetchDataTypesMetadataFields(
-      this.$axios,
-      dataTypes,
-      metadataFields
+      this.$axios
     )
     commit("setDataTypesMetadataFields", dataTypesMetadataFields)
   },

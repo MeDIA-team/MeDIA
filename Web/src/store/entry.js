@@ -1,11 +1,10 @@
-import { fetchEntries } from "~/util/data-fetcher"
+import { fetchEntriesNum, fetchEntries } from "~/util/data-fetcher"
 
 export const state = () => ({
   headers: [],
   entries: [],
   entryNum: null,
-  selectedEntries: [],
-  loading: true
+  selectedEntries: []
 })
 
 export const getters = {}
@@ -22,9 +21,6 @@ export const mutations = {
   },
   setSelectedEntries(state, data) {
     state.selectedEntries = data
-  },
-  setLoading(state, bool) {
-    state.loading = bool
   }
 }
 
@@ -32,17 +28,19 @@ export const actions = {
   updateHeaders({ commit }, data) {
     commit("setHeaders", data)
   },
-  async updateEntries({ commit, rootState }) {
-    const entries = await fetchEntries(this.$axios, rootState.filter)
+  async updateEntries({ commit, rootState }, optionContext) {
+    const entries = await fetchEntries(
+      this.$axios,
+      rootState.filter,
+      optionContext
+    )
     commit("setEntries", entries)
   },
-  updateEntryNum({ commit }, data) {
-    commit("setEntryNum", data)
+  async updateEntryNum({ commit, rootState }) {
+    const entryNum = await fetchEntriesNum(this.$axios, rootState.filter)
+    commit("setEntryNum", entryNum)
   },
   updateSelectedEntries({ commit }, data) {
     commit("setSelectedEntries", data)
-  },
-  updateLoading({ commit }, bool) {
-    commit("setLoading", bool)
   }
 }

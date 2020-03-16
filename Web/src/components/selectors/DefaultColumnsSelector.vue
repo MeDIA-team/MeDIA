@@ -24,8 +24,7 @@ export default {
         "Sex",
         "Age",
         "Sample ID",
-        "Sampling Date",
-        "Data ID"
+        "Sampling Date"
       ]
     }
   },
