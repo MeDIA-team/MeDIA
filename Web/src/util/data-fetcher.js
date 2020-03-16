@@ -159,7 +159,6 @@ export const fetchEntriesNum = async (client, filterState) => {
 }
 
 export const fetchEntries = async (client, filterState, optionContext) => {
-  console.log(optionContext)
   const sampleIDs = await fetchSampleIDs(client, filterState, optionContext)
   const entriesDoc = await fetchEntriesDoc(client, sampleIDs)
   const entryObj = sampleIDs.reduce((arr, cur) => ({ ...arr, [cur]: {} }), {})
@@ -199,8 +198,7 @@ const filterStateToQuery = (filterState) => {
     inputtedUpperAge,
     inputtedSampleID,
     inputtedBottomSamplingDate,
-    inputtedUpperSamplingDate,
-    selectedDataTypes
+    inputtedUpperSamplingDate
   } = filterState
 
   const query = {
@@ -245,11 +243,6 @@ const filterStateToQuery = (filterState) => {
               lte: inputtedUpperSamplingDate || null
             }
           }
-        },
-        {
-          terms: {
-            dataType: selectedDataTypes
-          }
         }
       ]
     }
@@ -260,14 +253,16 @@ const filterStateToQuery = (filterState) => {
 
 const fetchSampleIDs = async (client, filterState, optionContext) => {
   const { page, itemsPerPage, sortBy, sortDesc } = optionContext
+  const from = itemsPerPage !== -1 ? (page - 1) * itemsPerPage : 0
+  const size = itemsPerPage !== -1 ? itemsPerPage : 10000
   const query = filterStateToQuery(filterState)
   const sort = contextToSort(sortBy, sortDesc)
   const res = await client.$get("/api/data/_search", {
     params: {
       source: JSON.stringify({
         track_total_hits: true,
-        from: (page - 1) * itemsPerPage,
-        size: itemsPerPage,
+        from,
+        size,
         collapse: {
           field: "sampleID"
         },

@@ -6,8 +6,7 @@ export const state = () => ({
   inputtedUpperAge: "",
   inputtedSampleID: "",
   inputtedBottomSamplingDate: "",
-  inputtedUpperSamplingDate: "",
-  selectedDataTypes: []
+  inputtedUpperSamplingDate: ""
 })
 
 export const getters = {}
@@ -36,9 +35,6 @@ export const mutations = {
   },
   setInputtedUpperSamplingDate(state, data) {
     state.inputtedUpperSamplingDate = data
-  },
-  setSelectedDataTypes(state, data) {
-    state.selectedDataTypes = data
   }
 }
 
@@ -67,16 +63,10 @@ export const actions = {
   updateInputtedUpperSamplingDate({ commit }, data) {
     commit("setInputtedUpperSamplingDate", data)
   },
-  updateSelectedDataTypes({ commit }, data) {
-    commit("setSelectedDataTypes", data)
-  },
   initSelectedProjects({ commit, rootState }) {
     commit("setSelectedProjects", rootState.init.projects)
   },
   initSelectedSexes({ commit, rootState }) {
     commit("setSelectedSexes", rootState.init.sexes)
-  },
-  initSelectedDataTypes({ commit, rootState }) {
-    commit("setSelectedDataTypes", rootState.init.dataTypes)
   }
 }

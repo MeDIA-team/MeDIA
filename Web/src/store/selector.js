@@ -28,5 +28,8 @@ export const actions = {
   },
   updateSelectedDataTypesColumns({ commit }, data) {
     commit("setSelectedDataTypesColumns", data)
+  },
+  initSelectedDataTypesColumns({ commit, rootState }) {
+    commit("setSelectedDataTypesColumns", rootState.init.dataTypes)
   }
 }

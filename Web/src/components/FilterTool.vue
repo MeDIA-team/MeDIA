@@ -25,9 +25,6 @@
         <sampling-date-text-field
           v-else-if="filterKey === 'Sampling Date'"
         ></sampling-date-text-field>
-        <data-type-check-box
-          v-else-if="filterKey === 'Data Type'"
-        ></data-type-check-box>
       </div>
     </div>
   </div>
@@ -40,7 +37,6 @@ import SexCheckBox from "~/components/filters/SexCheckBox"
 import AgeTextField from "~/components/filters/AgeTextField"
 import SampleIDTextField from "~/components/filters/SampleIDTextField"
 import SamplingDateTextField from "~/components/filters/SamplingDateTextField"
-import DataTypeCheckBox from "~/components/filters/DataTypeCheckBox"
 
 export default {
   components: {
@@ -49,8 +45,7 @@ export default {
     SexCheckBox,
     AgeTextField,
     "sample-id-text-field": SampleIDTextField,
-    SamplingDateTextField,
-    DataTypeCheckBox
+    SamplingDateTextField
   },
   data() {
     return {
@@ -60,8 +55,7 @@ export default {
         "Sex",
         "Age",
         "Sample ID",
-        "Sampling Date",
-        "Data Type"
+        "Sampling Date"
       ]
     }
   }

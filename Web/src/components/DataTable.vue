@@ -1,16 +1,28 @@
 <template>
   <v-data-table
+    v-model="selectedEntries"
+    :footer-props="footerProps"
     :headers="headers"
     :items="entries"
+    :loading="loading"
     :options.sync="options"
     :server-items-length="entryNum"
-    :loading="loading"
-    class="elevation-2"
     calculate-widths
+    class="elevation-2"
     disable-filtering
+    item-key="sampleID"
     multi-sort
-    :footer-props="footerProps"
-  ></v-data-table>
+    show-select
+  >
+    <template
+      v-for="parentDataType in parentDataTypes"
+      #[parentDataType]="{ item }"
+    >
+      <v-icon v-if="item[parentDataType.slice(5)]" :key="parentDataType"
+        >mdi-check</v-icon
+      >
+    </template>
+  </v-data-table>
 </template>
 
 <script>
@@ -19,7 +31,7 @@ export default {
     return {
       options: {},
       loading: true,
-      footerProps: { "items-per-page-options": [10, 30, -1] }
+      footerProps: { "items-per-page-options": [10, 30, 100] }
     }
   },
   computed: {
@@ -27,7 +39,7 @@ export default {
       return this.$store.state.entry.headers
     },
     entries() {
-      return this.$store.state.entry.entries
+      return this.$store.getters["entry/fixedEntries"]
     },
     entryNum() {
       return this.$store.state.entry.entryNum
@@ -39,6 +51,9 @@ export default {
       set(value) {
         this.$store.dispatch("entry/updateSelectedEntries", value)
       }
+    },
+    parentDataTypes() {
+      return this.$store.state.init.dataTypes.map((ele) => "item." + ele)
     }
   },
   watch: {
@@ -54,6 +69,7 @@ export default {
       if (selectorMutations.includes(mutation.type)) {
         this.updateHeaders()
       } else if (filterMutations.includes(mutation.type)) {
+        this.options.page = 1
         this.fetchEntriesFromES()
       }
     })
@@ -78,7 +94,7 @@ export default {
       this.$store.state.selector.selectedDataTypesColumns.forEach((ele) => {
         if (ele.includes("_")) {
           headers.push({
-            text: ele.replace("_", " "),
+            text: ele.replace("_", ": "),
             align: "start",
             sortable: false,
             value: ele
@@ -86,7 +102,7 @@ export default {
         } else if (!childDataTypes.includes(ele)) {
           headers.push({
             text: ele,
-            align: "start",
+            align: "center",
             sortable: false,
             value: ele
           })

@@ -52,7 +52,7 @@ export default {
     await Promise.all(queue)
     store.dispatch("filter/initSelectedProjects")
     store.dispatch("filter/initSelectedSexes")
-    store.dispatch("filter/initSelectedDataTypes")
+    store.dispatch("selector/initSelectedDataTypesColumns")
   },
   data() {
     return {
