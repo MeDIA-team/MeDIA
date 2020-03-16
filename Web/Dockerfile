@@ -1,4 +1,4 @@
-FROM node:13-slim
+FROM node:13.10.1
 
 RUN apt update && \
     apt install -y --no-install-recommends \
@@ -14,7 +14,8 @@ RUN chmod +x /usr/local/bin/tini
 WORKDIR /opt/MeDIA_Web
 COPY . .
 
-RUN npm i
+RUN npm install && \
+    npm run build
 
 ENTRYPOINT ["tini", "--"]
 CMD ["tail", "-f", "/dev/null"]

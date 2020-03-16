@@ -19,11 +19,23 @@ export default {
   loading: { color: "#fff" },
   buildModules: ["@nuxtjs/eslint-module", "@nuxtjs/vuetify"],
   modules: ["@nuxtjs/axios", "@nuxtjs/proxy"],
+  axios: {
+    browserBaseURL: "http://ext-host0004.ascade.co.jp:8888",
+    headers: {
+      common: {
+        Authorization:
+          "Basic " +
+          Buffer.from(
+            process.env.BASIC_AUTH_USER + ":" + process.env.BASIC_AUTH_PASS
+          ).toString("base64")
+      }
+    }
+  },
   proxy: {
     "/api": {
       target: "http://db:9200",
       pathRewrite: {
-        "^/api": "/"
+        "^/api": ""
       }
     }
   },

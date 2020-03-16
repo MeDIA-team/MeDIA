@@ -4,13 +4,13 @@
 
 コンポーネントとして、
 
-- MeDIA CLI
-  - ストレージから収集したデータを Elasticsearch に投入するための CLI Tool
+- MeDIA Web
+  - データの閲覧/出力を行う Web アプリケーション
 - Elasticsearch
   - RESTful な API を提供する分散型検索/分析エンジン
   - データを格納する DB としても動作する
-- MeDIA Web
-  - データの閲覧/出力を行う Web アプリケーション
+- Nginx
+  - Web サーバ
 
 からなる。
 
@@ -19,14 +19,13 @@
 環境構築として、[Docker](https://www.docker.com)、[docker-compose](https://docs.docker.com/compose/) を使用している。
 
 ```bash
+# inotify の設定を変更する
+$ echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
+$ sysctl -p
+# Docker network の作成
+$ docker network create media_network
 # 全てのコンポーネントの起動
 $ docker-compose up -d --build
-
-# ./CLI/data 以下に投入したいデータを配置する (TODO: 現状だと CLI 以下を全て mount している)
-$ docker-compose exec cli media validate /opt/MeDIA_CLI/data/your_data.json
-$ docker-compose exec cli media load /opt/MeDIA_CLI/data/your_data.json
-
-# 手元の Browser で http://localhost:8080 にアクセスし MeDIA Web を起動する (TODO: 現状 8080 に http アクセス)
 ```
 
 Docker を使わない環境構築や様々な設定方法について、より詳細なドキュメントとして以下を参照する。

@@ -205,3 +205,5 @@ test/
 
 Elasticsearch/data/*
 Elasticsearch/logs/*
+
+Nginx/.htpasswd

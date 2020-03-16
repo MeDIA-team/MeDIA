@@ -9,8 +9,6 @@ export const state = () => ({
 
 export const getters = {
   fixedEntries: (state) => {
-    console.log(state.entries[0])
-
     return state.entries.map((entry) => {
       const fixedEntry = Object.assign({}, entry)
       fixedEntry.patientID =

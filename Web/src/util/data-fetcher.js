@@ -78,7 +78,6 @@ const fetchMetadataFields = async (client) => {
 
 const fetchAllFields = async (client) => {
   const res = await client.$get("/api/data/_mapping")
-
   return Object.keys(res.data.mappings.properties)
 }
 
