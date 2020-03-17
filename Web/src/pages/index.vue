@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" hide-on-scroll>
+    <v-app-bar app color="primary" absolute>
       <v-toolbar-title class="headline white--text">
         {{ titleText }}
       </v-toolbar-title>
@@ -57,7 +57,7 @@ export default {
   data() {
     return {
       titleText: "MeDIA",
-      footerText: "Copylight Text"
+      footerText: ""
     }
   }
 }
