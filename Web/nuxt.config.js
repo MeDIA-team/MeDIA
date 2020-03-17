@@ -18,24 +18,25 @@ export default {
   },
   loading: { color: "#fff" },
   buildModules: ["@nuxtjs/eslint-module", "@nuxtjs/vuetify"],
-  modules: ["@nuxtjs/axios", "@nuxtjs/proxy"],
+  modules: ["@nuxtjs/axios", "@nuxtjs/proxy", "nuxt-basic-auth-module"],
   axios: {
-    browserBaseURL: "http://ext-host0004.ascade.co.jp:8888",
+    browserBaseURL: process.env.BROWSER_BASE_URL || null,
     headers: {
-      common: {
+      get: {
         Authorization:
           "Basic " +
           Buffer.from(
             process.env.BASIC_AUTH_USER + ":" + process.env.BASIC_AUTH_PASS
           ).toString("base64")
       }
-    }
+    },
+    proxy: process.env.BROWSER_BASE_URL !== ""
   },
   proxy: {
-    "/api": {
-      target: "http://db:9200",
+    "/api/": {
+      target: process.env.ES_URL || "http://db:9200",
       pathRewrite: {
-        "^/api": ""
+        "^/api/": "/"
       }
     }
   },
@@ -48,6 +49,15 @@ export default {
       }
     }
   },
+  basic: {
+    name: process.env.BASIC_AUTH_USER || "media",
+    pass: process.env.BASIC_AUTH_PASS || "ascade",
+    enabled: process.env.BASIC_ENABLED === "true"
+  },
   srcDir: "./src/",
-  watch: ["@/util/*.js"]
+  watch: ["@/util/*.js"],
+  server: {
+    host: process.env.NUXT_HOST || "0.0.0.0",
+    port: process.env.NUXT_PORT || 8080
+  }
 }

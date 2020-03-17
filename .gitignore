@@ -204,6 +204,3 @@ docs/_book
 test/
 
 Elasticsearch/data/*
-Elasticsearch/logs/*
-
-Nginx/.htpasswd
