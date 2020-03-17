@@ -1,4 +1,5 @@
 .dockerignore
 .nuxt
+dist
 Dockerfile
 node_modules
