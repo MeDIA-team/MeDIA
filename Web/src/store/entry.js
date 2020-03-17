@@ -15,10 +15,12 @@ export const getters = {
         entry.patientID.length >= 20
           ? entry.patientID.slice(0, 20) + "..."
           : entry.patientID
+      fixedEntry.patientIDAll = entry.patientID
       fixedEntry.sampleID =
         entry.sampleID.length >= 20
           ? entry.sampleID.slice(0, 20) + "..."
           : entry.sampleID
+      fixedEntry.sampleIDAll = entry.sampleID
       fixedEntry.samplingDate = entry.samplingDate.split("T")[0]
       return fixedEntry
     })
