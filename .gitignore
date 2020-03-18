@@ -204,3 +204,4 @@ docs/_book
 test/
 
 Elasticsearch/data/*
+Web/data/*
