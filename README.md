@@ -19,28 +19,29 @@
 環境構築として、[Docker](https://www.docker.com)、[docker-compose](https://docs.docker.com/compose/) を使用している。
 
 ```bash
-# inotify の設定を変更する
-$ echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf
-$ sysctl -p
 # Docker network の作成
 $ docker network create media_network
 # 全てのコンポーネントの起動
 $ docker-compose up -d --build
 ```
 
-Docker を使わない環境構築や様々な設定方法について、より詳細なドキュメントとして以下を参照する。
+また、Elasticsearch、Nuxt.js のために HostOS の Kernel Option を変更しておく必要がある。
 
-- [MeDIA CLI](https://github.com/suecharo/MeDIA/blob/develop/CLI/README.md)
-- [Elasticsearch](https://github.com/suecharo/MeDIA/blob/develop/Elasticsearch/README.md)
+```bash
+# 仮想メモリの上限を変更する (for Elasticsearch)
+$ sysctl -w vm.max_map_count=262144
+
+# ファイル監視数の上限を変更する (for Nuxt.js)
+$ sysctl -w fs.inotify.max_user_watches=524288
+
+# sysctl の reload
+$ sysctl -p
+```
+
+より詳細なドキュメントとして以下を参照する。
+
 - [MeDIA Web](https://github.com/suecharo/MeDIA/blob/develop/Web/README.md)
+- [Elasticsearch](https://github.com/suecharo/MeDIA/blob/develop/Elasticsearch/README.md)
+- [Nginx](https://github.com/suecharo/MeDIA/blob/develop/Nginx/README.md)
 
 <!-- TODO Develop な URL であるため、後々変更が必要 -->
-
-## 開発環境
-
-- OS
-  - `Ubuntu 16.04.6 LTS (Xenial Xerus)`
-- Docker
-  - `19.03.5`
-- docker-compose
-  - `1.23.1`
