@@ -2,7 +2,7 @@
   "name": "media-web",
   "version": "1.0.0",
   "description": "Web application for microflora information and clinical multimodal data",
-  "author": "suecharo",
+  "author": "RIKEN",
   "private": true,
   "scripts": {
     "dev": "nuxt",

@@ -71,8 +71,8 @@ Data を初期化したい場合は、以下の Dir を削除すれば良い
 
 ```bash
 # 消去される file, dir の確認
-`$ git clean -nd Elasticsearch
+$ git clean -nd Elasticsearch
 
 # 消去
-`$ git clean -fd Elasticsearch
+$ git clean -fd Elasticsearch
 ```

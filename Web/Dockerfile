@@ -18,4 +18,4 @@ RUN npm install && \
     npm run build
 
 ENTRYPOINT ["tini", "--"]
-CMD ["tail", "-f", "/dev/null"]
+CMD ["npm", "run", "start"]

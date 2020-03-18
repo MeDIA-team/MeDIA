@@ -51,7 +51,7 @@ export default {
   },
   basic: {
     name: process.env.BASIC_AUTH_USER || "media",
-    pass: process.env.BASIC_AUTH_PASS || "ascade",
+    pass: process.env.BASIC_AUTH_PASS || "pass",
     enabled: process.env.BASIC_ENABLED === "true"
   },
   srcDir: "./src/",
