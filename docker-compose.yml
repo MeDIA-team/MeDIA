@@ -7,10 +7,10 @@ services:
     image: media_web:v1.0.0
     container_name: media_app
     environment:
-      BASIC_AUTH_PASS: "ascade"
+      BASIC_AUTH_PASS: "pass"
       BASIC_AUTH_USER: "media"
       BASIC_ENABLED: "true"
-      BROWSER_BASE_URL: "http://ext-host0004.ascade.co.jp:8888"
+      BROWSER_BASE_URL: "http://10.1.1.82:8888"
       ES_URL: "http://db:9200"
       NUXT_HOST: "0.0.0.0"
       NUXT_PORT: "8080"
@@ -31,6 +31,11 @@ services:
     restart: always
     command: ["npm", "run", "start"]
     # command: ["tail", "-f", "/dev/null"]
+    logging:
+      driver: syslog
+      options:
+        syslog-facility: local0
+        tag: "{{.Name}}"
 
   db:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.6.1
@@ -65,7 +70,7 @@ services:
     image: nginx:1.17
     container_name: media_web
     environment:
-      SERVER_NAME: "ext-host0004.ascade.co.jp"
+      SERVER_NAME: "10.1.1.82"
       APP_URL: "http://app:8080"
     networks:
       - default
@@ -75,6 +80,11 @@ services:
       - ${PWD}/Nginx/nginx.conf.tmpl:/etc/nginx/conf.d/nginx.conf.tmpl:ro
     restart: always
     command: /bin/sh -c "envsubst '$$SERVER_NAME$$APP_URL' < /etc/nginx/conf.d/nginx.conf.tmpl > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+    logging:
+      driver: syslog
+      options:
+        syslog-facility: local0
+        tag: "{{.Name}}"
 
 networks:
   default:

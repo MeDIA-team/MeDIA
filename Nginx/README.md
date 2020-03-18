@@ -13,7 +13,7 @@ Container Image として `nginx:1.17` を使っている。
 
 ```yaml
 environment:
-  SERVER_NAME: "ext-host0004.ascade.co.jp"
+  SERVER_NAME: "10.1.1.82"
   APP_URL: "http://app:8080"
 ```
 

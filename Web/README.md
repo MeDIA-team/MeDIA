@@ -38,10 +38,10 @@ Pagination や表示できる行数を替えながら、Export したい行を�
 
 ```yaml
 environment:
-  BASIC_AUTH_PASS: "ascade"
+  BASIC_AUTH_PASS: "pass"
   BASIC_AUTH_USER: "media"
   BASIC_ENABLED: "true"
-  BROWSER_BASE_URL: "http://ext-host0004.ascade.co.jp:8888"
+  BROWSER_BASE_URL: "http://10.1.1.82:8888"
   ES_URL: "http://db:9200"
   NUXT_HOST: "0.0.0.0"
   NUXT_PORT: "8080"
