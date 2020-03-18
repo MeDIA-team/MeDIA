@@ -34,6 +34,38 @@ Pagination や表示できる行数を替えながら、Export したい行を�
 
 ## 設定
 
+設定項目は、`../docker-compose.yml` の environment に集約されている。
+
+```yaml
+environment:
+  BASIC_AUTH_PASS: "ascade"
+  BASIC_AUTH_USER: "media"
+  BASIC_ENABLED: "true"
+  BROWSER_BASE_URL: "http://ext-host0004.ascade.co.jp:8888"
+  ES_URL: "http://db:9200"
+  NUXT_HOST: "0.0.0.0"
+  NUXT_PORT: "8080"
+```
+
+- `BASIC_AUTH_PASS`
+  - Basic 認証の password
+- `BASIC_AUTH_USER`
+  - Basic 認証の user name
+- `BASIC_ENABLED`
+  - Basic 認証をかけるかどうか (true or false)
+- `BROWSER_BASE_URL`
+  - クライアントから見た際の、MeDIA Web の URL
+  - 基本的に nginx へと入るための URL を記述すればよい
+- `ES_URL`
+  - Elasticsearch の URL
+  - docker network で設定されているため、基本的に変更する必要がない
+- `NUXT_HOST`
+  - MeDIA Web を起動する Host
+  - docker network で設定されているため、基本的に変更する必要がない
+- `NUXT_PORT`
+  - MeDIA Web を起動する Port
+  - docker network で設定されているため、基本的に変更する必要がない
+
 ## JSON データの読み込み
 
 Data Crawler を用いて、作成した JSON Data を Elasticsearch に読み込むためのコマンドとして、 `npm run bulk` が用意されている。Elasticsearch に Index が存在しない場合、このコマンドを使うことで自動的に生成される。
@@ -91,5 +123,3 @@ $ docker-compose exec app npm run dev
 ```
 
 ネットワーク周りの設定は、production mode と同様である。
-
-## ES Query
