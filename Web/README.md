@@ -4,6 +4,34 @@
 
 ## 使い方
 
+起動直後は以下の画面である。
+
+![media_initial](./docs_images/media_initail.png)
+
+まず、Filter Tool を使うことによって、行を制限できる。
+
+![media_filter](./docs_images/media_filter.png)
+
+次に、Selector Tool を使うことによって、表示する列を制限できる。
+
+![media_selector](./docs_images/media_selector.png)
+
+また、Selector Tool のプルダウンメニューを開くことによって、より詳細な情報の列を表示できる。
+
+![media_selector2](./docs_images/media_selector_2.png)
+
+Sort 機能として、それぞれの列の Header をクリックすることで Sort を行える。
+
+![media_sorter](./docs_images/media_sorter.png)
+
+Pagination や表示できる行数を替えながら、Export したい行を選択する。
+
+![media_pagination](./docs_images/media_pagination.png)
+
+最後に、Export Table ボタンを押すことで、選択した行が、select された列のまま (つまり現在見えている table の列) が tsv file として出力される。
+
+![media_export](./docs_images/media_export.png)
+
 ## 設定
 
 ## JSON データの読み込み
