@@ -6,14 +6,13 @@ const PATIENT_NUM = 100
 const SEX = ["Male", "Female"]
 const LIBRARY_PREP = ["Kazusa", "Riken"]
 const BODY_REGION = ["Back", "Thigh", "Arm", "Others"]
+const PROJECT_LIST_PATH = "./tests/projects-list.json"
+const DATA_TYPES_LIST_PATH = "./tests/data-types-list.json"
+const OUTPUT_FILE_PATH = "./tests/dummy-data.json"
 
 const readListFiles = () => {
-  const projects = JSON.parse(
-    fs.readFileSync("./tests/projects-list.json", "utf8")
-  )
-  const dataTypes = JSON.parse(
-    fs.readFileSync("./tests/data-types-list.json", "utf8")
-  )
+  const projects = JSON.parse(fs.readFileSync(PROJECT_LIST_PATH, "utf8"))
+  const dataTypes = JSON.parse(fs.readFileSync(DATA_TYPES_LIST_PATH, "utf8"))
 
   return { projects, dataTypes }
 }
@@ -85,7 +84,6 @@ const generateData = (projects, dataTypes, patients) => {
         }
         for (const dataTypeIndex of dataTypeIndices) {
           const entry = {
-            dataID: generateUUID4(),
             projectID: project.id,
             projectName: project.name,
             patientID: patient.id,
@@ -97,12 +95,12 @@ const generateData = (projects, dataTypes, patients) => {
             sampleID: sample.id,
             samplingDate: new Date(sample.samplingDate),
             dataType: dataTypes[dataTypeIndex],
-            filePath: `/data/${project.id}/${dataTypes[dataTypeIndex]}/${sample.id}.txt`
+            "File Path": `/data/${project.id}/${dataTypes[dataTypeIndex]}/${sample.id}.txt`
           }
           if (dataTypes[dataTypeIndex] === "RNAseq") {
             entry["Library Prep"] = randomChoice(LIBRARY_PREP)
           } else if (dataTypes[dataTypeIndex] === "Skin image") {
-            entry["Skin image"] = randomChoice(BODY_REGION)
+            entry["Body Region"] = randomChoice(BODY_REGION)
           }
           data.push(entry)
         }
@@ -117,22 +115,6 @@ const getRandomInt = (min, max) => {
   return Math.floor(Math.random() * (max + 1 - min)) + min
 }
 
-const generateUUID4 = () => {
-  const chars = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".split("")
-  for (let i = 0; i < chars.length; i++) {
-    switch (chars[i]) {
-      case "x":
-        chars[i] = Math.floor(Math.random() * 16).toString(16)
-        break
-      case "y":
-        chars[i] = (Math.floor(Math.random() * 4) + 8).toString(16)
-        break
-    }
-  }
-
-  return chars.join("")
-}
-
 const getAge = (from, to) => {
   return Math.floor((to - from) / 1000 / 60 / 60 / 24 / 365)
 }
@@ -142,7 +124,7 @@ const main = () => {
   const { projects, dataTypes } = readListFiles()
   const patients = generatePatients()
   const data = generateData(projects, dataTypes, patients)
-  fs.writeFileSync("./tests/dummy-data.json", JSON.stringify(data, null, 2))
+  fs.writeFileSync(OUTPUT_FILE_PATH, JSON.stringify(data, null, 2))
   console.log("Finish generate dummy data")
 }
 

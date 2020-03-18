@@ -1,22 +1,55 @@
 # MeDIA Web
 
-> Web application for microflora information and clinical multimodal data
+- データの閲覧/出力を行う Web アプリケーション
 
-## Build Setup
+## 使い方
+
+## 設定
+
+## JSON データの読み込み
+
+Data Crawler を用いて、作成した JSON Data を Elasticsearch に読み込むためのコマンドとして、 `npm run bulk` が用意されている。Elasticsearch に Index が存在しない場合、このコマンドを使うことで自動的に生成される。
 
 ```bash
-# install dependencies
-$ npm install
-
-# serve with hot reload at localhost:3000
-$ npm run dev
-
-# build for production and launch server
-$ npm run build
-$ npm run start
-
-# generate static project
-$ npm run generate
+# (注意) -- が必要である、絶対 path が望ましい
+$ npm run bulk -- /your/json/file/path
 ```
 
-For detailed explanation on how things work, check out [Nuxt.js docs](https://nuxtjs.org).
+このコマンドを使用するために、Host Machine の `./data` Directory が Docker Container 内に Mount されている。そのため、実際には、
+
+```bash
+$ ls data
+your.json
+
+$ docker-compose exec app npm run bulk -- /opt/MeDIA_Web/data/your.json
+```
+
+で bulk 処理が行える。ここで注意することとして、 `/opt/MeDIA_Web` に Host Machine の Web Dir が mount されていることである。
+
+---
+
+Dummy Data として、`./tests/dummy-data.json` が用意してある。そのため、Dummy Data を使って読み込む場合は、
+
+```bash
+$ docker-compose exec app npm run bulk -- /opt/MeDIA_Web/tests/dummy-data.json
+```
+
+を実行する。
+
+また、Dummy Data は `./tests/generate-dummy-data.js` を使って生成している。実行したい場合は、
+
+```bash
+$ npx node ./tests/generate-dummy-data.js
+```
+
+を実行する。
+
+## Development mode
+
+Development mode での起動は、まず `../docker-compose.yml` の command を編集する。
+
+```bash
+$ npm run dev
+```
+
+## ES Query
