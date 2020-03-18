@@ -20,6 +20,7 @@ services:
       - ${PWD}/Web/.editorconfig:/opt/MeDIA_Web/.editorconfig:rw
       - ${PWD}/Web/.eslintrc.js:/opt/MeDIA_Web/.eslintrc.js:rw
       - ${PWD}/Web/.prettierrc:/opt/MeDIA_Web/.prettierrc:rw
+      - ${PWD}/Web/bin:/opt/MeDIA_Web/bin:rw
       - ${PWD}/Web/data:/opt/MeDIA_Web/data:rw
       - ${PWD}/Web/nuxt.config.js:/opt/MeDIA_Web/nuxt.config.js:rw
       - ${PWD}/Web/package-lock.json:/opt/MeDIA_Web/package-lock.json:rw
