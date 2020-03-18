@@ -43,5 +43,3 @@ $ sysctl -p
 - [MeDIA Web](https://github.com/suecharo/MeDIA/blob/develop/Web/README.md)
 - [Elasticsearch](https://github.com/suecharo/MeDIA/blob/develop/Elasticsearch/README.md)
 - [Nginx](https://github.com/suecharo/MeDIA/blob/develop/Nginx/README.md)
-
-<!-- TODO Develop な URL であるため、後々変更が必要 -->

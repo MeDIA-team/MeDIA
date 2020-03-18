@@ -38,7 +38,7 @@ services:
       bootstrap.memory_lock: "true"
       discovery.type: "single-node"
       ELASTIC_PASSWORD: "media_elasticsearch_passwd"
-      ES_JAVA_OPTS: "-Xms512m -Xmx512m -Xlog:disable -Xlog:all=warning:stderr:utctime,level,tags -Xlog:gc=warning:stderr:utctime"
+      ES_JAVA_OPTS: "-Xms1g -Xmx16g -Xlog:disable -Xlog:all=warning:stderr:utctime,level,tags -Xlog:gc=warning:stderr:utctime"
       TAKE_FILE_OWNERSHIP: "true"
     ulimits:
       memlock:
