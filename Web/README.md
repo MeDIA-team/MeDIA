@@ -48,8 +48,20 @@ $ npx node ./tests/generate-dummy-data.js
 
 Development mode での起動は、まず `../docker-compose.yml` の command を編集する。
 
-```bash
-$ npm run dev
 ```
+-    command: ["npm", "run", "start"]
+-    # command: ["tail", "-f", "/dev/null"]
++    # command: ["npm", "run", "start"]
++    command: ["tail", "-f", "/dev/null"]
+```
+
+その後、production mode と同様に `docker-compose up` をし、手動で nuxt dev server を起動する。
+
+```bash
+$ docker-compose up -d
+$ docker-compose exec app npm run dev
+```
+
+ネットワーク周りの設定は、production mode と同様である。
 
 ## ES Query
