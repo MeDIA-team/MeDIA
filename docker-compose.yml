@@ -10,7 +10,7 @@ services:
       BASIC_AUTH_PASS: "pass"
       BASIC_AUTH_USER: "media"
       BASIC_ENABLED: "true"
-      BROWSER_BASE_URL: "http://10.1.1.82:8888"
+      BROWSER_BASE_URL: "http://127.0.0.1:8888"
       ES_URL: "http://db:9200"
       NUXT_HOST: "0.0.0.0"
       NUXT_PORT: "8080"
@@ -70,7 +70,7 @@ services:
     image: nginx:1.17
     container_name: media_web
     environment:
-      SERVER_NAME: "10.1.1.82"
+      SERVER_NAME: "127.0.0.1"
       APP_URL: "http://app:8080"
     networks:
       - default

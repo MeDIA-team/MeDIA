@@ -1,6 +1,4 @@
-.dockerignore
+.git
 .nuxt
 data
-dist
-Dockerfile
 node_modules
