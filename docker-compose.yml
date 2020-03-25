@@ -17,17 +17,8 @@ services:
     networks:
       - default
     volumes:
-      - ${PWD}/Web/.editorconfig:/opt/MeDIA_Web/.editorconfig:rw
-      - ${PWD}/Web/.eslintrc.js:/opt/MeDIA_Web/.eslintrc.js:rw
-      - ${PWD}/Web/.prettierrc:/opt/MeDIA_Web/.prettierrc:rw
-      - ${PWD}/Web/bin:/opt/MeDIA_Web/bin:rw
-      - ${PWD}/Web/data:/opt/MeDIA_Web/data:rw
-      - ${PWD}/Web/nuxt.config.js:/opt/MeDIA_Web/nuxt.config.js:rw
-      - ${PWD}/Web/package-lock.json:/opt/MeDIA_Web/package-lock.json:rw
-      - ${PWD}/Web/package.json:/opt/MeDIA_Web/package.json:rw
-      - ${PWD}/Web/README.md:/opt/MeDIA_Web/README.md:rw
-      - ${PWD}/Web/src:/opt/MeDIA_Web/src:rw
-      - ${PWD}/Web/tests:/opt/MeDIA_Web/tests:rw
+      - ${PWD}/Web:/opt/MeDIA_Web
+      - node_modules:/opt/MeDIA_Web/node_modules
     restart: always
     command: ["npm", "run", "start"]
     # command: ["tail", "-f", "/dev/null"]
@@ -90,3 +81,6 @@ networks:
   default:
     external:
       name: media_network
+
+volumes:
+  node_modules:

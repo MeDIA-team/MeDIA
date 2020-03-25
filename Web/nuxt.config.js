@@ -47,7 +47,8 @@ export default {
           primary: colors.blue.darken2
         }
       }
-    }
+    },
+    defaultAssets: false
   },
   basic: {
     name: process.env.BASIC_AUTH_USER || "media",
@@ -59,5 +60,7 @@ export default {
   server: {
     host: process.env.NUXT_HOST || "0.0.0.0",
     port: process.env.NUXT_PORT || 8080
-  }
+  },
+  plugins: [{ src: "plugins/vuetify", ssr: false }],
+  css: ["~/assets/fonts.css"]
 }
