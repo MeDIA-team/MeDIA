@@ -19,6 +19,7 @@ services:
     volumes:
       - ${PWD}/Web:/opt/MeDIA_Web
       - node_modules:/opt/MeDIA_Web/node_modules
+      - nuxt_build:/opt/MeDIA_Web/.nuxt
     restart: always
     command: ["tail", "-f", "/dev/null"]
 
@@ -68,3 +69,4 @@ networks:
 
 volumes:
   node_modules:
+  nuxt_build:
