@@ -62,7 +62,8 @@ const main = async () => {
     })
   }
 
-  const data = JSON.parse(fs.readFileSync(bulkJsonFilePath, "utf8"))
+  const dataBuffer = await fs.readFile(bulkJsonFilePath, "utf8")
+  const data = JSON.parse(dataBuffer)
   const body = []
   for (let entry of data) {
     body.push({

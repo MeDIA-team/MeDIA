@@ -5,7 +5,7 @@ const Validator = require("jsonschema").Validator
 const v = new Validator()
 const SCHEMA_FILE_PATH = require("path").resolve(__dirname + "/../schema.json")
 
-const main = () => {
+const main = async () => {
   if (process.argv.length !== 3) {
     console.log("Please check your command.")
     console.log(
@@ -15,7 +15,8 @@ const main = () => {
   }
   console.log("Start to validate the data json file.")
   const dataJsonFilePath = process.argv[2]
-  const instance = JSON.parse(fs.readFileSync(dataJsonFilePath, "utf8"))
+  const dataBuffer = await fs.readFile(dataJsonFilePath, "utf8")
+  const instance = JSON.parse(dataBuffer)
   const schema = JSON.parse(fs.readFileSync(SCHEMA_FILE_PATH, "utf8"))
   const result = v.validate(instance, schema)
   if (result.errors.length === 0) {
