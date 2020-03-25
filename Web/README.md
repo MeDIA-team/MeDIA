@@ -68,6 +68,76 @@ environment:
 
 ## JSON データの読み込み
 
+### Validate
+
+Data Crawler を用いて、作成した JSON Data を Validate するためのコマンドとして、 `npm run validate` が用意されている。
+
+```bash
+# (注意) -- が必要である、絶対 path が望ましい
+$ npm run validate -- /your/json/file/path
+```
+
+このコマンドを使用するために、Host Machine の `./data` Directory が Docker Container 内に Mount されている。そのため、実際には、
+
+```bash
+$ ls data
+your.json
+
+$ docker-compose exec app npm run validate -- /opt/MeDIA_Web/data/your.json
+```
+
+で Validate 処理が行える。ここで注意することとして、 `/opt/MeDIA_Web` に Host Machine の Web Dir が mount されていることである。
+
+---
+
+Schema として、`./schema.json` を用いている。Schema を編集したい場合は、このファイルを編集する。
+
+Dummy Data を用いて Test を行った際の、正常系と異常系の出力は下記の通りである。
+
+```bash
+# 正常系
+$ docker-compose exec app npm run validate -- /opt/MeDIA_Web/tests/dummy-data.json
+
+> media-web@1.0.0 validate /opt/MeDIA_Web
+> ./bin/validate-data-json.js "./tests/dummy-data.json"
+
+Start to validate the data json file.
+OK!!
+Finish to validate the data json file.
+
+# 異常系 (一箇所、projectID を抜いている)
+docker-compose exec app npm run validate -- /opt/MeDIA_Web/tests/dummy-data.json
+
+> media-web@1.0.0 validate /opt/MeDIA_Web
+> ./bin/validate-data-json.js "./tests/dummy-data.json"
+
+Start to validate the data json file.
+ERROR!!
+[
+  ValidationError {
+    property: 'instance[0]',
+    message: 'requires property "projectID"',
+    schema: { type: 'object', properties: [Object], required: [Array] },
+    instance: {
+      projectName: 'Retrospective clinical data',
+      patientID: '20e96521bc822441c881914fd69247a8f0a50872f69996fae0d6baf08e6b9306',
+      sex: 'Female',
+      age: 56,
+      sampleID: '4b96267b1c659e44b5bd60f44306d605',
+      samplingDate: '2012-03-11T00:00:00.000Z',
+      dataType: 'Microbiome',
+      'File Path': '/data/RCD/Microbiome/4b96267b1c659e44b5bd60f44306d605.txt'
+    },
+    name: 'required',
+    argument: 'projectID',
+    stack: 'instance[0] requires property "projectID"'
+  }
+]
+Finish to validate the data json file.
+```
+
+### Bulk
+
 Data Crawler を用いて、作成した JSON Data を Elasticsearch に読み込むためのコマンドとして、 `npm run bulk` が用意されている。Elasticsearch に Index が存在しない場合、このコマンドを使うことで自動的に生成される。
 
 ```bash

@@ -20,13 +20,13 @@ services:
       - ${PWD}/Web:/opt/MeDIA_Web
       - node_modules:/opt/MeDIA_Web/node_modules
     restart: always
-    command: ["npm", "run", "start"]
-    # command: ["tail", "-f", "/dev/null"]
-    logging:
-      driver: syslog
-      options:
-        syslog-facility: local0
-        tag: "{{.Name}}"
+    # command: ["npm", "run", "start"]
+    command: ["tail", "-f", "/dev/null"]
+    # logging:
+    #   driver: syslog
+    #   options:
+    #     syslog-facility: local0
+    #     tag: "{{.Name}}"
 
   db:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.6.1
@@ -51,11 +51,11 @@ services:
       - ${PWD}/Elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
       - ${PWD}/Elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro
     restart: always
-    logging:
-      driver: syslog
-      options:
-        syslog-facility: local0
-        tag: "{{.Name}}"
+    # logging:
+    #   driver: syslog
+    #   options:
+    #     syslog-facility: local0
+    #     tag: "{{.Name}}"
 
   web:
     image: nginx:1.17
@@ -71,11 +71,11 @@ services:
       - ${PWD}/Nginx/nginx.conf.tmpl:/etc/nginx/conf.d/nginx.conf.tmpl:ro
     restart: always
     command: /bin/sh -c "envsubst '$$SERVER_NAME$$APP_URL' < /etc/nginx/conf.d/nginx.conf.tmpl > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
-    logging:
-      driver: syslog
-      options:
-        syslog-facility: local0
-        tag: "{{.Name}}"
+    # logging:
+    #   driver: syslog
+    #   options:
+    #     syslog-facility: local0
+    #     tag: "{{.Name}}"
 
 networks:
   default:

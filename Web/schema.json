@@ -1,0 +1,38 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "projectID": {
+        "type": "string"
+      },
+      "patientID": {
+        "type": "string"
+      },
+      "sex": {
+        "type": "string"
+      },
+      "age": {
+        "type": "integer"
+      },
+      "sampleID": {
+        "type": "string"
+      },
+      "samplingDate": {
+        "type": "string"
+      },
+      "dataType": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "projectID",
+      "patientID",
+      "sex",
+      "age",
+      "sampleID",
+      "samplingDate",
+      "dataType"
+    ]
+  }
+}
