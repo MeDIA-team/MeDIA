@@ -19,7 +19,7 @@ services:
     volumes:
       - ${PWD}/Web/data:/opt/MeDIA_Web/data
     restart: always
-    command: ["yarn", "start"]
+    command: ["wait-for-it", "-s", "db:9200", "--", "yarn", "start"]
     logging:
       driver: syslog
       options:

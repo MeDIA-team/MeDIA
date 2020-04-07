@@ -3,6 +3,9 @@ FROM node:13.10.1
 ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /usr/local/bin/tini
 RUN chmod +x /usr/local/bin/tini
 
+ADD https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh /usr/local/bin/wait-for-it
+RUN chmod +x /usr/local/bin/wait-for-it
+
 RUN apt update && \
     apt install -y --no-install-recommends \
     build-essential \
