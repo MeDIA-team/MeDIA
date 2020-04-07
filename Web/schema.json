@@ -6,6 +6,9 @@
       "projectID": {
         "type": "string"
       },
+      "projectName": {
+        "type": "string"
+      },
       "patientID": {
         "type": "string"
       },
@@ -27,6 +30,7 @@
     },
     "required": [
       "projectID",
+      "projectName",
       "patientID",
       "sex",
       "age",
