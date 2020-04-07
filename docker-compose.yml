@@ -19,7 +19,7 @@ services:
     volumes:
       - ${PWD}/Web/data:/opt/MeDIA_Web/data
     restart: always
-    command: ["npm", "run", "start"]
+    command: ["yarn", "start"]
     logging:
       driver: syslog
       options:

@@ -13,16 +13,16 @@ RUN apt update && \
 
 WORKDIR /opt/MeDIA_Web
 
-COPY package.json package-lock.json ./
-RUN npm install
+COPY package.json yarn.lock ./
+RUN yarn install
 
 COPY . .
 
-RUN npm run build
+RUN yarn build
 
 ENV NUXT_HOST 0.0.0.0
 ENV NUXT_PORT 8080
 EXPOSE 8080
 
 ENTRYPOINT ["tini", "--"]
-CMD ["npm", "run", "start"]
+CMD ["yarn", "start"]
