@@ -10,7 +10,7 @@ export default (context, inject) => {
               items: {
                 terms: {
                   field,
-                  size: 10000
+                  size: 100000
                 }
               }
             }
@@ -73,7 +73,7 @@ export default (context, inject) => {
         params: {
           source: JSON.stringify({
             track_total_hits: true,
-            size: 10000,
+            size: 100000,
             collapse: {
               field: "dataType"
             },
@@ -199,11 +199,11 @@ export default (context, inject) => {
   const fetchSampleIDs = async (filterState, optionContext) => {
     const { page, itemsPerPage, sortBy, sortDesc } = optionContext
     let from = itemsPerPage !== -1 ? (page - 1) * itemsPerPage : 0
-    let size = itemsPerPage !== -1 ? itemsPerPage : 10000
+    let size = itemsPerPage !== -1 ? itemsPerPage : 100000
     const query = filterStateToQuery(filterState)
     if (filterState.inputtedDataTypes.length !== 0) {
       from = 0
-      size = 10000
+      size = 100000
     }
     const sort = contextToSort(sortBy, sortDesc)
     const res = await context.$axios
@@ -239,7 +239,7 @@ export default (context, inject) => {
       )
       const filteredSampleIDsSet = new Set(filteredSampleIDs)
       from = itemsPerPage !== -1 ? (page - 1) * itemsPerPage : 0
-      size = itemsPerPage !== -1 ? itemsPerPage : 10000
+      size = itemsPerPage !== -1 ? itemsPerPage : 100000
       let count = 0
       const sampleIDs = []
       for (const sampleID of fetchedSampleIDs) {
@@ -265,7 +265,7 @@ export default (context, inject) => {
         params: {
           source: JSON.stringify({
             track_total_hits: true,
-            size: 10000,
+            size: 100000,
             query: {
               terms: {
                 sampleID: sampleIDs
@@ -290,7 +290,7 @@ export default (context, inject) => {
         params: {
           source: JSON.stringify({
             track_total_hits: true,
-            size: 10000,
+            size: 100000,
             query,
             _source: ["sampleID", "dataType"]
           }),

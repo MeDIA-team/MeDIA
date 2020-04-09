@@ -37,7 +37,8 @@ const INDEX_MAPPINGS = {
 }
 const INDEX_SETTINGS = {
   number_of_shards: 1,
-  number_of_replicas: 1
+  number_of_replicas: 1,
+  "index.max_result_window": 100000
 }
 
 const createIndex = async () => {
