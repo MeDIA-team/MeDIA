@@ -84,11 +84,12 @@ export default {
             text: ele,
             align: "start",
             sortable: true,
-            value: labelToID(ele)
+            value: labelToID(ele),
+            width: labelAndWidth[ele]
           }
         }
       )
-      const childDataTypes = this.$store.state.selector.selectedDataTypesColumns
+      const dataTypesHaveChild = this.$store.state.selector.selectedDataTypesColumns
         .filter((ele) => ele.includes("_"))
         .map((ele) => ele.split("_", 2)[0])
       this.$store.state.selector.selectedDataTypesColumns.forEach((ele) => {
@@ -99,7 +100,7 @@ export default {
             sortable: false,
             value: ele
           })
-        } else if (!childDataTypes.includes(ele)) {
+        } else if (!dataTypesHaveChild.includes(ele)) {
           headers.push({
             text: ele,
             align: "center",
@@ -149,16 +150,26 @@ const labelAndID = {
   "Sampling Date": "samplingDate"
 }
 
-const IDAndLabel = Object.keys(labelAndID).reduce(
-  (acc, cur) => ({ ...acc, [labelAndID[cur]]: cur }),
-  {}
-)
-
-export const labelToID = (label) => {
+const labelToID = (label) => {
   return labelAndID[label] ? labelAndID[label] : label
 }
 
-export const IDToLabel = (ID) => {
-  return IDAndLabel[ID] ? IDAndLabel[ID] : ID
+// const IDAndLabel = Object.keys(labelAndID).reduce(
+//   (acc, cur) => ({ ...acc, [labelAndID[cur]]: cur }),
+//   {}
+// )
+
+// const IDToLabel = (ID) => {
+//   return IDAndLabel[ID] ? IDAndLabel[ID] : ID
+// }
+
+const labelAndWidth = {
+  "Project Name": 125,
+  "Project ID": 105,
+  "Patient ID": 105,
+  Sex: 75,
+  Age: 75,
+  "Sample ID": 105,
+  "Sampling Date": 135
 }
 </script>
