@@ -1,11 +1,3 @@
-import {
-  fetchProjects,
-  fetchSexes,
-  fetchDataTypes,
-  fetchDataTypesMetadataFields,
-  fetchTotalEntriesNum
-} from "~/util/data-fetcher"
-
 export const state = () => ({
   projects: [],
   sexes: [],
@@ -13,8 +5,6 @@ export const state = () => ({
   dataTypesMetadataFields: {},
   totalEntryNum: null
 })
-
-export const getters = {}
 
 export const mutations = {
   setProjects(state, data) {
@@ -36,25 +26,23 @@ export const mutations = {
 
 export const actions = {
   async initProjects({ commit }) {
-    const projects = await fetchProjects(this.$axios)
+    const projects = await this.$dataFetcher.fetchUniqueValues("projectName")
     commit("setProjects", projects)
   },
   async initSexes({ commit }) {
-    const sexes = await fetchSexes(this.$axios)
+    const sexes = await this.$dataFetcher.fetchUniqueValues("sex")
     commit("setSexes", sexes)
   },
   async initDataTypes({ commit }) {
-    const dataTypes = await fetchDataTypes(this.$axios)
+    const dataTypes = await this.$dataFetcher.fetchUniqueValues("dataType")
     commit("setDataTypes", dataTypes)
   },
   async initDataTypesMetadataFields({ commit }) {
-    const dataTypesMetadataFields = await fetchDataTypesMetadataFields(
-      this.$axios
-    )
+    const dataTypesMetadataFields = await this.$dataFetcher.fetchDataTypesMetadataFields()
     commit("setDataTypesMetadataFields", dataTypesMetadataFields)
   },
   async initTotalEntryNum({ commit }) {
-    const totalEntryNum = await fetchTotalEntriesNum(this.$axios)
+    const totalEntryNum = await this.$dataFetcher.fetchTotalEntriesNum()
     commit("setTotalEntryNum", totalEntryNum)
   }
 }

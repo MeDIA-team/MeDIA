@@ -1,5 +1,3 @@
-import { fetchEntriesNum, fetchEntries } from "~/util/data-fetcher"
-
 export const state = () => ({
   headers: [],
   entries: [],
@@ -47,15 +45,14 @@ export const actions = {
     commit("setHeaders", data)
   },
   async updateEntries({ commit, rootState }, optionContext) {
-    const entries = await fetchEntries(
-      this.$axios,
+    const entries = await this.$dataFetcher.fetchEntries(
       rootState.filter,
       optionContext
     )
     commit("setEntries", entries)
   },
   async updateEntryNum({ commit, rootState }) {
-    const entryNum = await fetchEntriesNum(this.$axios, rootState.filter)
+    const entryNum = await this.$dataFetcher.fetchEntriesNum(rootState.filter)
     commit("setEntryNum", entryNum)
   },
   updateSelectedEntries({ commit }, data) {

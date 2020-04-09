@@ -56,11 +56,13 @@ export default {
     enabled: process.env.BASIC_ENABLED === "true"
   },
   srcDir: "./src/",
-  watch: ["@/util/*.js"],
   server: {
     host: process.env.NUXT_HOST || "0.0.0.0",
     port: process.env.NUXT_PORT || 8080
   },
-  plugins: [{ src: "plugins/vuetify", ssr: false }],
+  plugins: [
+    { src: "plugins/vuetify", ssr: false },
+    "~/plugins/data-fetcher.js"
+  ],
   css: ["~/assets/fonts.css"]
 }
