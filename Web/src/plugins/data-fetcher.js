@@ -9,7 +9,8 @@ export default (context, inject) => {
             aggs: {
               items: {
                 terms: {
-                  field
+                  field,
+                  size: 10000
                 }
               }
             }
