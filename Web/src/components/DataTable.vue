@@ -89,10 +89,27 @@ export default {
           }
         }
       )
-      const dataTypesHaveChild = this.$store.state.selector.selectedDataTypesColumns
-        .filter((ele) => ele.includes("_"))
-        .map((ele) => ele.split("_", 2)[0])
-      this.$store.state.selector.selectedDataTypesColumns.forEach((ele) => {
+      const selectedDataTypesColumnsSorted = []
+      for (const dataType of this.$store.state.init.dataTypes) {
+        if (
+          this.$store.state.selector.selectedDataTypesColumns.includes(dataType)
+        ) {
+          selectedDataTypesColumnsSorted.push(dataType)
+        }
+        const metadataField = this.$store.state.init.dataTypesMetadataFields[
+          dataType
+        ]
+        for (const field of metadataField) {
+          if (
+            this.$store.state.selector.selectedDataTypesColumns.includes(
+              `${dataType}_${field}`
+            )
+          ) {
+            selectedDataTypesColumnsSorted.push(`${dataType}_${field}`)
+          }
+        }
+      }
+      selectedDataTypesColumnsSorted.forEach((ele) => {
         if (ele.includes("_")) {
           headers.push({
             text: ele.replace("_", ": "),
@@ -100,7 +117,7 @@ export default {
             sortable: false,
             value: ele
           })
-        } else if (!dataTypesHaveChild.includes(ele)) {
+        } else {
           headers.push({
             text: ele,
             align: "center",

@@ -11,8 +11,6 @@ export const state = () => ({
   selectedDataTypesColumns: []
 })
 
-export const getters = {}
-
 export const mutations = {
   setSelectedDefaultColumns(state, data) {
     state.selectedDefaultColumns = data
