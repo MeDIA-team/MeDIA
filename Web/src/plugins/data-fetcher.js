@@ -128,34 +128,41 @@ export default (context, inject) => {
   }
 
   const fetchEntriesNum = async (filterState) => {
-    const query = filterStateToQuery(filterState)
-    const res = await context.$axios
-      .$get("/api/data/_search", {
-        params: {
-          source: JSON.stringify({
-            track_total_hits: true,
-            size: 0,
-            collapse: {
-              field: "sampleID"
-            },
-            query,
-            aggs: {
-              total_count: {
-                cardinality: {
-                  field: "sampleID"
+    if (filterState.inputtedDataTypes.length !== 0) {
+      const filteredSampleIDs = await fetchFilterdSampleIDsByDataType(
+        filterState
+      )
+      return filteredSampleIDs.length
+    } else {
+      const query = filterStateToQuery(filterState)
+      const res = await context.$axios
+        .$get("/api/data/_search", {
+          params: {
+            source: JSON.stringify({
+              track_total_hits: true,
+              size: 0,
+              collapse: {
+                field: "sampleID"
+              },
+              query,
+              aggs: {
+                total_count: {
+                  cardinality: {
+                    field: "sampleID"
+                  }
                 }
               }
-            }
-          }),
-          source_content_type: "application/json"
-        }
-      })
-      .catch((error) => {
-        console.error(error.response)
-        return null
-      })
+            }),
+            source_content_type: "application/json"
+          }
+        })
+        .catch((error) => {
+          console.error(error.response)
+          return null
+        })
 
-    return res === null ? 0 : res.aggregations.total_count.value
+      return res === null ? 0 : res.aggregations.total_count.value
+    }
   }
 
   const fetchEntries = async (filterState, optionContext) => {
@@ -191,9 +198,13 @@ export default (context, inject) => {
 
   const fetchSampleIDs = async (filterState, optionContext) => {
     const { page, itemsPerPage, sortBy, sortDesc } = optionContext
-    const from = itemsPerPage !== -1 ? (page - 1) * itemsPerPage : 0
-    const size = itemsPerPage !== -1 ? itemsPerPage : 10000
+    let from = itemsPerPage !== -1 ? (page - 1) * itemsPerPage : 0
+    let size = itemsPerPage !== -1 ? itemsPerPage : 10000
     const query = filterStateToQuery(filterState)
+    if (filterState.inputtedDataTypes.length !== 0) {
+      from = 0
+      size = 10000
+    }
     const sort = contextToSort(sortBy, sortDesc)
     const res = await context.$axios
       .$get("/api/data/_search", {
@@ -217,7 +228,35 @@ export default (context, inject) => {
         return null
       })
 
-    return res === null ? [] : res.hits.hits.map((doc) => doc._source.sampleID)
+    if (res === null) {
+      return []
+    }
+
+    const fetchedSampleIDs = res.hits.hits.map((doc) => doc._source.sampleID)
+    if (filterState.inputtedDataTypes.length !== 0) {
+      const filteredSampleIDs = await fetchFilterdSampleIDsByDataType(
+        filterState
+      )
+      const filteredSampleIDsSet = new Set(filteredSampleIDs)
+      from = itemsPerPage !== -1 ? (page - 1) * itemsPerPage : 0
+      size = itemsPerPage !== -1 ? itemsPerPage : 10000
+      let count = 0
+      const sampleIDs = []
+      for (const sampleID of fetchedSampleIDs) {
+        if (sampleIDs.length === size) {
+          break
+        }
+        if (filteredSampleIDsSet.has(sampleID)) {
+          if (count >= from) {
+            sampleIDs.push(sampleID)
+          }
+          count++
+        }
+      }
+      return sampleIDs
+    } else {
+      return fetchedSampleIDs
+    }
   }
 
   const fetchEntriesDoc = async (sampleIDs) => {
@@ -242,6 +281,45 @@ export default (context, inject) => {
       })
 
     return res === null ? [] : res.hits.hits.map((doc) => doc._source)
+  }
+
+  const fetchFilterdSampleIDsByDataType = async (filterState) => {
+    const query = filterStateToQuery(filterState)
+    const res = await context.$axios
+      .$get("/api/data/_search", {
+        params: {
+          source: JSON.stringify({
+            track_total_hits: true,
+            size: 10000,
+            query,
+            _source: ["sampleID", "dataType"]
+          }),
+          source_content_type: "application/json"
+        }
+      })
+      .catch((error) => {
+        console.error(error.response)
+        return null
+      })
+    if (res === null) {
+      return []
+    }
+    const sampleIDToDataTypes = {}
+    res.hits.hits.forEach((item) => {
+      if (typeof sampleIDToDataTypes[item._source.sampleID] === "undefined") {
+        sampleIDToDataTypes[item._source.sampleID] = [item._source.dataType]
+      } else {
+        sampleIDToDataTypes[item._source.sampleID].push(item._source.dataType)
+      }
+    })
+    const filteredSampleIDs = []
+    for (const [key, val] of Object.entries(sampleIDToDataTypes)) {
+      if ([...new Set(val)].length === filterState.inputtedDataTypes.length) {
+        filteredSampleIDs.push(key)
+      }
+    }
+
+    return filteredSampleIDs
   }
 
   const functions = {
@@ -279,12 +357,13 @@ const filterStateToQuery = (filterState) => {
     inputtedUpperAge,
     inputtedSampleID,
     inputtedBottomSamplingDate,
-    inputtedUpperSamplingDate
+    inputtedUpperSamplingDate,
+    inputtedDataTypes
   } = filterState
 
   const query = {
     bool: {
-      must: [
+      filter: [
         {
           terms: {
             projectName: selectedProjects
@@ -327,6 +406,14 @@ const filterStateToQuery = (filterState) => {
         }
       ]
     }
+  }
+
+  if (inputtedDataTypes.length !== 0) {
+    query.bool.filter.push({
+      terms: {
+        dataType: inputtedDataTypes
+      }
+    })
   }
 
   return query
