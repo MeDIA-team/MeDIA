@@ -2,7 +2,7 @@
   <div class="d-flex flex-column" style="min-width: 250px;">
     <div class="d-inline-block" style="text-align: center;">
       <span class="grey--text text--darken-3 font-weight-medium subtitle"
-        >Number of entries displayed
+        >Number of displayed entries
       </span>
     </div>
     <pie-chart
