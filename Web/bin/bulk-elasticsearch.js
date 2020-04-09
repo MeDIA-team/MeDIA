@@ -27,12 +27,27 @@ const bulk = async (filePaths) => {
       body.push({ create: { _index: "data" } })
       body.push(ele)
     })
-    await client.bulk({ refresh: true, body }).catch((err) => {
+    let res
+    try {
+      res = await client.bulk({ refresh: true, body })
+    } catch (error) {
       errorFileList.push({
-        file: file,
+        file,
         errors: err
       })
-    })
+      continue
+    }
+    if (res.body.errors) {
+      const errors = res.body.items.map((item) => {
+        if (item.create.status === 400) {
+          return item.create.error
+        }
+      })
+      errorFileList.push({
+        file,
+        errors
+      })
+    }
   }
   if (errorFileList.length === 0) {
     console.log("OK!!")
@@ -41,7 +56,7 @@ const bulk = async (filePaths) => {
     console.error("ERROR!!")
     errorFileList.forEach((item) => {
       console.error(`Error file: ${item.file}`)
-      console.error(item.errors)
+      console.error(JSON.stringify(item.errors, null, 2))
     })
     throw new Error("Bulking Failed.")
   }
