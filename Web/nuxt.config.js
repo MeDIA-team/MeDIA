@@ -18,7 +18,12 @@ export default {
   },
   loading: { color: "#fff" },
   buildModules: ["@nuxtjs/eslint-module", "@nuxtjs/vuetify"],
-  modules: ["@nuxtjs/axios", "@nuxtjs/proxy", "nuxt-basic-auth-module"],
+  modules: [
+    "@nuxtjs/axios",
+    "@nuxtjs/proxy",
+    "nuxt-basic-auth-module",
+    "nuxt-clipboard2"
+  ],
   axios: {
     browserBaseURL: process.env.BROWSER_BASE_URL || null,
     headers: {
@@ -61,7 +66,7 @@ export default {
     port: process.env.NUXT_PORT || 8080
   },
   plugins: [
-    { src: "plugins/vuetify", ssr: false },
+    { src: "~/plugins/vuetify", ssr: false },
     "~/plugins/data-fetcher.js"
   ],
   css: ["~/assets/fonts.css"]

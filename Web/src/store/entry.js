@@ -5,26 +5,6 @@ export const state = () => ({
   selectedEntries: []
 })
 
-export const getters = {
-  fixedEntries: (state) => {
-    return state.entries.map((entry) => {
-      const fixedEntry = Object.assign({}, entry)
-      fixedEntry.patientID =
-        entry.patientID.length >= 20
-          ? entry.patientID.slice(0, 20) + "..."
-          : entry.patientID
-      fixedEntry.patientIDAll = entry.patientID
-      fixedEntry.sampleID =
-        entry.sampleID.length >= 20
-          ? entry.sampleID.slice(0, 20) + "..."
-          : entry.sampleID
-      fixedEntry.sampleIDAll = entry.sampleID
-      fixedEntry.samplingDate = entry.samplingDate.split("T")[0]
-      return fixedEntry
-    })
-  }
-}
-
 export const mutations = {
   setHeaders(state, data) {
     state.headers = data

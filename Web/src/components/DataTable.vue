@@ -1,28 +1,43 @@
 <template>
-  <v-data-table
-    v-model="selectedEntries"
-    :footer-props="footerProps"
-    :headers="headers"
-    :items="entries"
-    :loading="loading"
-    :options.sync="options"
-    :server-items-length="entryNum"
-    calculate-widths
-    class="elevation-2"
-    disable-filtering
-    item-key="sampleID"
-    multi-sort
-    show-select
-  >
-    <template
-      v-for="parentDataType in parentDataTypes"
-      #[parentDataType]="{ item }"
+  <div>
+    <v-data-table
+      v-model="selectedEntries"
+      :footer-props="footerProps"
+      :headers="headers"
+      :items="entries"
+      :loading="loading"
+      :options.sync="options"
+      :server-items-length="entryNum"
+      calculate-widths
+      class="elevation-2"
+      disable-filtering
+      item-key="sampleID"
+      multi-sort
+      show-select
     >
-      <v-icon v-if="item[parentDataType.slice(5)]" :key="parentDataType"
-        >mdi-check</v-icon
+      <template
+        v-for="parentDataType in parentDataTypes"
+        #[parentDataType]="{ item }"
       >
-    </template>
-  </v-data-table>
+        <v-icon v-if="item[parentDataType.slice(5)]" :key="parentDataType"
+          >mdi-check</v-icon
+        >
+      </template>
+      <template v-for="header in copyHeaders" #[header]="{ item }">
+        <div :key="header" @click="copyText(item[header.slice(5)])">
+          {{ shortenText(item[header.slice(5)]) }}
+        </div>
+      </template>
+    </v-data-table>
+    <v-snackbar
+      v-model="snackbar"
+      :timeout="snackbarTimeout"
+      bottom
+      color="primary"
+    >
+      {{ snackbarText }}
+    </v-snackbar>
+  </div>
 </template>
 
 <script>
@@ -31,7 +46,10 @@ export default {
     return {
       options: {},
       loading: true,
-      footerProps: { "items-per-page-options": [10, 30, 100] }
+      footerProps: { "items-per-page-options": [10, 30, 100] },
+      snackbar: false,
+      snackbarText: "",
+      snackbarTimeout: 1000
     }
   },
   computed: {
@@ -39,7 +57,7 @@ export default {
       return this.$store.state.entry.headers
     },
     entries() {
-      return this.$store.getters["entry/fixedEntries"]
+      return this.$store.state.entry.entries
     },
     entryNum() {
       return this.$store.state.entry.entryNum
@@ -54,6 +72,19 @@ export default {
     },
     parentDataTypes() {
       return this.$store.state.init.dataTypes.map((ele) => "item." + ele)
+    },
+    copyHeaders() {
+      const headers = this.$store.state.selector.selectedDefaultColumns.map(
+        (header) => "item." + labelToID(header)
+      )
+      for (const header of this.$store.state.selector
+        .selectedDataTypesColumns) {
+        if (!this.$store.state.init.dataTypes.includes(header)) {
+          headers.push("item." + header)
+        }
+      }
+
+      return headers
     }
   },
   watch: {
@@ -136,6 +167,17 @@ export default {
       ]
       await Promise.all(queue)
       this.loading = false
+    },
+    copyText(text) {
+      this.snackbar = true
+      this.snackbarText = `Coppied: ${text}`
+      this.$copyText(text)
+    },
+    shortenText(text) {
+      if (typeof text === "undefined") {
+        return text
+      }
+      return text.length >= 20 ? text.slice(0, 20) + "..." : text
     }
   }
 }
