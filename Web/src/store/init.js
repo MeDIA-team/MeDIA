@@ -35,10 +35,14 @@ export const actions = {
   },
   async initDataTypes({ commit }) {
     const dataTypes = await this.$dataFetcher.fetchUniqueValues("dataType")
+    dataTypes.sort()
     commit("setDataTypes", dataTypes)
   },
   async initDataTypesMetadataFields({ commit }) {
     const dataTypesMetadataFields = await this.$dataFetcher.fetchDataTypesMetadataFields()
+    Object.keys(dataTypesMetadataFields).forEach((key) => {
+      dataTypesMetadataFields[key].sort()
+    })
     commit("setDataTypesMetadataFields", dataTypesMetadataFields)
   },
   async initTotalEntryNum({ commit }) {
