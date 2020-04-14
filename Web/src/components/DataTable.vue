@@ -1,31 +1,30 @@
 <template>
   <div>
     <v-data-table
-      v-model="selectedEntries"
       :footer-props="footerProps"
       :headers="headers"
       :items="entries"
       :loading="loading"
       :options.sync="options"
       :server-items-length="entryNum"
+      :value="selectedEntries"
       calculate-widths
       class="elevation-2"
       disable-filtering
       item-key="sampleID"
       multi-sort
       show-select
+      @input="updateSelectedEntries($event)"
     >
       <template
         v-for="parentDataType in parentDataTypes"
-        #[parentDataType]="{ item }"
+        #[parentDataType]="{ value }"
       >
-        <v-icon v-if="item[parentDataType.slice(5)]" :key="parentDataType"
-          >mdi-check</v-icon
-        >
+        <v-icon v-if="value" :key="parentDataType">mdi-check</v-icon>
       </template>
-      <template v-for="header in copyHeaders" #[header]="{ item }">
-        <div :key="header" @click="copyText(item[header.slice(5)])">
-          {{ shortenText(item[header.slice(5)]) }}
+      <template v-for="header in copyHeaders" #[header]="{ value }">
+        <div :key="header" @click="copyText(value)">
+          {{ shortenText(value) }}
         </div>
       </template>
     </v-data-table>
@@ -64,10 +63,10 @@ export default {
     },
     selectedEntries: {
       get() {
-        return this.$store.state.entry.selectedEntries
+        return this.$store.getters["entry/getSelectedEntries"]
       },
       set(value) {
-        this.$store.dispatch("entry/updateSelectedEntries", value)
+        this.$store.dispatch("entry/updateSelectedEntriesFromTable", value)
       }
     },
     parentDataTypes() {
@@ -162,7 +161,7 @@ export default {
     async fetchEntriesFromES() {
       this.loading = true
       const queue = [
-        this.$store.dispatch("entry/updateEntryNum"),
+        this.$store.dispatch("entry/updateTotalSampleIDs"),
         this.$store.dispatch("entry/updateEntries", this.options)
       ]
       await Promise.all(queue)
@@ -178,6 +177,11 @@ export default {
         return text
       }
       return text.length >= 20 ? text.slice(0, 20) + "..." : text
+    },
+    updateSelectedEntries(event) {
+      this.test = event.map((entry) => {
+        return { sampleID: entry.sampleID }
+      })
     }
   }
 }

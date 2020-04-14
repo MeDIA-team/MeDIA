@@ -127,12 +127,12 @@ export default (context, inject) => {
     return res === null ? 0 : res.aggregations.total_count.value
   }
 
-  const fetchEntriesNum = async (filterState) => {
+  const fetchEntriesSampleIDs = async (filterState) => {
     if (filterState.inputtedDataTypes.length !== 0) {
       const filteredSampleIDs = await fetchFilterdSampleIDsByDataType(
         filterState
       )
-      return filteredSampleIDs.length
+      return filteredSampleIDs
     } else {
       const query = filterStateToQuery(filterState)
       const res = await context.$axios
@@ -140,7 +140,7 @@ export default (context, inject) => {
           params: {
             source: JSON.stringify({
               track_total_hits: true,
-              size: 0,
+              size: 10000,
               collapse: {
                 field: "sampleID"
               },
@@ -161,7 +161,9 @@ export default (context, inject) => {
           return null
         })
 
-      return res === null ? 0 : res.aggregations.total_count.value
+      return res === null
+        ? []
+        : res.hits.hits.map((doc) => doc._source.sampleID)
     }
   }
 
@@ -329,7 +331,7 @@ export default (context, inject) => {
     fetchDataTypesMetadataFields,
     fetchDataTypesHaveMetadataField,
     fetchTotalEntriesNum,
-    fetchEntriesNum,
+    fetchEntriesSampleIDs,
     fetchEntries,
     fetchSampleIDs,
     fetchEntriesDoc

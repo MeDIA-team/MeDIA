@@ -8,26 +8,64 @@
 <script>
 export default {
   methods: {
-    exportTable() {
+    async exportTable() {
       let content = ""
       this.$store.state.entry.headers.forEach((header) => {
         content += header.value + "\t"
       })
       content = content.trim() + "\n"
-      this.$store.state.entry.selectedEntries.forEach((entry) => {
-        let line = ""
-        this.$store.state.entry.headers.forEach((header) => {
-          const ele =
-            entry[
-              ["patientID", "sampleID"].includes(header.value)
-                ? header.value + "All"
-                : header.value
-            ]
-          line += typeof ele === "undefined" ? false : ele
-          line += "\t"
+
+      const chunkSize = 100
+      for (
+        let i = 0;
+        i < this.$store.state.entry.selectedEntries.length;
+        i += chunkSize
+      ) {
+        const sampleIDChunk = this.$store.state.entry.selectedEntries.slice(
+          i,
+          i + chunkSize
+        )
+        const entriesDoc = await this.$dataFetcher.fetchEntriesDoc(
+          sampleIDChunk
+        )
+        const entryObj = sampleIDChunk.reduce(
+          (arr, cur) => ({ ...arr, [cur]: {} }),
+          {}
+        )
+        entriesDoc.forEach((doc) => {
+          const sampleID = doc.sampleID
+          const dataType = doc.dataType
+          Object.entries(doc).forEach(([key, val]) => {
+            if (
+              [
+                "projectID",
+                "projectName",
+                "patientID",
+                "sex",
+                "age",
+                "sampleID",
+                "samplingDate"
+              ].includes(key)
+            ) {
+              entryObj[sampleID][key] = val
+            } else if (key === "dataType") {
+              entryObj[sampleID][dataType] = true
+            } else {
+              entryObj[sampleID][dataType + "_" + key] = val
+            }
+          })
         })
-        content += line.trim() + "\n"
-      })
+        sampleIDChunk.forEach((sampleID) => {
+          let line = ""
+          const entry = entryObj[sampleID]
+          this.$store.state.entry.headers.forEach((header) => {
+            const ele = entry[header.value]
+            line += typeof ele === "undefined" ? false : ele
+            line += "\t"
+          })
+          content += line.trim() + "\n"
+        })
+      }
 
       const blob = new Blob([content], { type: "text/tsv" })
       const link = document.createElement("a")

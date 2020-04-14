@@ -20,6 +20,14 @@ export const mutations = {
   }
 }
 
+export const getters = {
+  getSelectedEntries(state) {
+    return state.selectedEntries.map((entry) => {
+      return { sampleID: entry }
+    })
+  }
+}
+
 export const actions = {
   updateHeaders({ commit }, data) {
     commit("setHeaders", data)
@@ -31,11 +39,21 @@ export const actions = {
     )
     commit("setEntries", entries)
   },
-  async updateEntryNum({ commit, rootState }) {
-    const entryNum = await this.$dataFetcher.fetchEntriesNum(rootState.filter)
-    commit("setEntryNum", entryNum)
+  async updateTotalSampleIDs({ commit, rootState }) {
+    console.log(rootState.filter)
+    const sampleIDs = await this.$dataFetcher.fetchEntriesSampleIDs(
+      rootState.filter
+    )
+    commit("setEntryNum", sampleIDs.length)
+    commit("setSelectedEntries", sampleIDs)
   },
   updateSelectedEntries({ commit }, data) {
     commit("setSelectedEntries", data)
+  },
+  updateSelectedEntriesFromTable({ commit }, data) {
+    commit(
+      "setSelectedEntries",
+      data.map((item) => item.sampleID)
+    )
   }
 }
