@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 "use strict"
-const axiosBase = require("axios")
-const axios = axiosBase.create({
+const axios = require("axios").create({
   baseURL: process.env.ES_URL || "http://db:9200",
   headers: {
     "Content-Type": "application/json"
   }
 })
+
 const INDEX_MAPPINGS = {
   properties: {
     age: {
@@ -43,10 +43,11 @@ const INDEX_SETTINGS = {
 
 const createIndex = async () => {
   await axios.get("/").catch((err) => {
-    throw new Error("The request to / failed.")
+    throw err
   })
+
   let existsIndex = true
-  await axios.get("/data").catch((err) => {
+  await axios.get("/data").catch(() => {
     existsIndex = false
   })
   if (!existsIndex) {
@@ -57,7 +58,7 @@ const createIndex = async () => {
         settings: INDEX_SETTINGS
       })
       .catch((err) => {
-        throw new Error("The put requiest to /data failed.")
+        throw err
       })
     console.log("Finish to create ES index.")
   } else {
@@ -67,7 +68,7 @@ const createIndex = async () => {
 
 const main = async () => {
   await createIndex().catch((err) => {
-    console.error(err.name, err.message)
+    console.error(JSON.stringify(err, null, 2))
     process.exit(1)
   })
   process.exit(0)

@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 "use strict"
-const fs = require("fs")
 const { Client } = require("@elastic/elasticsearch")
 const client = new Client({
   node: process.env.ES_URL || "http://db:9200"
@@ -20,7 +19,7 @@ const bulk = async (filePaths) => {
   const errorFileList = []
   for (const file of filePaths) {
     console.log(`Bulking... ${file}`)
-    const dataBuffer = fs.readFileSync(file, "utf8")
+    const dataBuffer = require("fs").readFileSync(file, "utf8")
     const data = JSON.parse(dataBuffer)
     const body = []
     data.forEach((ele) => {
@@ -30,7 +29,7 @@ const bulk = async (filePaths) => {
     let res
     try {
       res = await client.bulk({ refresh: true, body })
-    } catch (error) {
+    } catch (err) {
       errorFileList.push({
         file,
         errors: err
@@ -64,12 +63,12 @@ const bulk = async (filePaths) => {
 
 const main = async () => {
   if (process.argv.length < 3) {
-    console.log("Please check your command.")
-    console.log("The json file path you want to validate does not exist.")
+    console.error("Please check your command.")
+    console.error("The json file path you want to validate does not exist.")
     process.exit(1)
   }
   await bulk(process.argv.slice(2)).catch((err) => {
-    console.error(err.name, err.message)
+    console.error(JSON.stringify(err, null, 2))
     process.exit(1)
   })
 }

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 "use strict"
-const fs = require("fs")
 const Validator = require("jsonschema").Validator
 const v = new Validator()
+
 const SCHEMA_FILE_PATH = require("path").resolve(`${__dirname}/../schema.json`)
-const SCHEMA_FILE = fs.readFileSync(SCHEMA_FILE_PATH, "utf8")
+const SCHEMA_FILE = require("fs").readFileSync(SCHEMA_FILE_PATH, "utf8")
 const SCHEMA = JSON.parse(SCHEMA_FILE)
 
 const validate = async (filePaths) => {
@@ -12,23 +12,23 @@ const validate = async (filePaths) => {
   const errorFileList = []
   for (const file of filePaths) {
     console.log(`Validating... ${file}`)
-    let data = undefined
+    let data
     try {
-      data = await fs.promises.readFile(file, "utf8")
-    } catch (error) {
+      data = await require("fs").promises.readFile(file, "utf8")
+    } catch (err) {
       errorFileList.push({
         file: file,
-        errors: error
+        errors: err
       })
       continue
     }
-    let instance = undefined
+    let instance
     try {
       instance = JSON.parse(data)
-    } catch (error) {
+    } catch (err) {
       errorFileList.push({
         file: file,
-        errors: error
+        errors: err
       })
       continue
     }
@@ -47,20 +47,20 @@ const validate = async (filePaths) => {
     console.error("ERROR!!")
     errorFileList.forEach((item) => {
       console.error(`Error file: ${item.file}`)
-      console.error(item.errors)
+      console.error(JSON.stringify(item.errors, null, 2))
     })
-    throw new Error("Validate Failed.")
+    throw new Error("Validation Failed.")
   }
 }
 
 const main = async () => {
   if (process.argv.length < 3) {
-    console.log("Please check your command.")
-    console.log("The json file path you want to validate does not exist.")
+    console.error("Please check your command.")
+    console.error("The json file path you want to validate does not exist.")
     process.exit(1)
   }
   await validate(process.argv.slice(2)).catch((err) => {
-    console.error(err.name, err.message)
+    console.error(JSON.stringify(err, null, 2))
     process.exit(1)
   })
   process.exit(0)
