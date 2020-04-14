@@ -1,7 +1,7 @@
 import colors from "vuetify/es5/util/colors"
 
 export default {
-  mode: "universal",
+  mode: "spa",
   head: {
     titleTemplate: "%s - " + process.env.npm_package_name,
     title: process.env.npm_package_name || "",
@@ -66,7 +66,8 @@ export default {
     port: process.env.NUXT_PORT || 8080
   },
   plugins: [
-    { src: "~/plugins/vuetify", ssr: false },
+    "~/plugins/vuetify.js",
+    "~/plugins/const.js",
     "~/plugins/data-fetcher.js"
   ],
   css: ["~/assets/fonts.css"]
