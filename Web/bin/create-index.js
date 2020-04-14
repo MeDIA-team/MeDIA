@@ -32,6 +32,9 @@ const INDEX_MAPPINGS = {
     },
     sex: {
       type: "keyword"
+    },
+    disease: {
+      type: "keyword"
     }
   }
 }

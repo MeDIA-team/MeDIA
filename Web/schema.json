@@ -18,6 +18,9 @@
       "age": {
         "type": "integer"
       },
+      "disease": {
+        "type": "string"
+      },
       "sampleID": {
         "type": "string"
       },
@@ -34,6 +37,7 @@
       "patientID",
       "sex",
       "age",
+      "disease",
       "sampleID",
       "samplingDate",
       "dataType"
