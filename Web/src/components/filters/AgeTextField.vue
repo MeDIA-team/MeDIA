@@ -1,13 +1,13 @@
 <template>
-  <div class="d-flex flex-row">
+  <div class="d-flex">
     <v-text-field
       v-model="inputtedBottomAge"
       class="my-1"
-      single-line
-      outlined
       dense
       hide-details
-      style="max-width: 70px;"
+      outlined
+      single-line
+      style="max-width: 80px;"
       type="number"
     ></v-text-field>
     <div class="d-flex align-center mx-4">
@@ -18,11 +18,11 @@
     <v-text-field
       v-model="inputtedUpperAge"
       class="my-1"
-      single-line
-      outlined
       dense
       hide-details
-      style="max-width: 70px;"
+      outlined
+      single-line
+      style="max-width: 80px;"
       type="number"
     ></v-text-field>
   </div>
@@ -50,5 +50,3 @@ export default {
   }
 }
 </script>
-
-<style></style>

@@ -1,14 +1,14 @@
 <template>
-  <div class="d-flex flex-row flex-wrap">
+  <div class="d-flex flex-wrap">
     <v-checkbox
-      v-for="sex in sexes"
-      :key="sex"
       v-model="selectedSexes"
-      :value="sex"
+      :key="sex"
       :label="sex"
-      hide-details
+      :value="sex"
       class="shrink my-0 mr-6 pt-0 align-center"
+      hide-details
       style="width: 120px; height: 52px;"
+      v-for="sex in sexes"
     ></v-checkbox>
   </div>
 </template>
@@ -30,5 +30,3 @@ export default {
   }
 }
 </script>
-
-<style></style>

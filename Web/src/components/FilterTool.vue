@@ -13,16 +13,19 @@
             </span>
           </div>
           <project-check-box v-if="filterKey === 'Project'"></project-check-box>
-          <patient-id-text-field
+          <patient-id-chip
             v-else-if="filterKey === 'Patient ID'"
             class="my-2"
-          ></patient-id-text-field>
+          ></patient-id-chip>
           <sex-check-box v-else-if="filterKey === 'Sex'"></sex-check-box>
           <age-text-field v-else-if="filterKey === 'Age'"></age-text-field>
-          <sample-id-text-field
+          <disease-check-box
+            v-else-if="filterKey === 'Disease'"
+          ></disease-check-box>
+          <sample-id-chip
             v-else-if="filterKey === 'Sample ID'"
             class="my-2"
-          ></sample-id-text-field>
+          ></sample-id-chip>
           <sampling-date-text-field
             v-else-if="filterKey === 'Sampling Date'"
           ></sampling-date-text-field>
@@ -39,21 +42,23 @@
 
 <script>
 import ProjectCheckBox from "~/components/filters/ProjectCheckBox"
-import PatientIDTextField from "~/components/filters/PatientIDTextField"
+import PatientIDChip from "~/components/filters/PatientIDChip"
 import SexCheckBox from "~/components/filters/SexCheckBox"
 import AgeTextField from "~/components/filters/AgeTextField"
-import SampleIDTextField from "~/components/filters/SampleIDTextField"
+import DiseaseCheckBox from "~/components/filters/DiseaseCheckBox"
+import SampleIDChip from "~/components/filters/SampleIDChip"
 import SamplingDateTextField from "~/components/filters/SamplingDateTextField"
-import EntryNumChart from "~/components/filters/EntryNumChart"
 import DataTypeChip from "~/components/filters/DataTypeChip"
+import EntryNumChart from "~/components/filters/EntryNumChart"
 
 export default {
   components: {
     ProjectCheckBox,
-    "patient-id-text-field": PatientIDTextField,
+    "patient-id-chip": PatientIDChip,
     SexCheckBox,
     AgeTextField,
-    "sample-id-text-field": SampleIDTextField,
+    DiseaseCheckBox,
+    "sample-id-chip": SampleIDChip,
     SamplingDateTextField,
     EntryNumChart,
     DataTypeChip
@@ -65,6 +70,7 @@ export default {
         "Patient ID",
         "Sex",
         "Age",
+        "Disease",
         "Sample ID",
         "Sampling Date",
         "Data Type"

@@ -1,12 +1,12 @@
 <template>
   <v-autocomplete
-    v-model="inputtedDataTypes"
-    :items="dataTypes"
+    v-model="inputtedSampleIDs"
+    :items="sampleIDs"
     :search-input.sync="searchInput"
     clearable
     hide-details
     hide-selected
-    label="must have"
+    label="should have"
     multiple
     outlined
     single-line
@@ -27,22 +27,21 @@ export default {
     return { searchInput: null }
   },
   computed: {
-    inputtedDataTypes: {
+    inputtedSampleIDs: {
       get() {
-        return this.$store.state.filter.inputtedDataTypes
+        return this.$store.state.filter.inputtedSampleIDs
       },
       set(value) {
-        this.$store.dispatch("filter/updateInputtedDataTypes", value)
+        this.$store.dispatch("filter/updateInputtedSampleIDs", value)
       }
     },
-    dataTypes() {
-      return this.$store.state.init.dataTypes
+    sampleIDs() {
+      return this.$store.state.init.sampleIDs
     }
   },
-
   methods: {
     remove(item) {
-      this.inputtedDataTypes = this.inputtedDataTypes.filter(
+      this.inputtedSampleIDs = this.inputtedSampleIDs.filter(
         (ele) => ele !== item
       )
     }
