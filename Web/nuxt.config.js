@@ -65,10 +65,6 @@ export default {
     host: process.env.NUXT_HOST || "0.0.0.0",
     port: process.env.NUXT_PORT || 8080
   },
-  plugins: [
-    "~/plugins/vuetify.js",
-    "~/plugins/const.js",
-    "~/plugins/data-fetcher.js"
-  ],
+  plugins: ["~/plugins/vuetify.js", "~/plugins/data-fetcher.js"],
   css: ["~/assets/fonts.css"]
 }
