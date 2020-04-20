@@ -1,25 +1,27 @@
 <template>
-  <v-card color="white">
-    <v-tabs v-model="selectedTabIndex" color="primary" class="pl-4">
-      <v-tab
-        v-for="tabKey in tabKeys"
-        :key="tabKey"
-        color="primary"
-        class="subtitle-1"
-      >
-        {{ tabKey }}
-      </v-tab>
-    </v-tabs>
+  <div>
+    <v-card color="white">
+      <v-tabs v-model="selectedTabIndex" color="primary" class="pl-4">
+        <v-tab
+          v-for="tabKey in tabKeys"
+          :key="tabKey"
+          class="subtitle-1"
+          color="primary"
+        >
+          {{ tabKey }}
+        </v-tab>
+      </v-tabs>
 
-    <v-tabs-items v-model="selectedTabIndex">
-      <v-tab-item>
-        <filter-tool class="px-10 pb-4"></filter-tool>
-      </v-tab-item>
-      <v-tab-item>
-        <selector-tool class="px-10 pb-4"></selector-tool>
-      </v-tab-item>
-    </v-tabs-items>
-  </v-card>
+      <v-tabs-items v-model="selectedTabIndex">
+        <v-tab-item>
+          <filter-tool class="px-10 pb-4"></filter-tool>
+        </v-tab-item>
+        <v-tab-item>
+          <selector-tool class="px-10 pb-4"></selector-tool>
+        </v-tab-item>
+      </v-tabs-items>
+    </v-card>
+  </div>
 </template>
 
 <script>
@@ -30,7 +32,7 @@ export default {
   components: { FilterTool, SelectorTool },
   data() {
     return {
-      selectedTabIndex: null,
+      selectedTabIndex: 0,
       tabKeys: ["Filter", "Selector"]
     }
   }

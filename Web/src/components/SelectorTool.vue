@@ -1,18 +1,18 @@
 <template>
   <div>
-    <default-columns-selector></default-columns-selector>
-    <data-types-columns-selector class="mt-2"></data-types-columns-selector>
+    <required-fields-selector></required-fields-selector>
+    <data-type-fields-selector class="mt-2"></data-type-fields-selector>
   </div>
 </template>
 
 <script>
-import DefaultColumnsSelector from "~/components/selectors/DefaultColumnsSelector.vue"
-import DataTypesColumnsSelector from "~/components/selectors/DataTypesColumnsSelector.vue"
+import RequiredFieldsSelector from "~/components/selectors/RequiredFieldsSelector.vue"
+import DataTypeFieldsSelector from "~/components/selectors/DataTypeFieldsSelector.vue"
 
 export default {
   components: {
-    DefaultColumnsSelector,
-    DataTypesColumnsSelector
+    RequiredFieldsSelector,
+    DataTypeFieldsSelector
   }
 }
 </script>

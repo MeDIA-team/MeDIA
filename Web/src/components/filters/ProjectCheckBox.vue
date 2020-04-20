@@ -1,14 +1,14 @@
 <template>
   <div class="d-flex flex-wrap">
     <v-checkbox
-      v-model="selectedProjects"
+      v-for="project in projects"
       :key="project"
+      v-model="selectedProjects"
       :label="project"
       :value="project"
       class="shrink my-0 mr-4 pt-0 align-center"
       hide-details
       style="width: 200px; height: 52px;"
-      v-for="project in projects"
     ></v-checkbox>
   </div>
 </template>

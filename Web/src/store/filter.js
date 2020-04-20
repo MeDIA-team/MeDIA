@@ -1,10 +1,11 @@
 export const state = () => ({
   selectedProjects: [],
-  inputtedPatientID: "",
+  inputtedPatientIDs: [],
   selectedSexes: [],
   inputtedBottomAge: "",
   inputtedUpperAge: "",
-  inputtedSampleID: "",
+  selectedDiseases: [],
+  inputtedSampleIDs: [],
   inputtedBottomSamplingDate: "",
   inputtedUpperSamplingDate: "",
   inputtedDataTypes: []
@@ -14,8 +15,8 @@ export const mutations = {
   setSelectedProjects(state, data) {
     state.selectedProjects = data
   },
-  setInputtedPatientID(state, data) {
-    state.inputtedPatientID = data
+  setInputtedPatientIDs(state, data) {
+    state.inputtedPatientIDs = data
   },
   setSelectedSexes(state, data) {
     state.selectedSexes = data
@@ -26,8 +27,11 @@ export const mutations = {
   setInputtedUpperAge(state, data) {
     state.inputtedUpperAge = data
   },
-  setInputtedSampleID(state, data) {
-    state.inputtedSampleID = data
+  setSelectedDiseases(state, data) {
+    state.selectedDiseases = data
+  },
+  setInputtedSampleIDs(state, data) {
+    state.inputtedSampleIDs = data
   },
   setInputtedBottomSamplingDate(state, data) {
     state.inputtedBottomSamplingDate = data
@@ -41,11 +45,16 @@ export const mutations = {
 }
 
 export const actions = {
+  initialize({ commit, rootState }) {
+    commit("setSelectedProjects", rootState.init.projects)
+    commit("setSelectedSexes", rootState.init.sexes)
+    commit("setSelectedDiseases", rootState.init.diseases)
+  },
   updateSelectedProjects({ commit }, data) {
     commit("setSelectedProjects", data)
   },
-  updateInputtedPatientID({ commit }, data) {
-    commit("setInputtedPatientID", data)
+  updateInputtedPatientIDs({ commit }, data) {
+    commit("setInputtedPatientIDs", data)
   },
   updateSelectedSexes({ commit }, data) {
     commit("setSelectedSexes", data)
@@ -56,8 +65,8 @@ export const actions = {
   updateInputtedUpperAge({ commit }, data) {
     commit("setInputtedUpperAge", data)
   },
-  updateInputtedSampleID({ commit }, data) {
-    commit("setInputtedSampleID", data)
+  updateInputtedSampleIDs({ commit }, data) {
+    commit("setInputtedSampleIDs", data)
   },
   updateInputtedBottomSamplingDate({ commit }, data) {
     commit("setInputtedBottomSamplingDate", data)
@@ -67,11 +76,5 @@ export const actions = {
   },
   updateInputtedDataTypes({ commit }, data) {
     commit("setInputtedDataTypes", data)
-  },
-  initSelectedProjects({ commit, rootState }) {
-    commit("setSelectedProjects", rootState.init.projects)
-  },
-  initSelectedSexes({ commit, rootState }) {
-    commit("setSelectedSexes", rootState.init.sexes)
   }
 }

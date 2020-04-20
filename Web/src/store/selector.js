@@ -1,33 +1,28 @@
 export const state = () => ({
-  selectedDefaultColumns: [
-    "Project Name",
-    "Project ID",
-    "Patient ID",
-    "Sex",
-    "Age",
-    "Sample ID",
-    "Sampling Date"
-  ],
-  selectedDataTypesColumns: []
+  selectedRequiredFields: [],
+  selectedDataTypeFields: []
 })
 
 export const mutations = {
-  setSelectedDefaultColumns(state, data) {
-    state.selectedDefaultColumns = data
+  setSelectedRequiredFields(state, data) {
+    state.selectedRequiredFields = data
   },
-  setSelectedDataTypesColumns(state, data) {
-    state.selectedDataTypesColumns = data
+  setSelectedDataTypesFields(state, data) {
+    state.selectedDataTypeFields = data
   }
 }
 
 export const actions = {
-  updateSelectedDefaultColumns({ commit }, data) {
-    commit("setSelectedDefaultColumns", data)
+  initialize({ commit, rootState }) {
+    commit(
+      "setSelectedRequiredFields",
+      rootState.const.requiredFields.map((item) => item.key)
+    )
   },
-  updateSelectedDataTypesColumns({ commit }, data) {
-    commit("setSelectedDataTypesColumns", data)
+  updateSelectedRequiredFields({ commit }, data) {
+    commit("setSelectedRequiredFields", data)
   },
-  initSelectedDataTypesColumns({ commit, rootState }) {
-    commit("setSelectedDataTypesColumns", rootState.init.dataTypes)
+  updateSelectedDataTypesFields({ commit }, data) {
+    commit("setSelectedDataTypesFields", data)
   }
 }
