@@ -36,7 +36,7 @@ export default {
       }
     },
     sampleIDs() {
-      return this.$store.state.entry.processedSampleIDs
+      return this.$store.state.init.sampleIDs
     }
   },
   methods: {

@@ -36,7 +36,7 @@ export default {
       }
     },
     patientIDs() {
-      return this.$store.state.entry.processedPatientIDs
+      return this.$store.state.init.patientIDs
     }
   },
   methods: {
