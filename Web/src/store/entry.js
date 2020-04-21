@@ -12,6 +12,7 @@ export const state = () => ({
   loading: true,
   shownEntries: [],
   processedSampleIDs: [],
+  processedPatientIDs: [],
   selectedSampleIDs: [],
   entryCount: 0,
   patientCount: 0
@@ -32,6 +33,9 @@ export const mutations = {
   },
   setProcessedSampleIDs(state, data) {
     state.processedSampleIDs = data
+  },
+  setProcessedPatientIDs(state, data) {
+    state.processedPatientIDs = data
   },
   setSelectedSampleIDs(state, data) {
     state.selectedSampleIDs = data
@@ -96,6 +100,7 @@ export const actions = {
     } else {
       processedSampleIDs = filteredAndSortedSampleIDs
     }
+    processedSampleIDs.sort()
     commit("setProcessedSampleIDs", processedSampleIDs)
     commit("setSelectedSampleIDs", processedSampleIDs)
     commit("setEntryCount", processedSampleIDs.length)
@@ -107,6 +112,7 @@ export const actions = {
         }
       )
     })
+    commit("setProcessedPatientIDs", Array.from(patientIDSet).sort())
     commit("setPatientCount", patientIDSet.size)
     const { page, itemsPerPage } = state.options
     const shownSampleIDs = processedSampleIDs.slice(
