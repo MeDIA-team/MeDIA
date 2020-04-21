@@ -46,10 +46,11 @@ export default {
                 this.$store.state.entry.patientCount
             ],
             backgroundColor: [
-              "rgba(25, 118, 210, 0.8)",
+              "rgba(71, 145, 219, 1)",
               "rgba(255, 255, 255, 0)"
             ],
-            borderColor: "rgba(25, 118, 210, 0.3)"
+            borderColor: "rgba(71, 145, 219, 1)",
+            borderWidth: 0.6
           }
         ]
       }
