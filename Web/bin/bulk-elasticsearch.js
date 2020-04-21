@@ -50,6 +50,9 @@ const bulk = async (filePaths) => {
   }
   if (errorFileList.length === 0) {
     console.log("OK!!")
+    await require("./update-index-fielddata")().catch((err) => {
+      throw err
+    })
     console.log("Finish bulk to elasticsearch.")
   } else {
     console.error("ERROR!!")
@@ -68,7 +71,7 @@ const main = async () => {
     process.exit(1)
   }
   await bulk(process.argv.slice(2)).catch((err) => {
-    console.error(JSON.stringify(err, null, 2))
+    JSON.stringify(err, null, 2)
     process.exit(1)
   })
 }

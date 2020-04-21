@@ -110,8 +110,14 @@ export default {
     this.$store.dispatch("entry/updateEntries")
     this.$store.subscribe((mutation) => {
       if (this.subscribeMutations.includes(mutation.type)) {
-        this.options.page = 1
         this.$store.dispatch("entry/updateEntries")
+      }
+      if (
+        this.subscribeMutations
+          .filter((ele) => ele !== "entry/setOptions")
+          .includes(mutation.type)
+      ) {
+        this.$store.dispatch("entry/updatePageFirst")
       }
     })
   },

@@ -21,6 +21,9 @@ export const mutations = {
   setOptions(state, data) {
     state.options = data
   },
+  setPageFirst(state) {
+    state.options.page = 1
+  },
   setLoading(state, data) {
     state.loading = data
   },
@@ -142,6 +145,9 @@ export const actions = {
   },
   updateOptions({ commit }, data) {
     commit("setOptions", data)
+  },
+  updatePageFirst({ commit }) {
+    commit("setPageFirst")
   },
   updateSelectedSampleIDs({ commit }, data) {
     commit(

@@ -13,6 +13,7 @@
     "lint:fix": "eslint --fix --ext .js,.vue .",
     "validate": "./bin/validate-data-json.js",
     "createIndex": "./bin/create-index.js",
+    "updateIndexFielddata": "./bin/update-index-fielddata.js",
     "bulk": "./bin/bulk-elasticsearch.js"
   },
   "dependencies": {
