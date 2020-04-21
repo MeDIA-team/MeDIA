@@ -49,7 +49,7 @@ export const mutations = {
 }
 
 export const actions = {
-  async initialize({ commit, state }) {
+  async initialize({ state, commit }) {
     const queue = [
       {
         func: this.$dataFetcher.fetchUniqueValues,
@@ -82,16 +82,6 @@ export const actions = {
         mutation: "setSampleIDs"
       },
       {
-        func: this.$dataFetcher.fetchTotalCount,
-        arg: "sampleID",
-        mutation: "setTotalSampleIDCount"
-      },
-      {
-        func: this.$dataFetcher.fetchTotalCount,
-        arg: "patientID",
-        mutation: "setTotalPatientIDCount"
-      },
-      {
         func: this.$dataFetcher.fetchDataTypeFields,
         arg: undefined,
         mutation: "setDataTypeFields"
@@ -114,5 +104,8 @@ export const actions = {
     for (let i = 0; i < queue.length; i++) {
       commit(queue[i].mutation, results[i])
     }
+
+    commit("setTotalSampleIDCount", state.sampleIDs.length)
+    commit("setTotalPatientIDCount", state.patientIDs.length)
   }
 }

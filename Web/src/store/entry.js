@@ -37,7 +37,7 @@ export const mutations = {
     state.entryCount = data
   },
   setPatientCount(state, data) {
-    state.PatientCount = data
+    state.patientCount = data
   }
 }
 
@@ -76,7 +76,6 @@ export const getters = {
 
 export const actions = {
   async updateEntries({ commit, state, rootState }) {
-    console.log("FFFFFFFFFFFFFFFF")
     commit("setLoading", true)
     const filteredAndSortedSampleIDs = await this.$dataFetcher
       .fetchFilteredAndSortedSampleIDs(state.options, rootState.filter)
@@ -105,7 +104,7 @@ export const actions = {
         }
       )
     })
-    commit("setPatientCount", patientIDSet.length)
+    commit("setPatientCount", patientIDSet.size)
     const { page, itemsPerPage } = state.options
     const shownSampleIDs = processedSampleIDs.slice(
       (page - 1) * itemsPerPage,

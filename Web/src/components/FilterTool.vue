@@ -36,7 +36,10 @@
         </div>
       </div>
     </div>
-    <entry-num-chart class="mr-10"></entry-num-chart>
+    <div class="d-flex flex-column ml-auto mr-10">
+      <entry-count-chart></entry-count-chart>
+      <patient-count-chart class="mt-4"></patient-count-chart>
+    </div>
   </div>
 </template>
 
@@ -49,7 +52,8 @@ import DiseaseCheckBox from "~/components/filters/DiseaseCheckBox"
 import SampleIDChip from "~/components/filters/SampleIDChip"
 import SamplingDateTextField from "~/components/filters/SamplingDateTextField"
 import DataTypeChip from "~/components/filters/DataTypeChip"
-import EntryNumChart from "~/components/filters/EntryNumChart"
+import EntryCountChart from "~/components/filters/EntryCountChart"
+import PatientCountChart from "~/components/filters/PatientCountChart"
 
 export default {
   components: {
@@ -60,7 +64,8 @@ export default {
     DiseaseCheckBox,
     "sample-id-chip": SampleIDChip,
     SamplingDateTextField,
-    EntryNumChart,
+    EntryCountChart,
+    PatientCountChart,
     DataTypeChip
   },
   data() {

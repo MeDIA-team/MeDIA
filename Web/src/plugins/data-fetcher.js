@@ -25,37 +25,6 @@ export default (ctx, inject) => {
     return res.aggregations.items.buckets.map((item) => item.key).sort() || []
   }
 
-  const fetchTotalCount = async (field) => {
-    const res = await ctx.$axios
-      .$get("/api/data/_search", {
-        params: {
-          source: JSON.stringify({
-            track_total_hits: true,
-            size: 0,
-            collapse: {
-              field
-            },
-            query: {
-              match_all: {}
-            },
-            aggs: {
-              total_count: {
-                cardinality: {
-                  field
-                }
-              }
-            }
-          }),
-          source_content_type: "application/json"
-        }
-      })
-      .catch((err) => {
-        throw err
-      })
-
-    return res.aggregations.total_count.value || 0
-  }
-
   const fetchAllFields = async () => {
     const res = await ctx.$axios.$get("/api/data/_mapping").catch((err) => {
       throw err
@@ -141,18 +110,6 @@ export default (ctx, inject) => {
     const { sortBy, sortDesc } = optionContext
     const sort = sortContextToQuery(sortBy, sortDesc)
     const filter = filterStateToQuery(filterState)
-    console.log(
-      JSON.stringify({
-        track_total_hits: true,
-        size: ctx.store.state.const.elasticsearchSize,
-        collapse: {
-          field: "sampleID"
-        },
-        sort,
-        query: filter,
-        _source: false
-      })
-    )
     const res = await ctx.$axios
       .$get("/api/data/_search", {
         params: {
@@ -241,7 +198,6 @@ export default (ctx, inject) => {
 
   const functions = {
     fetchUniqueValues,
-    fetchTotalCount,
     fetchDataTypeFields,
     fetchFilteredAndSortedSampleIDs,
     fetchSampleIDTable,
@@ -262,8 +218,6 @@ const sortContextToQuery = (sortBy, sortDesc) => {
       }
     })
   }
-
-  console.log(sort)
 
   return sort
 }
