@@ -1,7 +1,25 @@
 export const state = () => ({
   selectedRequiredFields: [],
-  selectedDataTypeFields: []
+  selectedDataTypeFields: [],
+  treeviewOpen: []
 })
+
+export const getters = {
+  treeviewItems(state, getters, rootState, rootGetters) {
+    return rootState.init.dataTypes.map((dataType) => {
+      return {
+        id: dataType,
+        name: dataType,
+        children: rootState.init.dataTypeFields[dataType].map((field) => {
+          return {
+            id: dataType + "_" + field,
+            name: field
+          }
+        })
+      }
+    })
+  }
+}
 
 export const mutations = {
   setSelectedRequiredFields(state, data) {
@@ -9,6 +27,9 @@ export const mutations = {
   },
   setSelectedDataTypesFields(state, data) {
     state.selectedDataTypeFields = data
+  },
+  setTreeviewOpen(state, data) {
+    state.treeviewOpen = data
   }
 }
 
@@ -16,7 +37,9 @@ export const actions = {
   initialize({ commit, rootState }) {
     commit(
       "setSelectedRequiredFields",
-      rootState.const.requiredFields.map((item) => item.key)
+      rootState.const.requiredFields
+        .map((item) => item.key)
+        .filter((key) => key !== "dataType")
     )
     commit("setSelectedDataTypesFields", rootState.init.dataTypes)
   },
@@ -39,5 +62,8 @@ export const actions = {
       }
     }
     commit("setSelectedDataTypesFields", sortedData)
+  },
+  updateTreeviewOpen({ commit }, data) {
+    commit("setTreeviewOpen", data)
   }
 }

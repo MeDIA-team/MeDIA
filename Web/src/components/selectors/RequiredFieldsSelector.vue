@@ -17,7 +17,9 @@
 export default {
   computed: {
     requiredFields() {
-      return this.$store.state.const.requiredFields
+      return this.$store.state.const.requiredFields.filter(
+        (field) => field.key !== "dataType"
+      )
     },
     selectedRequiredFields: {
       get() {

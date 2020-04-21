@@ -35,6 +35,15 @@
           ></data-type-chip>
         </div>
       </div>
+      <v-btn
+        class="mt-4"
+        color="secondary"
+        max-width="160"
+        min-width="160"
+        outlined
+        @click="setInitialState"
+        >Set Initial State</v-btn
+      >
     </div>
     <div class="d-flex flex-column ml-auto mr-10">
       <entry-count-chart></entry-count-chart>
@@ -80,6 +89,11 @@ export default {
         "Sampling Date",
         "Data Type"
       ]
+    }
+  },
+  methods: {
+    setInitialState() {
+      this.$store.dispatch("filter/initialize")
     }
   }
 }

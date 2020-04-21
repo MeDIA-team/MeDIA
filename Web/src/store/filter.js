@@ -47,8 +47,15 @@ export const mutations = {
 export const actions = {
   initialize({ commit, rootState }) {
     commit("setSelectedProjects", rootState.init.projects)
+    commit("setInputtedPatientIDs", [])
     commit("setSelectedSexes", rootState.init.sexes)
+    commit("setInputtedBottomAge", "")
+    commit("setInputtedUpperAge", "")
     commit("setSelectedDiseases", rootState.init.diseases)
+    commit("setInputtedSampleIDs", [])
+    commit("setInputtedBottomSamplingDate", "")
+    commit("setInputtedUpperSamplingDate", "")
+    commit("setInputtedDataTypes", [])
   },
   updateSelectedProjects({ commit }, data) {
     commit("setSelectedProjects", data)

@@ -1,11 +1,13 @@
 <template>
   <div>
-    <span class="grey--text text--darken-4 title">
+    <span class="grey--text text--darken-3 title">
       Data Type
     </span>
     <v-treeview
       v-model="selectedDataTypeFields"
-      :items="dataTypeFields"
+      :items="treeviewItems"
+      :open.sync="treeviewOpen"
+      class="grey--text text--darken-2"
       dense
       hoverable
       return-object
@@ -19,26 +21,6 @@
 
 <script>
 export default {
-  data() {
-    const dataTypeFields = this.$store.state.init.dataTypes.map((dataType) => {
-      return {
-        id: dataType,
-        name: dataType,
-        children: this.$store.state.init.dataTypeFields[dataType].map(
-          (field) => {
-            return {
-              id: dataType + "_" + field,
-              name: field
-            }
-          }
-        )
-      }
-    })
-
-    return {
-      dataTypeFields
-    }
-  },
   computed: {
     selectedDataTypeFields: {
       get() {
@@ -54,6 +36,17 @@ export default {
           "selector/updateSelectedDataTypesFields",
           value.map((val) => val.id)
         )
+      }
+    },
+    treeviewItems() {
+      return this.$store.getters["selector/treeviewItems"]
+    },
+    treeviewOpen: {
+      get() {
+        return this.$store.state.selector.treeviewOpen
+      },
+      set(value) {
+        this.$store.dispatch("selector/updateTreeviewOpen", value)
       }
     }
   }
