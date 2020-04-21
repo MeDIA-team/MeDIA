@@ -5,7 +5,7 @@
         {{ this.$store.state.const.titleText }}
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <!-- <export-table-button></export-table-button> -->
+      <export-table-button></export-table-button>
     </v-app-bar>
 
     <v-content>
@@ -32,13 +32,13 @@
 
 <script>
 import DataTable from "~/components/DataTable"
-// import ExportTableButton from "~/components/ExportTableButton"
+import ExportTableButton from "~/components/ExportTableButton"
 import ToolCard from "~/components/ToolCard"
 
 export default {
   components: {
     DataTable,
-    //   ExportTableButton,
+    ExportTableButton,
     ToolCard
   },
   async fetch({ store, error }) {
@@ -46,7 +46,6 @@ export default {
       "init/initialize",
       "filter/initialize",
       "selector/initialize"
-      // "entry/updateEntries"s
     ]
     for (const initAction of initActionQueue) {
       try {

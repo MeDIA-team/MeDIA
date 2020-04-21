@@ -10,71 +10,80 @@ export default {
   methods: {
     async exportTable() {
       let content = ""
-      this.$store.state.entry.headers.forEach((header) => {
+      const headers = this.$store.getters["entry/headers"]
+      headers.forEach((header) => {
         content += header.value + "\t"
       })
       content = content.trim() + "\n"
 
-      const chunkSize = 100
+      const allDocs = this.$store.state.entry.selectedSampleIDs.reduce(
+        (arr, cur) => ({ ...arr, [cur]: {} }),
+        {}
+      )
       for (
         let i = 0;
-        i < this.$store.state.entry.selectedEntries.length;
-        i += chunkSize
+        i < this.$store.state.entry.selectedSampleIDs.length;
+        i += this.$store.state.const.dumpChunkSize
       ) {
-        const sampleIDChunk = this.$store.state.entry.selectedEntries.slice(
+        const sampleIDChunk = this.$store.state.entry.selectedSampleIDs.slice(
           i,
-          i + chunkSize
+          i + this.$store.state.const.dumpChunkSize
         )
-        const entriesDoc = await this.$dataFetcher.fetchEntriesDoc(
-          sampleIDChunk
-        )
-        const entryObj = sampleIDChunk.reduce(
-          (arr, cur) => ({ ...arr, [cur]: {} }),
-          {}
-        )
-        entriesDoc.forEach((doc) => {
+        const entryDocs = await this.$dataFetcher
+          .fetchEntryDocs(sampleIDChunk)
+          .catch((err) => {
+            throw err
+          })
+        entryDocs.forEach((doc) => {
           const sampleID = doc.sampleID
           const dataType = doc.dataType
           Object.entries(doc).forEach(([key, val]) => {
             if (
-              [
-                "projectID",
-                "projectName",
-                "patientID",
-                "sex",
-                "age",
-                "sampleID",
-                "samplingDate"
-              ].includes(key)
+              this.$store.state.const.requiredFields
+                .map((item) => item.key)
+                .filter((key) => key !== "dataType")
+                .includes(key)
             ) {
-              entryObj[sampleID][key] = val
+              allDocs[sampleID][key] = val
             } else if (key === "dataType") {
-              entryObj[sampleID][dataType] = true
+              allDocs[sampleID][dataType] = true
             } else {
-              entryObj[sampleID][dataType + "_" + key] = val
+              allDocs[sampleID][dataType + "_" + key] = val
             }
           })
         })
-        sampleIDChunk.forEach((sampleID) => {
-          let line = ""
-          const entry = entryObj[sampleID]
-          this.$store.state.entry.headers.forEach((header) => {
-            const ele = entry[header.value]
-            line += typeof ele === "undefined" ? false : ele
-            line += "\t"
-          })
-          content += line.trim() + "\n"
-        })
       }
+      Object.values(allDocs).forEach((entry) => {
+        let line = ""
+        headers.forEach((header) => {
+          const ele = entry[header.value]
+          line += typeof ele === "undefined" ? false : ele
+          line += "\t"
+        })
+        content += line.trim() + "\n"
+      })
 
       const blob = new Blob([content], { type: "text/tsv" })
       const link = document.createElement("a")
       link.href = (window.URL || window.webkitURL).createObjectURL(blob)
-      link.download = "MeDIA_output.tsv"
+      const now = new Date()
+      link.download = `MeDIA_output_${formatDate(now, "yyyy-MM-ddTHH:mm")}.tsv`
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
     }
   }
+}
+
+const formatDate = (date, format) => {
+  format = format.replace(/yyyy/g, date.getFullYear())
+  format = format.replace(/MM/g, ("0" + (date.getMonth() + 1)).slice(-2))
+  format = format.replace(/dd/g, ("0" + date.getDate()).slice(-2))
+  format = format.replace(/HH/g, ("0" + date.getHours()).slice(-2))
+  format = format.replace(/mm/g, ("0" + date.getMinutes()).slice(-2))
+  format = format.replace(/ss/g, ("0" + date.getSeconds()).slice(-2))
+  format = format.replace(/SSS/g, ("00" + date.getMilliseconds()).slice(-3))
+
+  return format
 }
 </script>
