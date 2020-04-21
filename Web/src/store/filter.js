@@ -65,6 +65,9 @@ export const actions = {
   updateInputtedUpperAge({ commit }, data) {
     commit("setInputtedUpperAge", data)
   },
+  updateSelectedDiseases({ commit }, data) {
+    commit("setSelectedDiseases", data)
+  },
   updateInputtedSampleIDs({ commit }, data) {
     commit("setInputtedSampleIDs", data)
   },

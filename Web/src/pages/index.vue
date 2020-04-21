@@ -2,10 +2,10 @@
   <v-app>
     <v-app-bar app color="primary" absolute>
       <v-toolbar-title class="headline white--text">
-        {{ titleText }}
+        {{ this.$store.state.const.titleText }}
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <export-table-button></export-table-button>
+      <!-- <export-table-button></export-table-button> -->
     </v-app-bar>
 
     <v-content>
@@ -22,7 +22,7 @@
       >
         <div>
           <span class="block text-center caption white--text">
-            {{ footerText }}
+            {{ this.$store.state.const.footerText }}
           </span>
         </div>
       </div>
@@ -32,32 +32,29 @@
 
 <script>
 import DataTable from "~/components/DataTable"
-import ExportTableButton from "~/components/ExportTableButton"
+// import ExportTableButton from "~/components/ExportTableButton"
 import ToolCard from "~/components/ToolCard"
 
 export default {
   components: {
     DataTable,
-    ExportTableButton,
+    //   ExportTableButton,
     ToolCard
   },
-  async fetch({ store }) {
-    const queue = [
-      store.dispatch("init/initProjects"),
-      store.dispatch("init/initSexes"),
-      store.dispatch("init/initDataTypes"),
-      store.dispatch("init/initDataTypesMetadataFields"),
-      store.dispatch("init/initTotalEntryNum")
+  async fetch({ store, error }) {
+    const initActionQueue = [
+      "init/initialize",
+      "filter/initialize",
+      "selector/initialize"
+      // "entry/updateEntries"s
     ]
-    await Promise.all(queue)
-    store.dispatch("filter/initSelectedProjects")
-    store.dispatch("filter/initSelectedSexes")
-    store.dispatch("selector/initSelectedDataTypesColumns")
-  },
-  data() {
-    return {
-      titleText: "MeDIA",
-      footerText: ""
+    for (const initAction of initActionQueue) {
+      try {
+        await store.dispatch(initAction)
+      } catch (err) {
+        error(err)
+        return
+      }
     }
   }
 }

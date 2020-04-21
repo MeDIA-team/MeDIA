@@ -4,33 +4,39 @@ export const state = () => ({
   requiredFields: [
     {
       key: "projectID",
-      label: "Project ID"
+      label: "Project ID",
+      width: 125
     },
     {
       key: "projectName",
-      label: "Project Name"
+      label: "Project Name",
+      width: 105
     },
     {
       key: "patientID",
-      label: "Patient ID"
+      label: "Patient ID",
+      width: 105
     },
     {
       key: "sex",
-      label: "Sex"
+      label: "Sex",
+      width: 75
     },
     {
       key: "age",
-      label: "Age"
+      label: "Age",
+      width: 75
     },
-    { key: "disease", label: "Disease" },
-    { key: "sampleID", label: "Sample ID" },
-    { key: "samplingDate", label: "Sampling Date" },
-    { key: "dataType", label: "Data Type" }
+    { key: "disease", label: "Disease", width: 105 },
+    { key: "sampleID", label: "Sample ID", width: 105 },
+    { key: "samplingDate", label: "Sampling Date", width: 105 },
+    { key: "dataType", label: "Data Type", width: null }
   ],
   chartLabel: {
     sampleID: "Number of displayed entries",
     patientID: "Number of displayed patients"
   },
-  rowsPerPage: [10, 30, 100],
+  itemsPerPage: [10, 30, 100],
+  snackbarTimeout: 1000,
   elasticsearchSize: 100000
 })

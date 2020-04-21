@@ -1,58 +1,152 @@
 export const state = () => ({
-  headers: [],
-  entries: [],
-  entryNum: null,
-  selectedEntries: []
+  options: {
+    page: 1,
+    itemsPerPage: 10,
+    sortBy: [],
+    sortDesc: [],
+    groupBy: [],
+    groupDesc: [],
+    mustSort: false,
+    multiSort: true
+  },
+  loading: true,
+  shownEntries: [],
+  processedSampleIDs: [],
+  selectedSampleIDs: [],
+  entryCount: 0,
+  patientCount: 0
 })
 
 export const mutations = {
-  setHeaders(state, data) {
-    state.headers = data
+  setOptions(state, data) {
+    state.options = data
   },
-  setEntries(state, data) {
-    state.entries = data
+  setLoading(state, data) {
+    state.loading = data
   },
-  setEntryNum(state, data) {
-    state.entryNum = data
+  setShownEntries(state, data) {
+    state.shownEntries = data
   },
-  setSelectedEntries(state, data) {
-    state.selectedEntries = data
+  setProcessedSampleIDs(state, data) {
+    state.processedSampleIDs = data
+  },
+  setSelectedSampleIDs(state, data) {
+    state.selectedSampleIDs = data
+  },
+  setEntryCount(state, data) {
+    state.entryCount = data
+  },
+  setPatientCount(state, data) {
+    state.PatientCount = data
   }
 }
 
 export const getters = {
   getSelectedEntries(state) {
-    return state.selectedEntries.map((entry) => {
-      return { sampleID: entry }
+    return state.selectedSampleIDs.map((sampleID) => {
+      return { sampleID }
     })
+  },
+  headers(state, getters, rootState, rootGetters) {
+    const headers = rootState.selector.selectedRequiredFields
+      .filter((key) => key !== "dataType")
+      .map((key) => {
+        const field = rootState.const.requiredFields.find(
+          (item) => item.key === key
+        )
+        return {
+          text: field.label,
+          align: "start",
+          sortable: true,
+          value: field.key,
+          width: field.width
+        }
+      })
+    for (const field of rootState.selector.selectedDataTypeFields) {
+      headers.push({
+        text: field.includes("_") ? field.replace("_", ": ") : field,
+        align: field.includes("_") ? "start" : "center",
+        sortable: field.includes("_"),
+        value: field
+      })
+    }
+    return headers
   }
 }
 
 export const actions = {
-  updateHeaders({ commit }, data) {
-    commit("setHeaders", data)
-  },
-  async updateEntries({ commit, rootState }, optionContext) {
-    const entries = await this.$dataFetcher.fetchEntries(
-      rootState.filter,
-      optionContext
+  async updateEntries({ commit, state, rootState }) {
+    console.log("FFFFFFFFFFFFFFFF")
+    commit("setLoading", true)
+    const filteredAndSortedSampleIDs = await this.$dataFetcher
+      .fetchFilteredAndSortedSampleIDs(state.options, rootState.filter)
+      .catch((err) => {
+        throw err
+      })
+    let processedSampleIDs
+    if (rootState.filter.inputtedDataTypes.length !== 0) {
+      processedSampleIDs = filteredAndSortedSampleIDs.filter((sampleID) => {
+        const dataTypeSet = rootState.init.sampleIDAndDataTypeTable[sampleID]
+        return rootState.filter.inputtedDataTypes.every((dataType) =>
+          dataTypeSet.has(dataType)
+        )
+      })
+    } else {
+      processedSampleIDs = filteredAndSortedSampleIDs
+    }
+    commit("setProcessedSampleIDs", processedSampleIDs)
+    commit("setSelectedSampleIDs", processedSampleIDs)
+    commit("setEntryCount", processedSampleIDs.length)
+    const patientIDSet = new Set()
+    processedSampleIDs.forEach((sampleID) => {
+      rootState.init.sampleIDAndPatientIDTable[sampleID].forEach(
+        (patientID) => {
+          patientIDSet.add(patientID)
+        }
+      )
+    })
+    commit("setPatientCount", patientIDSet.length)
+    const { page, itemsPerPage } = state.options
+    const shownSampleIDs = processedSampleIDs.slice(
+      (page - 1) * itemsPerPage,
+      page * itemsPerPage
     )
-    commit("setEntries", entries)
-  },
-  async updateTotalSampleIDs({ commit, rootState }) {
-    console.log(rootState.filter)
-    const sampleIDs = await this.$dataFetcher.fetchEntriesSampleIDs(
-      rootState.filter
+    const entryDocs = await this.$dataFetcher
+      .fetchEntryDocs(shownSampleIDs)
+      .catch((err) => {
+        throw err
+      })
+    const shownEntries = shownSampleIDs.reduce(
+      (arr, cur) => ({ ...arr, [cur]: {} }),
+      {}
     )
-    commit("setEntryNum", sampleIDs.length)
-    commit("setSelectedEntries", sampleIDs)
+    entryDocs.forEach((doc) => {
+      const sampleID = doc.sampleID
+      const dataType = doc.dataType
+      Object.entries(doc).forEach(([key, val]) => {
+        if (
+          rootState.const.requiredFields
+            .map((item) => item.key)
+            .filter((key) => key !== "dataType")
+            .includes(key)
+        ) {
+          shownEntries[sampleID][key] = val
+        } else if (key === "dataType") {
+          shownEntries[sampleID][dataType] = true
+        } else {
+          shownEntries[sampleID][dataType + "_" + key] = val
+        }
+      })
+    })
+    commit("setShownEntries", Object.values(shownEntries))
+    commit("setLoading", false)
   },
-  updateSelectedEntries({ commit }, data) {
-    commit("setSelectedEntries", data)
+  updateOptions({ commit }, data) {
+    commit("setOptions", data)
   },
-  updateSelectedEntriesFromTable({ commit }, data) {
+  updateSelectedSampleIDs({ commit }, data) {
     commit(
-      "setSelectedEntries",
+      "setSelectedSampleIDs",
       data.map((item) => item.sampleID)
     )
   }

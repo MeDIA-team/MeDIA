@@ -1,6 +1,6 @@
-export default (context, inject) => {
+export default (ctx, inject) => {
   const fetchUniqueValues = async (field) => {
-    const res = await context.$axios
+    const res = await ctx.$axios
       .$get("/api/data/_search", {
         params: {
           source: JSON.stringify({
@@ -10,7 +10,7 @@ export default (context, inject) => {
               items: {
                 terms: {
                   field,
-                  size: 100000
+                  size: ctx.store.state.const.elasticsearchSize
                 }
               }
             }
@@ -18,62 +18,102 @@ export default (context, inject) => {
           source_content_type: "application/json"
         }
       })
-      .catch((error) => {
-        console.error(error.response)
-        return null
+      .catch((err) => {
+        throw err
       })
 
-    return res === null
-      ? []
-      : res.aggregations.items.buckets.map((item) => item.key)
+    return res.aggregations.items.buckets.map((item) => item.key).sort() || []
   }
 
-  const fetchMetadataFields = async () => {
-    const allFields = await fetchAllFields()
-
-    return allFields.filter((field) => !defaultFields.includes(field))
-  }
-
-  const fetchAllFields = async () => {
-    const res = await context.$axios
-      .$get("/api/data/_mapping")
-      .catch((error) => {
-        console.error(error.response)
-        return null
-      })
-
-    return res === null ? [] : Object.keys(res.data.mappings.properties)
-  }
-
-  const fetchDataTypesMetadataFields = async () => {
-    const dataTypes = await fetchUniqueValues("dataType")
-    const dataTypesMetadataFields = dataTypes.reduce(
-      (acc, cur) => ({ ...acc, [cur]: [] }),
-      {}
-    )
-    const metadataFields = await fetchMetadataFields()
-    const queue = []
-    metadataFields.forEach((metadataFields) => {
-      queue.push(fetchDataTypesHaveMetadataField(metadataFields))
-    })
-    const results = await Promise.all(queue)
-    metadataFields.forEach((metadataFields, ind) => {
-      const dataTypes = results[ind]
-      dataTypes.forEach((dataType) => {
-        dataTypesMetadataFields[dataType].push(metadataFields)
-      })
-    })
-
-    return dataTypesMetadataFields
-  }
-
-  const fetchDataTypesHaveMetadataField = async (metadataField) => {
-    const res = await context.$axios
+  const fetchTotalCount = async (field) => {
+    const res = await ctx.$axios
       .$get("/api/data/_search", {
         params: {
           source: JSON.stringify({
             track_total_hits: true,
-            size: 100000,
+            size: 0,
+            collapse: {
+              field
+            },
+            query: {
+              match_all: {}
+            },
+            aggs: {
+              total_count: {
+                cardinality: {
+                  field
+                }
+              }
+            }
+          }),
+          source_content_type: "application/json"
+        }
+      })
+      .catch((err) => {
+        throw err
+      })
+
+    return res.aggregations.total_count.value || 0
+  }
+
+  const fetchAllFields = async () => {
+    const res = await ctx.$axios.$get("/api/data/_mapping").catch((err) => {
+      throw err
+    })
+
+    return Object.keys(res.data.mappings.properties) || []
+  }
+
+  const fetchMetadataFields = async () => {
+    const allFields = await fetchAllFields().catch((err) => {
+      throw err
+    })
+    const requiredFields = ctx.store.state.const.requiredFields.map(
+      (item) => item.key
+    )
+
+    return allFields.filter((field) => !requiredFields.includes(field)) || []
+  }
+
+  const fetchDataTypeFields = async () => {
+    const dataTypes = await fetchUniqueValues("dataType").catch((err) => {
+      throw err
+    })
+    const dataTypeFields = dataTypes.reduce(
+      (acc, cur) => ({ ...acc, [cur]: [] }),
+      {}
+    )
+    const metadataFields = await fetchMetadataFields().catch((err) => {
+      throw err
+    })
+    const queue = []
+    metadataFields.forEach((field) => {
+      queue.push(fetchDataTypeHaveMetadataField(field))
+    })
+    const results = await Promise.all(queue).catch((err) => {
+      throw err
+    })
+    for (let i = 0; i < results.length; i++) {
+      const metadataField = metadataFields[i]
+      const dataTypes = results[i]
+      dataTypes.forEach((dataType) => {
+        dataTypeFields[dataType].push(metadataField)
+      })
+    }
+    for (const [key, value] of Object.entries(dataTypeFields)) {
+      dataTypeFields[key] = value.sort()
+    }
+
+    return dataTypeFields
+  }
+
+  const fetchDataTypeHaveMetadataField = async (metadataField) => {
+    const res = await ctx.$axios
+      .$get("/api/data/_search", {
+        params: {
+          source: JSON.stringify({
+            track_total_hits: true,
+            size: ctx.store.state.const.elasticsearchSize,
             collapse: {
               field: "dataType"
             },
@@ -87,187 +127,102 @@ export default (context, inject) => {
           source_content_type: "application/json"
         }
       })
-      .catch((error) => {
-        console.error(error.response)
-        return null
+      .catch((err) => {
+        throw err
       })
 
-    return res === null ? [] : res.hits.hits.map((doc) => doc._source.dataType)
+    return res.hits.hits.map((doc) => doc._source.dataType) || []
   }
 
-  const fetchTotalEntriesNum = async () => {
-    const res = await context.$axios
+  const fetchFilteredAndSortedSampleIDs = async (
+    optionContext,
+    filterState
+  ) => {
+    const { sortBy, sortDesc } = optionContext
+    const sort = sortContextToQuery(sortBy, sortDesc)
+    const filter = filterStateToQuery(filterState)
+    console.log(
+      JSON.stringify({
+        track_total_hits: true,
+        size: ctx.store.state.const.elasticsearchSize,
+        collapse: {
+          field: "sampleID"
+        },
+        sort,
+        query: filter,
+        _source: false
+      })
+    )
+    const res = await ctx.$axios
       .$get("/api/data/_search", {
         params: {
           source: JSON.stringify({
             track_total_hits: true,
-            size: 0,
+            size: ctx.store.state.const.elasticsearchSize,
             collapse: {
               field: "sampleID"
             },
+            sort,
+            query: filter,
+            _source: false
+          }),
+          source_content_type: "application/json"
+        }
+      })
+      .catch((err) => {
+        throw err
+      })
+
+    return res.hits.hits.map((doc) => doc.fields.sampleID[0]) || []
+  }
+
+  const fetchSampleIDTable = async (field) => {
+    const res = await ctx.$axios
+      .$get("/api/data/_search", {
+        params: {
+          source: JSON.stringify({
+            track_total_hits: true,
+            size: ctx.store.state.const.elasticsearchSize,
             query: {
               match_all: {}
             },
-            aggs: {
-              total_count: {
-                cardinality: {
-                  field: "sampleID"
-                }
-              }
-            }
-          }),
-          source_content_type: "application/json"
-        }
-      })
-      .catch((error) => {
-        console.error(error.response)
-        return null
-      })
-
-    return res === null ? 0 : res.aggregations.total_count.value
-  }
-
-  const fetchEntriesSampleIDs = async (filterState) => {
-    if (filterState.inputtedDataTypes.length !== 0) {
-      const filteredSampleIDs = await fetchFilterdSampleIDsByDataType(
-        filterState
-      )
-      return filteredSampleIDs
-    } else {
-      const query = filterStateToQuery(filterState)
-      const res = await context.$axios
-        .$get("/api/data/_search", {
-          params: {
-            source: JSON.stringify({
-              track_total_hits: true,
-              size: 10000,
-              collapse: {
-                field: "sampleID"
-              },
-              query,
-              aggs: {
-                total_count: {
-                  cardinality: {
-                    field: "sampleID"
-                  }
-                }
-              }
-            }),
-            source_content_type: "application/json"
-          }
-        })
-        .catch((error) => {
-          console.error(error.response)
-          return null
-        })
-
-      return res === null
-        ? []
-        : res.hits.hits.map((doc) => doc._source.sampleID)
-    }
-  }
-
-  const fetchEntries = async (filterState, optionContext) => {
-    const sampleIDs = await fetchSampleIDs(filterState, optionContext)
-    const entriesDoc = await fetchEntriesDoc(sampleIDs)
-    const entryObj = sampleIDs.reduce((arr, cur) => ({ ...arr, [cur]: {} }), {})
-    entriesDoc.forEach((doc) => {
-      const sampleID = doc.sampleID
-      const dataType = doc.dataType
-      Object.entries(doc).forEach(([key, val]) => {
-        if (
-          [
-            "projectID",
-            "projectName",
-            "patientID",
-            "sex",
-            "age",
-            "sampleID",
-            "samplingDate"
-          ].includes(key)
-        ) {
-          entryObj[sampleID][key] = val
-        } else if (key === "dataType") {
-          entryObj[sampleID][dataType] = true
-        } else {
-          entryObj[sampleID][dataType + "_" + key] = val
-        }
-      })
-    })
-
-    return Object.values(entryObj)
-  }
-
-  const fetchSampleIDs = async (filterState, optionContext) => {
-    const { page, itemsPerPage, sortBy, sortDesc } = optionContext
-    let from = itemsPerPage !== -1 ? (page - 1) * itemsPerPage : 0
-    let size = itemsPerPage !== -1 ? itemsPerPage : 100000
-    const query = filterStateToQuery(filterState)
-    if (filterState.inputtedDataTypes.length !== 0) {
-      from = 0
-      size = 100000
-    }
-    const sort = contextToSort(sortBy, sortDesc)
-    const res = await context.$axios
-      .$get("/api/data/_search", {
-        params: {
-          source: JSON.stringify({
-            track_total_hits: true,
-            from,
-            size,
             collapse: {
-              field: "sampleID"
+              field: "sampleID",
+              inner_hits: {
+                name: field,
+                size: ctx.store.state.const.elasticsearchSize,
+                _source: [field],
+                collapse: {
+                  field
+                }
+              }
             },
-            query,
-            sort,
-            _source: ["sampleID"]
+            _source: false
           }),
           source_content_type: "application/json"
         }
       })
-      .catch((error) => {
-        console.error(error.response)
-        return null
+      .catch((err) => {
+        throw err
       })
-
-    if (res === null) {
-      return []
-    }
-
-    const fetchedSampleIDs = res.hits.hits.map((doc) => doc._source.sampleID)
-    if (filterState.inputtedDataTypes.length !== 0) {
-      const filteredSampleIDs = await fetchFilterdSampleIDsByDataType(
-        filterState
+    const table = {}
+    for (const item of res.hits.hits) {
+      const sampleID = item.fields.sampleID[0]
+      table[sampleID] = new Set(
+        item.inner_hits[field].hits.hits.map((item) => item._source[field])
       )
-      const filteredSampleIDsSet = new Set(filteredSampleIDs)
-      from = itemsPerPage !== -1 ? (page - 1) * itemsPerPage : 0
-      size = itemsPerPage !== -1 ? itemsPerPage : 100000
-      let count = 0
-      const sampleIDs = []
-      for (const sampleID of fetchedSampleIDs) {
-        if (sampleIDs.length === size) {
-          break
-        }
-        if (filteredSampleIDsSet.has(sampleID)) {
-          if (count >= from) {
-            sampleIDs.push(sampleID)
-          }
-          count++
-        }
-      }
-      return sampleIDs
-    } else {
-      return fetchedSampleIDs
     }
+
+    return table
   }
 
-  const fetchEntriesDoc = async (sampleIDs) => {
-    const res = await context.$axios
+  const fetchEntryDocs = async (sampleIDs) => {
+    const res = await ctx.$axios
       .$get("/api/data/_search", {
         params: {
           source: JSON.stringify({
             track_total_hits: true,
-            size: 100000,
+            size: ctx.store.state.const.elasticsearchSize,
             query: {
               terms: {
                 sampleID: sampleIDs
@@ -277,90 +232,53 @@ export default (context, inject) => {
           source_content_type: "application/json"
         }
       })
-      .catch((error) => {
-        console.error(error.response)
-        return null
+      .catch((err) => {
+        throw err
       })
 
-    return res === null ? [] : res.hits.hits.map((doc) => doc._source)
-  }
-
-  const fetchFilterdSampleIDsByDataType = async (filterState) => {
-    const query = filterStateToQuery(filterState)
-    const res = await context.$axios
-      .$get("/api/data/_search", {
-        params: {
-          source: JSON.stringify({
-            track_total_hits: true,
-            size: 100000,
-            query,
-            _source: ["sampleID", "dataType"]
-          }),
-          source_content_type: "application/json"
-        }
-      })
-      .catch((error) => {
-        console.error(error.response)
-        return null
-      })
-    if (res === null) {
-      return []
-    }
-    const sampleIDToDataTypes = {}
-    res.hits.hits.forEach((item) => {
-      if (typeof sampleIDToDataTypes[item._source.sampleID] === "undefined") {
-        sampleIDToDataTypes[item._source.sampleID] = [item._source.dataType]
-      } else {
-        sampleIDToDataTypes[item._source.sampleID].push(item._source.dataType)
-      }
-    })
-    const filteredSampleIDs = []
-    for (const [key, val] of Object.entries(sampleIDToDataTypes)) {
-      if ([...new Set(val)].length === filterState.inputtedDataTypes.length) {
-        filteredSampleIDs.push(key)
-      }
-    }
-
-    return filteredSampleIDs
+    return res.hits.hits.map((doc) => doc._source) || []
   }
 
   const functions = {
     fetchUniqueValues,
-    fetchMetadataFields,
-    fetchAllFields,
-    fetchDataTypesMetadataFields,
-    fetchDataTypesHaveMetadataField,
-    fetchTotalEntriesNum,
-    fetchEntriesSampleIDs,
-    fetchEntries,
-    fetchSampleIDs,
-    fetchEntriesDoc
+    fetchTotalCount,
+    fetchDataTypeFields,
+    fetchFilteredAndSortedSampleIDs,
+    fetchSampleIDTable,
+    fetchEntryDocs
   }
+
   inject("dataFetcher", functions)
 }
 
-const defaultFields = [
-  "projectName",
-  "projectID",
-  "patientID",
-  "sex",
-  "age",
-  "sampleID",
-  "samplingDate",
-  "dataType"
-]
+const sortContextToQuery = (sortBy, sortDesc) => {
+  const sort = []
+  for (let i = 0; i < sortBy.length; i++) {
+    const key = sortBy[i].includes("_") ? sortBy[i].split("_")[1] : sortBy[i]
+    const desc = sortDesc[i]
+    sort.push({
+      [key]: {
+        order: desc ? "desc" : "asc"
+      }
+    })
+  }
+
+  console.log(sort)
+
+  return sort
+}
 
 const filterStateToQuery = (filterState) => {
   const {
     selectedProjects,
-    inputtedPatientID,
+    inputtedPatientIDs,
     selectedSexes,
     inputtedBottomAge,
     inputtedUpperAge,
-    inputtedSampleID,
+    selectedDiseases,
+    inputtedSampleIDs,
     inputtedBottomSamplingDate,
-    inputtedUpperSamplingDate,
-    inputtedDataTypes
+    inputtedUpperSamplingDate
   } = filterState
 
   const query = {
@@ -369,13 +287,6 @@ const filterStateToQuery = (filterState) => {
         {
           terms: {
             projectName: selectedProjects
-          }
-        },
-        {
-          wildcard: {
-            patientID: {
-              value: inputtedPatientID + "*"
-            }
           }
         },
         {
@@ -392,10 +303,8 @@ const filterStateToQuery = (filterState) => {
           }
         },
         {
-          wildcard: {
-            sampleID: {
-              value: inputtedSampleID + "*"
-            }
+          terms: {
+            disease: selectedDiseases
           }
         },
         {
@@ -410,26 +319,20 @@ const filterStateToQuery = (filterState) => {
     }
   }
 
-  if (inputtedDataTypes.length !== 0) {
+  if (inputtedSampleIDs.length !== 0) {
     query.bool.filter.push({
       terms: {
-        dataType: inputtedDataTypes
+        sampleID: inputtedSampleIDs
+      }
+    })
+  }
+  if (inputtedPatientIDs.length !== 0) {
+    query.bool.filter.push({
+      terms: {
+        patientID: inputtedPatientIDs
       }
     })
   }
 
   return query
-}
-
-const contextToSort = (sortBy, sortDesc) => {
-  const sort = []
-  sortBy.forEach((key, ind) => {
-    sort.push({
-      [key]: {
-        order: sortDesc[ind] ? "desc" : "asc"
-      }
-    })
-  })
-
-  return sort
 }
