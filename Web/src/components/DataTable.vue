@@ -128,7 +128,7 @@ export default {
       this.$copyText(text)
     },
     shortenText(text) {
-      if (typeof text === "undefined") {
+      if (typeof text === "undefined" || text === null) {
         return text
       }
       return text.length > 20 ? text.slice(0, 20) + "..." : text
