@@ -47,6 +47,7 @@ export default {
       subscribeMutations: [
         "filter/setSelectedProjects",
         "filter/setInputtedPatientIDs",
+        "filter/setInputtedProjectPatientIDs",
         "filter/setSelectedSexes",
         "filter/setInputtedBottomAge",
         "filter/setInputtedUpperAge",

@@ -1,7 +1,7 @@
 <template>
   <v-autocomplete
-    v-model="inputtedPatientIDs"
-    :items="patientIDs"
+    v-model="inputtedProjectPatientIDs"
+    :items="projectPatientIDs"
     :search-input.sync="searchInput"
     clearable
     hide-details
@@ -27,21 +27,21 @@ export default {
     return { searchInput: null }
   },
   computed: {
-    inputtedPatientIDs: {
+    inputtedProjectPatientIDs: {
       get() {
-        return this.$store.state.filter.inputtedPatientIDs
+        return this.$store.state.filter.inputtedProjectPatientIDs
       },
       set(value) {
-        this.$store.dispatch("filter/updateInputtedPatientIDs", value)
+        this.$store.dispatch("filter/updateInputtedProjectPatientIDs", value)
       }
     },
-    patientIDs() {
-      return this.$store.state.init.patientIDs
+    projectPatientIDs() {
+      return this.$store.state.init.projectPatientIDs
     }
   },
   methods: {
     remove(item) {
-      this.inputtedPatientIDs = this.inputtedPatientIDs.filter(
+      this.inputtedProjectPatientIDs = this.inputtedProjectPatientIDs.filter(
         (ele) => ele !== item
       )
     }

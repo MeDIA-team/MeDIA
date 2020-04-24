@@ -15,6 +15,9 @@ const INDEX_MAPPINGS = {
     dataType: {
       type: "keyword"
     },
+    projectPatientID: {
+      type: "keyword"
+    },
     patientID: {
       type: "keyword"
     },

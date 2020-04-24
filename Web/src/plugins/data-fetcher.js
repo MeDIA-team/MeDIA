@@ -226,6 +226,7 @@ const filterStateToQuery = (filterState) => {
   const {
     selectedProjects,
     inputtedPatientIDs,
+    inputtedProjectPatientIDs,
     selectedSexes,
     inputtedBottomAge,
     inputtedUpperAge,
@@ -284,6 +285,13 @@ const filterStateToQuery = (filterState) => {
     query.bool.filter.push({
       terms: {
         patientID: inputtedPatientIDs
+      }
+    })
+  }
+  if (inputtedProjectPatientIDs.length !== 0) {
+    query.bool.filter.push({
+      terms: {
+        projectPatientID: inputtedProjectPatientIDs
       }
     })
   }

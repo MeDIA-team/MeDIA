@@ -10,7 +10,7 @@
     multiple
     outlined
     single-line
-    style="max-width: 620px;"
+    style="max-width: 660px;"
     @input="searchInput = null"
   >
     <template v-slot:selection="{ item }">

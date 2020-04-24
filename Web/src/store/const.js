@@ -13,6 +13,11 @@ export const state = () => ({
       width: 105
     },
     {
+      key: "projectPatientID",
+      label: "Project Patient ID",
+      width: 105
+    },
+    {
       key: "patientID",
       label: "Patient ID",
       width: 105

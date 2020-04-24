@@ -17,6 +17,10 @@
             v-else-if="filterKey === 'Patient ID'"
             class="my-2"
           ></patient-id-chip>
+          <project-patient-id-chip
+            v-else-if="filterKey === 'Project Patient ID'"
+            class="my-2"
+          ></project-patient-id-chip>
           <sex-check-box v-else-if="filterKey === 'Sex'"></sex-check-box>
           <age-text-field v-else-if="filterKey === 'Age'"></age-text-field>
           <disease-check-box
@@ -63,6 +67,7 @@ import SamplingDateTextField from "~/components/filters/SamplingDateTextField"
 import DataTypeChip from "~/components/filters/DataTypeChip"
 import EntryCountChart from "~/components/filters/EntryCountChart"
 import PatientCountChart from "~/components/filters/PatientCountChart"
+import ProjectPatientIDChip from "~/components/filters/ProjectPatientIDChip"
 
 export default {
   components: {
@@ -75,13 +80,15 @@ export default {
     SamplingDateTextField,
     EntryCountChart,
     PatientCountChart,
-    DataTypeChip
+    DataTypeChip,
+    "project-patient-id-chip": ProjectPatientIDChip
   },
   data() {
     return {
       filterKeys: [
         "Project",
         "Patient ID",
+        "Project Patient ID",
         "Sex",
         "Age",
         "Disease",

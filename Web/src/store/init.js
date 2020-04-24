@@ -4,6 +4,7 @@ export const state = () => ({
   diseases: [],
   dataTypes: [],
   patientIDs: [],
+  projectPatientIDs: [],
   sampleIDs: [],
   dataTypeFields: {},
   totalPatientIDCount: 0,
@@ -27,6 +28,9 @@ export const mutations = {
   },
   setPatinetIDs(state, data) {
     state.patientIDs = data
+  },
+  setProjectPatinetIDs(state, data) {
+    state.projectPatientIDs = data
   },
   setSampleIDs(state, data) {
     state.sampleIDs = data
@@ -75,6 +79,11 @@ export const actions = {
         func: this.$dataFetcher.fetchUniqueValues,
         arg: "patientID",
         mutation: "setPatinetIDs"
+      },
+      {
+        func: this.$dataFetcher.fetchUniqueValues,
+        arg: "projectPatientID",
+        mutation: "setProjectPatinetIDs"
       },
       {
         func: this.$dataFetcher.fetchUniqueValues,

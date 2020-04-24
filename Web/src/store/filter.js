@@ -1,6 +1,7 @@
 export const state = () => ({
   selectedProjects: [],
   inputtedPatientIDs: [],
+  inputtedProjectPatientIDs: [],
   selectedSexes: [],
   inputtedBottomAge: "",
   inputtedUpperAge: "",
@@ -17,6 +18,9 @@ export const mutations = {
   },
   setInputtedPatientIDs(state, data) {
     state.inputtedPatientIDs = data
+  },
+  setInputtedProjectPatientIDs(state, data) {
+    state.inputtedProjectPatientIDs = data
   },
   setSelectedSexes(state, data) {
     state.selectedSexes = data
@@ -48,6 +52,7 @@ export const actions = {
   initialize({ commit, rootState }) {
     commit("setSelectedProjects", rootState.init.projects)
     commit("setInputtedPatientIDs", [])
+    commit("setInputtedProjectPatientIDs", [])
     commit("setSelectedSexes", rootState.init.sexes)
     commit("setInputtedBottomAge", "")
     commit("setInputtedUpperAge", "")
@@ -62,6 +67,9 @@ export const actions = {
   },
   updateInputtedPatientIDs({ commit }, data) {
     commit("setInputtedPatientIDs", data)
+  },
+  updateInputtedProjectPatientIDs({ commit }, data) {
+    commit("setInputtedProjectPatientIDs", data)
   },
   updateSelectedSexes({ commit }, data) {
     commit("setSelectedSexes", data)
