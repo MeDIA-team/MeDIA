@@ -224,16 +224,16 @@ const sortContextToQuery = (sortBy, sortDesc) => {
 
 const filterStateToQuery = (filterState) => {
   const {
-    selectedProjects,
-    inputtedPatientIDs,
-    inputtedProjectPatientIDs,
-    selectedSexes,
-    inputtedBottomAge,
-    inputtedUpperAge,
-    selectedDiseases,
-    inputtedSampleIDs,
-    inputtedBottomSamplingDate,
-    inputtedUpperSamplingDate
+    projects,
+    patientIDs,
+    projectPatientIDs,
+    sexes,
+    bottomAge,
+    upperAge,
+    diseases,
+    sampleIDs,
+    bottomSamplingDate,
+    upperSamplingDate
   } = filterState
 
   const query = {
@@ -241,32 +241,32 @@ const filterStateToQuery = (filterState) => {
       filter: [
         {
           terms: {
-            projectName: selectedProjects
+            projectName: projects
           }
         },
         {
           terms: {
-            sex: selectedSexes
+            sex: sexes
           }
         },
         {
           range: {
             age: {
-              gte: inputtedBottomAge || null,
-              lte: inputtedUpperAge || null
+              gte: bottomAge || null,
+              lte: upperAge || null
             }
           }
         },
         {
           terms: {
-            disease: selectedDiseases
+            disease: diseases
           }
         },
         {
           range: {
             samplingDate: {
-              gte: inputtedBottomSamplingDate || null,
-              lte: inputtedUpperSamplingDate || null
+              gte: bottomSamplingDate || null,
+              lte: upperSamplingDate || null
             }
           }
         }
@@ -274,25 +274,19 @@ const filterStateToQuery = (filterState) => {
     }
   }
 
-  if (inputtedSampleIDs.length !== 0) {
+  if (sampleIDs.length !== 0) {
     query.bool.filter.push({
-      terms: {
-        sampleID: inputtedSampleIDs
-      }
+      terms: { sampleIDs }
     })
   }
-  if (inputtedPatientIDs.length !== 0) {
+  if (patientIDs.length !== 0) {
     query.bool.filter.push({
-      terms: {
-        patientID: inputtedPatientIDs
-      }
+      terms: { patientIDs }
     })
   }
-  if (inputtedProjectPatientIDs.length !== 0) {
+  if (projectPatientIDs.length !== 0) {
     query.bool.filter.push({
-      terms: {
-        projectPatientID: inputtedProjectPatientIDs
-      }
+      terms: { projectPatientIDs }
     })
   }
 

@@ -86,10 +86,10 @@ export const actions = {
         throw err
       })
     let processedSampleIDs
-    if (rootState.filter.inputtedDataTypes.length !== 0) {
+    if (rootState.filter.dataTypes.length !== 0) {
       processedSampleIDs = filteredAndSortedSampleIDs.filter((sampleID) => {
         const dataTypeSet = rootState.init.sampleIDAndDataTypeTable[sampleID]
-        return rootState.filter.inputtedDataTypes.every((dataType) =>
+        return rootState.filter.dataTypes.every((dataType) =>
           dataTypeSet.has(dataType)
         )
       })

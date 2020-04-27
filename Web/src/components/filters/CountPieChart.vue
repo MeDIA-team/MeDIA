@@ -1,8 +1,8 @@
 <template>
   <div class="d-flex flex-column" style="min-width: 250px;">
     <div class="d-inline-block" style="text-align: center;">
-      <span class="grey--text text--darken-3 font-weight-medium subtitle"
-        >{{ this.$store.state.const.chartLabel.patientID }}
+      <span class="grey--text text--darken-3 font-weight-medium subtitle">
+        {{ label }}
       </span>
     </div>
     <pie-chart
@@ -12,9 +12,9 @@
       :width="200"
       style="margin: 20px auto 0;"
     ></pie-chart>
-    <div class="d-inline-block mr-6" style="text-align: right;">
-      <span class="grey--text text--darken-3 font-weight-medium subtitle"
-        >{{ patientCount }} / {{ totalPatientIDCount }}
+    <div class="d-inline-block mr-6 mt-2" style="text-align: right;">
+      <span class="grey--text text--darken-3 font-weight-medium subtitle">
+        {{ count }} / {{ totalCount }}
       </span>
     </div>
   </div>
@@ -24,6 +24,23 @@
 import PieChart from "~/components/filters/PieChart.vue"
 export default {
   components: { PieChart },
+  props: {
+    countKey: {
+      type: String,
+      default: "",
+      require: true
+    },
+    totalCountKey: {
+      type: String,
+      default: "",
+      require: true
+    },
+    labelKey: {
+      type: String,
+      default: "",
+      require: true
+    }
+  },
   data() {
     return {
       chartOptions: {
@@ -41,9 +58,9 @@ export default {
         datasets: [
           {
             data: [
-              this.$store.state.entry.patientCount,
-              this.$store.state.init.totalPatientIDCount -
-                this.$store.state.entry.patientCount
+              this.$store.state.entry[this.countKey],
+              this.$store.state.init[this.totalCountKey] -
+                this.$store.state.entry[this.countKey]
             ],
             backgroundColor: [
               "rgba(71, 145, 219, 1)",
@@ -55,11 +72,14 @@ export default {
         ]
       }
     },
-    totalPatientIDCount() {
-      return this.$store.state.init.totalPatientIDCount
+    count() {
+      return this.$store.state.entry[this.countKey]
     },
-    patientCount() {
-      return this.$store.state.entry.patientCount
+    totalCount() {
+      return this.$store.state.init[this.totalCountKey]
+    },
+    label() {
+      return this.$store.state.const.chartLabel[this.labelKey]
     }
   }
 }

@@ -1,98 +1,80 @@
 export const state = () => ({
-  selectedProjects: [],
-  inputtedPatientIDs: [],
-  inputtedProjectPatientIDs: [],
-  selectedSexes: [],
-  inputtedBottomAge: "",
-  inputtedUpperAge: "",
-  selectedDiseases: [],
-  inputtedSampleIDs: [],
-  inputtedBottomSamplingDate: "",
-  inputtedUpperSamplingDate: "",
-  inputtedDataTypes: []
+  projects: [],
+  patientIDs: [],
+  projectPatientIDs: [],
+  sexes: [],
+  bottomAge: "",
+  upperAge: "",
+  diseases: [],
+  sampleIDs: [],
+  bottomSamplingDate: "",
+  upperSamplingDate: "",
+  dataTypes: []
 })
 
 export const mutations = {
-  setSelectedProjects(state, data) {
-    state.selectedProjects = data
+  setProjects(state, payload) {
+    state.projects = payload
   },
-  setInputtedPatientIDs(state, data) {
-    state.inputtedPatientIDs = data
+  setPatientIDs(state, payload) {
+    state.patientIDs = payload
   },
-  setInputtedProjectPatientIDs(state, data) {
-    state.inputtedProjectPatientIDs = data
+  setProjectPatientIDs(state, payload) {
+    state.projectPatientIDs = payload
   },
-  setSelectedSexes(state, data) {
-    state.selectedSexes = data
+  setSexes(state, payload) {
+    state.sexes = payload
   },
-  setInputtedBottomAge(state, data) {
-    state.inputtedBottomAge = data
+  setBottomAge(state, payload) {
+    state.bottomAge = payload
   },
-  setInputtedUpperAge(state, data) {
-    state.inputtedUpperAge = data
+  setUpperAge(state, payload) {
+    state.upperAge = payload
   },
-  setSelectedDiseases(state, data) {
-    state.selectedDiseases = data
+  setDiseases(state, payload) {
+    state.diseases = payload
   },
-  setInputtedSampleIDs(state, data) {
-    state.inputtedSampleIDs = data
+  setSampleIDs(state, payload) {
+    state.sampleIDs = payload
   },
-  setInputtedBottomSamplingDate(state, data) {
-    state.inputtedBottomSamplingDate = data
+  setBottomSamplingDate(state, payload) {
+    state.bottomSamplingDate = payload
   },
-  setInputtedUpperSamplingDate(state, data) {
-    state.inputtedUpperSamplingDate = data
+  setUpperSamplingDate(state, payload) {
+    state.upperSamplingDate = payload
   },
-  setInputtedDataTypes(state, data) {
-    state.inputtedDataTypes = data
+  setDataTypes(state, payload) {
+    state.dataTypes = payload
+  },
+  initialize(state, payload) {
+    state.projects = payload.projects
+    state.patientIDs = payload.patientIDs
+    state.projectPatientIDs = payload.projectPatientIDs
+    state.sexes = payload.sexes
+    state.bottomAge = payload.bottomAge
+    state.upperAge = payload.upperAge
+    state.diseases = payload.diseases
+    state.sampleIDs = payload.sampleIDs
+    state.bottomSamplingDate = payload.bottomSamplingDate
+    state.upperSamplingDate = payload.upperSamplingDate
+    state.dataTypes = payload.dataTypes
   }
 }
 
 export const actions = {
   initialize({ commit, rootState }) {
-    commit("setSelectedProjects", rootState.init.projects)
-    commit("setInputtedPatientIDs", [])
-    commit("setInputtedProjectPatientIDs", [])
-    commit("setSelectedSexes", rootState.init.sexes)
-    commit("setInputtedBottomAge", "")
-    commit("setInputtedUpperAge", "")
-    commit("setSelectedDiseases", rootState.init.diseases)
-    commit("setInputtedSampleIDs", [])
-    commit("setInputtedBottomSamplingDate", "")
-    commit("setInputtedUpperSamplingDate", "")
-    commit("setInputtedDataTypes", [])
-  },
-  updateSelectedProjects({ commit }, data) {
-    commit("setSelectedProjects", data)
-  },
-  updateInputtedPatientIDs({ commit }, data) {
-    commit("setInputtedPatientIDs", data)
-  },
-  updateInputtedProjectPatientIDs({ commit }, data) {
-    commit("setInputtedProjectPatientIDs", data)
-  },
-  updateSelectedSexes({ commit }, data) {
-    commit("setSelectedSexes", data)
-  },
-  updateInputtedBottomAge({ commit }, data) {
-    commit("setInputtedBottomAge", data)
-  },
-  updateInputtedUpperAge({ commit }, data) {
-    commit("setInputtedUpperAge", data)
-  },
-  updateSelectedDiseases({ commit }, data) {
-    commit("setSelectedDiseases", data)
-  },
-  updateInputtedSampleIDs({ commit }, data) {
-    commit("setInputtedSampleIDs", data)
-  },
-  updateInputtedBottomSamplingDate({ commit }, data) {
-    commit("setInputtedBottomSamplingDate", data)
-  },
-  updateInputtedUpperSamplingDate({ commit }, data) {
-    commit("setInputtedUpperSamplingDate", data)
-  },
-  updateInputtedDataTypes({ commit }, data) {
-    commit("setInputtedDataTypes", data)
+    commit("initialize", {
+      projects: rootState.init.projects,
+      patientIDs: [],
+      projectPatientIDs: [],
+      sexes: rootState.init.sexes,
+      bottomAge: "",
+      upperAge: "",
+      diseases: rootState.init.diseases,
+      sampleIDs: [],
+      bottomSamplingDate: "",
+      upperSamplingDate: "",
+      dataTypes: []
+    })
   }
 }

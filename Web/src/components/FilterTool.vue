@@ -1,106 +1,164 @@
 <template>
   <div class="d-flex">
     <div class="d-flex flex-column">
-      <div
-        v-for="filterKey in filterKeys"
-        :key="filterKey"
-        class="d-flex flex-column"
-      >
-        <div class="d-flex">
-          <div class="d-flex align-center" style="min-width: 140px;">
-            <span class="grey--text text--darken-3 font-weight-medium">
-              {{ filterKey }}
-            </span>
-          </div>
-          <project-check-box v-if="filterKey === 'Project'"></project-check-box>
-          <patient-id-chip
-            v-else-if="filterKey === 'Patient ID'"
-            class="my-2"
-          ></patient-id-chip>
-          <project-patient-id-chip
-            v-else-if="filterKey === 'Project Patient ID'"
-            class="my-2"
-          ></project-patient-id-chip>
-          <sex-check-box v-else-if="filterKey === 'Sex'"></sex-check-box>
-          <age-text-field v-else-if="filterKey === 'Age'"></age-text-field>
-          <disease-check-box
-            v-else-if="filterKey === 'Disease'"
-          ></disease-check-box>
-          <sample-id-chip
-            v-else-if="filterKey === 'Sample ID'"
-            class="my-2"
-          ></sample-id-chip>
-          <sampling-date-text-field
-            v-else-if="filterKey === 'Sampling Date'"
-          ></sampling-date-text-field>
-          <data-type-chip
-            v-else-if="filterKey === 'Data Type'"
-            class="mt-2"
-          ></data-type-chip>
+      <div v-for="field in fields" :key="field.label" class="d-flex">
+        <div class="d-flex align-center" style="min-width: 140px;">
+          <span class="grey--text text--darken-3 font-weight-medium">
+            {{ field.label }}
+          </span>
+        </div>
+        <div v-if="field.type === 'check'">
+          <check-box-field
+            :contents-key="field.contentsKey"
+            :selected-contents-commit="field.selectedContentsCommit"
+            :selected-contents-key="field.selectedContentsKey"
+          ></check-box-field>
+        </div>
+        <div v-else-if="field.type === 'chip'" class="my-2">
+          <chip-field
+            :box-label="field.boxLabel"
+            :contents-key="field.contentsKey"
+            :field-width="field.fieldWidth"
+            :selected-contents-commit="field.selectedContentsCommit"
+            :selected-contents-key="field.selectedContentsKey"
+          ></chip-field>
+        </div>
+        <div v-else-if="field.type === 'text'">
+          <text-field
+            :box-width="field.boxWidth"
+            :field-type="field.fieldType"
+            :inputted-bottom-value-commit="field.inputtedBottomValueCommit"
+            :inputted-bottom-value-key="field.inputtedBottomValueKey"
+            :inputted-upper-value-commit="field.inputtedUpperValueCommit"
+            :inputted-upper-value-key="field.inputtedUpperValueKey"
+          ></text-field>
         </div>
       </div>
-      <v-btn
-        class="mt-4"
-        color="secondary"
-        max-width="160"
-        min-width="160"
-        outlined
-        @click="setInitialState"
-        >Set Initial State</v-btn
-      >
+      <set-initial-state-button class="mt-2"></set-initial-state-button>
     </div>
     <div class="d-flex flex-column ml-auto mr-10">
-      <entry-count-chart></entry-count-chart>
-      <patient-count-chart class="mt-4"></patient-count-chart>
+      <count-pie-chart
+        v-for="chart in countCharts"
+        :key="chart.labelKey"
+        :count-key="chart.countKey"
+        :label-key="chart.labelKey"
+        :total-count-key="chart.totalCountKey"
+        :class="{ 'mt-6': chart.marginTop }"
+      ></count-pie-chart>
     </div>
   </div>
 </template>
 
 <script>
-import ProjectCheckBox from "~/components/filters/ProjectCheckBox"
-import PatientIDChip from "~/components/filters/PatientIDChip"
-import SexCheckBox from "~/components/filters/SexCheckBox"
-import AgeTextField from "~/components/filters/AgeTextField"
-import DiseaseCheckBox from "~/components/filters/DiseaseCheckBox"
-import SampleIDChip from "~/components/filters/SampleIDChip"
-import SamplingDateTextField from "~/components/filters/SamplingDateTextField"
-import DataTypeChip from "~/components/filters/DataTypeChip"
-import EntryCountChart from "~/components/filters/EntryCountChart"
-import PatientCountChart from "~/components/filters/PatientCountChart"
-import ProjectPatientIDChip from "~/components/filters/ProjectPatientIDChip"
+import CheckBoxField from "~/components/filters/CheckBoxField"
+import ChipField from "~/components/filters/ChipField"
+import CountPieChart from "~/components/filters/CountPieChart"
+import SetInitialStateButton from "~/components/filters/SetInitialStateButton"
+import TextField from "~/components/filters/TextField"
 
 export default {
   components: {
-    ProjectCheckBox,
-    "patient-id-chip": PatientIDChip,
-    SexCheckBox,
-    AgeTextField,
-    DiseaseCheckBox,
-    "sample-id-chip": SampleIDChip,
-    SamplingDateTextField,
-    EntryCountChart,
-    PatientCountChart,
-    DataTypeChip,
-    "project-patient-id-chip": ProjectPatientIDChip
+    CheckBoxField,
+    ChipField,
+    CountPieChart,
+    SetInitialStateButton,
+    TextField
   },
   data() {
     return {
-      filterKeys: [
-        "Project",
-        "Patient ID",
-        "Project Patient ID",
-        "Sex",
-        "Age",
-        "Disease",
-        "Sample ID",
-        "Sampling Date",
-        "Data Type"
+      fields: [
+        {
+          label: "Project",
+          type: "check",
+          contentsKey: "projects",
+          selectedContentsCommit: "filter/setProjects",
+          selectedContentsKey: "projects"
+        },
+        {
+          boxLabel: "is",
+          contentsKey: "patientIDs",
+          fieldWidth: "660px",
+          label: "Patient ID",
+          selectedContentsCommit: "filter/setPatientIDs",
+          selectedContentsKey: "patientIDs",
+          type: "chip"
+        },
+        {
+          boxLabel: "is",
+          contentsKey: "projectPatientIDs",
+          fieldWidth: "660px",
+          label: "Project Patient ID",
+          selectedContentsCommit: "filter/setProjectPatientIDs",
+          selectedContentsKey: "projectPatientIDs",
+          type: "chip"
+        },
+        {
+          contentsKey: "sexes",
+          label: "Sex",
+          selectedContentsCommit: "filter/setSexes",
+          selectedContentsKey: "sexes",
+          type: "check"
+        },
+        {
+          boxWidth: "80px",
+          fieldType: "number",
+          inputtedBottomValueCommit: "filter/setBottomAge",
+          inputtedBottomValueKey: "bottomAge",
+          inputtedUpperValueCommit: "filter/setUpperAge",
+          inputtedUpperValueKey: "upperAge",
+          label: "Age",
+          type: "text"
+        },
+        {
+          contentsKey: "diseases",
+          label: "Disease",
+          selectedContentsCommit: "filter/setDiseases",
+          selectedContentsKey: "diseases",
+          type: "check"
+        },
+        {
+          boxLabel: "is",
+          contentsKey: "sampleIDs",
+          fieldWidth: "660px",
+          label: "Sample ID",
+          selectedContentsCommit: "filter/setSampleIDs",
+          selectedContentsKey: "sampleIDs",
+          type: "chip"
+        },
+        {
+          boxWidth: "200px",
+          fieldType: "date",
+          inputtedBottomValueCommit: "filter/setBottomSamplingDate",
+          inputtedBottomValueKey: "bottomSamplingDate",
+          inputtedUpperValueCommit: "filter/setUpperSamplingDate",
+          inputtedUpperValueKey: "upperSamplingDate",
+          label: "Sampling Date",
+          type: "text"
+        },
+        {
+          boxLabel: "must have",
+          contentsKey: "dataTypes",
+          fieldWidth: "660px",
+          label: "Data Type",
+          selectedContentsCommit: "filter/setDataTypes",
+          selectedContentsKey: "dataTypes",
+          type: "chip"
+        }
+      ],
+      countCharts: [
+        {
+          countKey: "entryCount",
+          labelKey: "sampleID",
+          marginTop: false,
+          totalCountKey: "totalSampleIDCount"
+        },
+        {
+          countKey: "patientCount",
+          labelKey: "patientID",
+          marginTop: true,
+          totalCountKey: "totalPatientIDCount"
+        }
       ]
-    }
-  },
-  methods: {
-    setInitialState() {
-      this.$store.dispatch("filter/initialize")
     }
   }
 }
