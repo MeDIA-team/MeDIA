@@ -4,18 +4,18 @@
       <v-container fluid>
         <div class="d-flex justify-center align-center">
           <v-card
+            :color="greyLighten5"
             class="d-flex flex-column align-center"
-            color="#f5f5f5"
             elevation="24"
             height="300"
             style="border-radius: 24px; margin-top: 100px;"
             width="480"
           >
             <div class="mt-12">
-              <span class="display-3 grey--text text--darken-3">MeDIA</span>
+              <span class="display-3 info--text">MeDIA</span>
             </div>
             <div class="mt-4">
-              <p class="text-center grey--text text--darken-3">
+              <p class="text-center info--text">
                 Integrated Management System for<br />Microbiome Information and
                 Clinical Multimodal Data
               </p>
@@ -23,7 +23,7 @@
             <div class="d-flex mt-2">
               <v-btn
                 class="mr-8"
-                color="#0D47A1"
+                color="primary"
                 large
                 nuxt
                 outlined
@@ -36,7 +36,7 @@
                 <div class="ml-1">Sample View</div>
               </v-btn>
               <v-btn
-                color="#880E4F"
+                color="secondary"
                 large
                 nuxt
                 outlined
@@ -51,7 +51,6 @@
             </div>
           </v-card>
         </div>
-
         <v-dialog
           v-model="transition"
           max-width="480"
@@ -59,8 +58,8 @@
           overlay-opacity="0.9"
         >
           <v-card
+            :color="greyLighten5"
             class="d-flex flex-column align-center pt-2"
-            color="#f5f5f5"
             height="140"
             style="border-radius: 24px;"
             width="480"
@@ -70,7 +69,7 @@
               class="mt-4 mb-2"
               indeterminate
             ></v-progress-circular>
-            <p class="text-center grey--text text--darken-3 title font-regular">
+            <p class="text-center info--text title font-regular">
               Now loading the {{ transitionTo }} page...<br />
               Please wait...
             </p>
@@ -82,9 +81,12 @@
 </template>
 
 <script>
+import colors from "vuetify/lib/util/colors"
+
 export default {
   data() {
     return {
+      greyLighten5: colors.grey.lighten5,
       transition: false,
       transitionTo: null,
       transitionColor: null
@@ -94,12 +96,12 @@ export default {
     transitionToSample(event) {
       this.transition = true
       this.transitionTo = "Sample"
-      this.transitionColor = "#0D47A1"
+      this.transitionColor = "primary"
     },
     transitionToPatient(event) {
       this.transition = true
       this.transitionTo = "Patient"
-      this.transitionColor = "#880E4F"
+      this.transitionColor = "secondary"
     }
   }
 }

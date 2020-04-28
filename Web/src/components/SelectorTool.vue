@@ -3,7 +3,7 @@
     <required-fields-selector></required-fields-selector>
     <div class="d-flex">
       <v-btn
-        color="secondary"
+        color="info"
         max-width="160"
         min-width="160"
         outlined
@@ -12,7 +12,7 @@
       >
       <v-btn
         class="ml-4"
-        color="secondary"
+        color="info"
         max-width="160"
         min-width="160"
         outlined

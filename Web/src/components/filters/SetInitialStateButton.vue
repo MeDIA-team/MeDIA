@@ -1,6 +1,6 @@
 <template>
   <v-btn
-    color="secondary"
+    color="info"
     max-width="160"
     min-width="160"
     outlined

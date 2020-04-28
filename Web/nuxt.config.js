@@ -49,7 +49,9 @@ export default {
     theme: {
       themes: {
         light: {
-          primary: colors.blue.darken2
+          primary: colors.blue.darken3,
+          secondary: colors.pink.darken3,
+          info: colors.grey.darken4
         }
       }
     },
