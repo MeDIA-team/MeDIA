@@ -1,66 +1,112 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" absolute>
-      <v-toolbar-title class="headline white--text">
-        {{ this.$store.state.const.titleText }}
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <export-table-button></export-table-button>
-    </v-app-bar>
-
-    <v-content>
+    <v-content class="background">
       <v-container fluid>
-        <tool-card class="mb-6"></tool-card>
-        <data-table class="mb-10"></data-table>
+        <div class="d-flex justify-center align-center">
+          <v-card
+            class="d-flex flex-column align-center"
+            color="#f5f5f5"
+            elevation="24"
+            height="300"
+            style="border-radius: 24px; margin-top: 100px;"
+            width="480"
+          >
+            <div class="mt-12">
+              <span class="display-3 grey--text text--darken-3">MeDIA</span>
+            </div>
+            <div class="mt-4">
+              <p class="text-center grey--text text--darken-3">
+                Integrated Management System for<br />Microbiome Information and
+                Clinical Multimodal Data
+              </p>
+            </div>
+            <div class="d-flex mt-2">
+              <v-btn
+                class="mr-8"
+                color="#0D47A1"
+                large
+                nuxt
+                outlined
+                raise
+                to="/sample"
+                width="175"
+                @click="transitionToSample"
+              >
+                <v-icon>mdi-flask-outline</v-icon>
+                <div class="ml-1">Sample View</div>
+              </v-btn>
+              <v-btn
+                color="#880E4F"
+                large
+                nuxt
+                outlined
+                raise
+                to="/patient"
+                width="175"
+                @click="transitionToPatient"
+              >
+                <v-icon>mdi-account-outline</v-icon>
+                <div class="ml-1">Patient View</div>
+              </v-btn>
+            </div>
+          </v-card>
+        </div>
+
+        <v-dialog
+          v-model="transition"
+          max-width="480"
+          persistent
+          overlay-opacity="0.9"
+        >
+          <v-card
+            class="d-flex flex-column align-center pt-2"
+            color="#f5f5f5"
+            height="140"
+            style="border-radius: 24px;"
+            width="480"
+          >
+            <v-progress-circular
+              :color="transitionColor"
+              class="mt-4 mb-2"
+              indeterminate
+            ></v-progress-circular>
+            <p class="text-center grey--text text--darken-3 title font-regular">
+              Now loading the {{ transitionTo }} page...<br />
+              Please wait...
+            </p>
+          </v-card>
+        </v-dialog>
       </v-container>
     </v-content>
-
-    <v-footer app color="primary" padless absolute height="30px">
-      <div
-        class="d-flex align-center justify-center"
-        style="width: 100%; height: 100%;"
-      >
-        <div>
-          <span class="block text-center caption white--text">
-            {{ this.$store.state.const.footerText }}
-          </span>
-        </div>
-      </div>
-    </v-footer>
   </v-app>
 </template>
 
 <script>
-import DataTable from "~/components/DataTable"
-import ExportTableButton from "~/components/ExportTableButton"
-import ToolCard from "~/components/ToolCard"
-
 export default {
-  components: {
-    DataTable,
-    ExportTableButton,
-    ToolCard
+  data() {
+    return {
+      transition: false,
+      transitionTo: null,
+      transitionColor: null
+    }
   },
-  async fetch({ store, error }) {
-    const initActionQueue = [
-      "init/initialize",
-      "filter/initialize",
-      "selector/initialize"
-    ]
-    for (const initAction of initActionQueue) {
-      try {
-        await store.dispatch(initAction)
-      } catch (err) {
-        error(err)
-        return
-      }
+  methods: {
+    transitionToSample(event) {
+      this.transition = true
+      this.transitionTo = "Sample"
+      this.transitionColor = "#0D47A1"
+    },
+    transitionToPatient(event) {
+      this.transition = true
+      this.transitionTo = "Patient"
+      this.transitionColor = "#880E4F"
     }
   }
 }
 </script>
 
 <style scoped>
-#app {
-  background: #f5f5f5;
+.background {
+  background: url("~assets/bg.jpg") center center / cover no-repeat;
 }
 </style>
