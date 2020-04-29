@@ -1,20 +1,16 @@
 <template>
   <v-app>
-    <header-bar color="primary" text="MeDIA Sample"></header-bar>
+    <header-bar :color="color" :text="headerLabel"></header-bar>
 
     <v-content>
       <v-container fluid>
-        <tool-card class="mb-6" color="primary" view-type="sample"></tool-card>
-        <data-table
-          class="mb-6"
-          color="primary"
-          view-type="sample"
-        ></data-table>
+        <tool-card class="mb-6" :color="color" view-type="sample"></tool-card>
+        <data-table class="mb-6" :color="color" view-type="sample"></data-table>
       </v-container>
     </v-content>
 
     <footer-bar
-      color="primary"
+      :color="color"
       :text="this.$store.state.const.footerText"
     ></footer-bar>
   </v-app>
@@ -47,6 +43,13 @@ export default {
         error(err)
         return
       }
+    }
+  },
+  data() {
+    return {
+      headerLabel: "MeDIA Sample",
+      viewType: "sample",
+      color: "primary"
     }
   }
 }

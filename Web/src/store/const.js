@@ -34,7 +34,7 @@ export const state = () => ({
     { key: "disease", label: "Disease", width: 105 },
     { key: "sampleID", label: "Sample ID", width: 105 },
     { key: "samplingDate", label: "Sampling Date", width: 105 },
-    { key: "dataType", label: "Data Type", width: null }
+    { key: "dataType", label: "Data Type" }
   ],
   chartLabel: {
     sampleID: "Number of displayed entries",

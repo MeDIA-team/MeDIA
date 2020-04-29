@@ -1,50 +1,57 @@
 <template>
   <v-app>
-    <header-bar color="secondary" text="MeDIA Patient"></header-bar>
+    <header-bar :color="color" :text="headerLabel"></header-bar>
 
     <v-content>
       <v-container fluid>
-        Patient
-        <!-- <tool-card class="mb-6"></tool-card>
-        <data-table class="mb-6"></data-table> -->
+        <tool-card class="mb-6" :color="color" view-type="sample"></tool-card>
+        <data-table class="mb-6" :color="color" view-type="sample"></data-table>
       </v-container>
     </v-content>
 
     <footer-bar
-      color="secondary"
+      :color="color"
       :text="this.$store.state.const.footerText"
     ></footer-bar>
   </v-app>
 </template>
 
 <script>
-// import DataTable from "~/components/DataTable"
+import DataTable from "~/components/DataTable"
 import FooterBar from "~/components/FooterBar"
 import HeaderBar from "~/components/HeaderBar"
-// import ToolCard from "~/components/ToolCard"
+import ToolCard from "~/components/ToolCard"
 
 export default {
   components: {
-    // DataTable,
+    DataTable,
     FooterBar,
-    HeaderBar
-    // ToolCard
+    HeaderBar,
+    ToolCard
+  },
+  async fetch({ store, error }) {
+    const initActionQueue = [
+      "init/initialize",
+      "filter/initialize",
+      "selector/initialize",
+      "sampleEntry/initialize"
+    ]
+    for (const initAction of initActionQueue) {
+      try {
+        await store.dispatch(initAction)
+      } catch (err) {
+        error(err)
+        return
+      }
+    }
+  },
+  data() {
+    return {
+      headerLabel: "MeDIA Patient",
+      viewType: "patient",
+      color: "secondary"
+    }
   }
-  // async fetch({ store, error }) {
-  //   const initActionQueue = [
-  //     "init/initialize",
-  //     "filter/initialize",
-  //     "selector/initialize"
-  //   ]
-  //   for (const initAction of initActionQueue) {
-  //     try {
-  //       await store.dispatch(initAction)
-  //     } catch (err) {
-  //       error(err)
-  //       return
-  //     }
-  //   }
-  // }
 }
 </script>
 
