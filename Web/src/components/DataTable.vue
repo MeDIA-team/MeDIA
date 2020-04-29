@@ -29,9 +29,9 @@
     </v-data-table>
     <v-snackbar
       v-model="snackbar"
+      :color="color"
       :timeout="this.$store.state.const.snackbarTimeout"
       bottom
-      color="primary"
     >
       {{ snackbarText }}
     </v-snackbar>
@@ -56,64 +56,74 @@ export default {
     return {
       snackbar: false,
       snackbarText: "",
-      subscribeMutations: [
-        "filter/setProjects",
-        "filter/setPatientIDs",
-        "filter/setProjectPatientIDs",
-        "filter/setSexes",
-        "filter/setBottomAge",
-        "filter/setUpperAge",
-        "filter/setDiseases",
-        "filter/setSampleIDs",
-        "filter/setBottomSamplingDate",
-        "filter/setUpperSamplingDate",
-        "filter/setDataTypes",
-        "filter/initialize",
-        "entry/setOptions"
-      ]
+      subscribeMutations: {
+        sample: [
+          "sampleFilter/setProjects",
+          "sampleFilter/setPatientIDs",
+          "sampleFilter/setProjectPatientIDs",
+          "sampleFilter/setSexes",
+          "sampleFilter/setBottomAge",
+          "sampleFilter/setUpperAge",
+          "sampleFilter/setDiseases",
+          "sampleFilter/setSampleIDs",
+          "sampleFilter/setBottomSamplingDate",
+          "sampleFilter/setUpperSamplingDate",
+          "sampleFilter/setDataTypes",
+          "sampleFilter/initialize",
+          "sampleEntry/setOptions"
+        ]
+      }
     }
   },
   computed: {
-    footerProps() {
-      return { "items-per-page-options": this.$store.state.const.itemsPerPage }
+    loading() {
+      return this.$store.state[`${this.viewType}Entry`].loading
+    },
+    shownEntries() {
+      return this.$store.state[`${this.viewType}Entry`].shownEntries
+    },
+    entryCount() {
+      return this.$store.state[`${this.viewType}Entry`].entryCount
+    },
+    headers() {
+      return this.$store.getters[`${this.viewType}Entry/headers`]
     },
     options: {
       get() {
-        return this.$store.state.entry.options
+        return this.$store.state[`${this.viewType}Entry`].options
       },
       set(value) {
-        this.$store.dispatch("entry/updateOptions", value)
+        this.$store.commit(`${this.viewType}Entry/setOptions`, value)
       }
-    },
-    loading() {
-      return this.$store.state.entry.loading
-    },
-    headers() {
-      return this.$store.getters["entry/headers"]
-    },
-    shownEntries() {
-      return this.$store.state.entry.shownEntries
-    },
-    entryCount() {
-      return this.$store.state.entry.entryCount
     },
     selectedEntries: {
       get() {
-        return this.$store.getters["entry/getSelectedEntries"]
+        return this.$store.getters[`${this.viewType}Entry/getSelectedEntries`]
       },
       set(value) {
-        this.$store.dispatch("entry/updateSelectedSampleIDs", value)
+        this.$store.dispatch(
+          `${this.viewType}Entry/updateSelectedSampleIDs`,
+          value
+        )
       }
     },
+    footerProps() {
+      return { "items-per-page-options": this.$store.state.const.itemsPerPage }
+    },
     parentDataTypes() {
-      return this.$store.state.init.dataTypes.map((ele) => "item." + ele)
+      return this.$store.state[`${this.viewType}Init`].dataTypes.map(
+        (ele) => "item." + ele
+      )
     },
     copyableHeaders() {
-      const headers = this.$store.state.selector.selectedRequiredFields.map(
-        (field) => "item." + field
-      )
-      for (const field of this.$store.state.selector.selectedDataTypeFields) {
-        if (!this.$store.state.init.dataTypes.includes(field)) {
+      const headers = this.$store.state[
+        `${this.viewType}Selector`
+      ].requiredFields.map((field) => "item." + field)
+      for (const field of this.$store.state[`${this.viewType}Selector`]
+        .dataTypeFields) {
+        if (
+          !this.$store.state[`${this.viewType}Init`].dataTypes.includes(field)
+        ) {
           headers.push("item." + field)
         }
       }
@@ -121,17 +131,17 @@ export default {
     }
   },
   mounted() {
-    this.$store.dispatch("entry/updateEntries")
+    this.$store.dispatch(`${this.viewType}Entry/updateEntries`)
     this.$store.subscribe((mutation) => {
-      if (this.subscribeMutations.includes(mutation.type)) {
-        this.$store.dispatch("entry/updateEntries")
+      if (this.subscribeMutations[this.viewType].includes(mutation.type)) {
+        this.$store.dispatch(`${this.viewType}Entry/updateEntries`)
       }
       if (
-        this.subscribeMutations
-          .filter((ele) => ele !== "entry/setOptions")
+        this.subscribeMutations[this.viewType]
+          .filter((ele) => ele !== `${this.viewType}Entry/setOptions`)
           .includes(mutation.type)
       ) {
-        this.$store.dispatch("entry/updatePageFirst")
+        this.$store.commit(`${this.viewType}Entry/setPageFirst`)
       }
     })
   },

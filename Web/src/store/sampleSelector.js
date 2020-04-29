@@ -1,5 +1,5 @@
 export const state = () => ({
-  requireFields: [],
+  requiredFields: [],
   dataTypeFields: [],
   openedTreeviewItems: []
 })
@@ -23,7 +23,7 @@ export const getters = {
 
 export const mutations = {
   setRequiredFields(state, payload) {
-    state.requireFields = payload
+    state.requiredFields = payload
   },
   setDataTypeFields(state, payload) {
     state.dataTypeFields = payload

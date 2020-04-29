@@ -36,7 +36,7 @@ export default {
     },
     selectedRequiredFields: {
       get() {
-        return this.$store.state[`${this.viewType}Selector`].requireFields
+        return this.$store.state[`${this.viewType}Selector`].requiredFields
       },
       set(value) {
         this.$store.dispatch(

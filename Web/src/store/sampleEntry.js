@@ -51,7 +51,7 @@ export const getters = {
     })
   },
   headers(state, getters, rootState, rootGetters) {
-    const headers = rootState.selector.selectedRequiredFields
+    const headers = rootState.sampleSelector.requiredFields
       .filter((key) => key !== "dataType")
       .map((key) => {
         const field = rootState.const.requiredFields.find(
@@ -65,7 +65,7 @@ export const getters = {
           width: field.width
         }
       })
-    for (const field of rootState.selector.selectedDataTypeFields) {
+    for (const field of rootState.sampleSelector.dataTypeFields) {
       headers.push({
         text: field.includes("_") ? field.replace("_", ": ") : field,
         align: field.includes("_") ? "start" : "center",
@@ -81,15 +81,16 @@ export const actions = {
   async updateEntries({ commit, state, rootState }) {
     commit("setLoading", true)
     const filteredAndSortedSampleIDs = await this.$dataFetcher
-      .fetchFilteredAndSortedSampleIDs(state.options, rootState.filter)
+      .fetchFilteredAndSortedSampleIDs(state.options, rootState.sampleFilter)
       .catch((err) => {
         throw err
       })
     let processedSampleIDs
-    if (rootState.filter.dataTypes.length !== 0) {
+    if (rootState.sampleFilter.dataTypes.length !== 0) {
       processedSampleIDs = filteredAndSortedSampleIDs.filter((sampleID) => {
-        const dataTypeSet = rootState.init.sampleIDAndDataTypeTable[sampleID]
-        return rootState.filter.dataTypes.every((dataType) =>
+        const dataTypeSet =
+          rootState.sampleInit.sampleIDAndDataTypeTable[sampleID]
+        return rootState.sampleFilter.dataTypes.every((dataType) =>
           dataTypeSet.has(dataType)
         )
       })
@@ -101,7 +102,7 @@ export const actions = {
     commit("setEntryCount", processedSampleIDs.length)
     const patientIDSet = new Set()
     processedSampleIDs.forEach((sampleID) => {
-      rootState.init.sampleIDAndPatientIDTable[sampleID].forEach(
+      rootState.sampleInit.sampleIDAndPatientIDTable[sampleID].forEach(
         (patientID) => {
           patientIDSet.add(patientID)
         }
@@ -142,12 +143,6 @@ export const actions = {
     })
     commit("setShownEntries", Object.values(shownEntries))
     commit("setLoading", false)
-  },
-  updateOptions({ commit }, data) {
-    commit("setOptions", data)
-  },
-  updatePageFirst({ commit }) {
-    commit("setPageFirst")
   },
   updateSelectedSampleIDs({ commit }, data) {
     commit(
