@@ -14,7 +14,9 @@ export const state = () => ({
   processedSampleIDs: [],
   selectedSampleIDs: [],
   entryCount: 0,
-  patientCount: 0
+  patientCount: 0,
+  sampleIDAndDataTypeTable: {},
+  sampleIDAndPatientIDTable: {}
 })
 
 export const mutations = {
@@ -41,6 +43,12 @@ export const mutations = {
   },
   setPatientCount(state, data) {
     state.patientCount = data
+  },
+  setSampleIDAndDataTypeTable(state, data) {
+    state.sampleIDAndDataTypeTable = data
+  },
+  setSampleIDAndPatientIDTable(state, data) {
+    state.sampleIDAndPatientIDTable = data
   }
 }
 
@@ -51,7 +59,7 @@ export const getters = {
     })
   },
   headers(state, getters, rootState, rootGetters) {
-    const headers = rootState.sampleSelector.requiredFields
+    const headers = rootState.selector.requiredFields
       .filter((key) => key !== "dataType")
       .map((key) => {
         const field = rootState.const.requiredFields.find(
@@ -65,7 +73,7 @@ export const getters = {
           width: field.width
         }
       })
-    for (const field of rootState.sampleSelector.dataTypeFields) {
+    for (const field of rootState.selector.dataTypeFields) {
       headers.push({
         text: field.includes("_") ? field.replace("_", ": ") : field,
         align: field.includes("_") ? "start" : "center",
@@ -78,19 +86,40 @@ export const getters = {
 }
 
 export const actions = {
+  async initialize({ state, commit }) {
+    const queue = [
+      {
+        func: this.$dataFetcher.fetchSampleIDTable,
+        arg: "dataType",
+        mutation: "setSampleIDAndDataTypeTable"
+      },
+      {
+        func: this.$dataFetcher.fetchSampleIDTable,
+        arg: "patientID",
+        mutation: "setSampleIDAndPatientIDTable"
+      }
+    ]
+    const promiseQueue = queue.map((item) => item.func(item.arg))
+    const results = await Promise.all(promiseQueue).catch((err) => {
+      throw err
+    })
+    for (let i = 0; i < queue.length; i++) {
+      commit(queue[i].mutation, results[i])
+    }
+  },
+
   async updateEntries({ commit, state, rootState }) {
     commit("setLoading", true)
     const filteredAndSortedSampleIDs = await this.$dataFetcher
-      .fetchFilteredAndSortedSampleIDs(state.options, rootState.sampleFilter)
+      .fetchFilteredAndSortedSampleIDs(state.options, rootState.filter)
       .catch((err) => {
         throw err
       })
     let processedSampleIDs
-    if (rootState.sampleFilter.dataTypes.length !== 0) {
+    if (rootState.filter.dataTypes.length !== 0) {
       processedSampleIDs = filteredAndSortedSampleIDs.filter((sampleID) => {
-        const dataTypeSet =
-          rootState.sampleInit.sampleIDAndDataTypeTable[sampleID]
-        return rootState.sampleFilter.dataTypes.every((dataType) =>
+        const dataTypeSet = state.sampleIDAndDataTypeTable[sampleID]
+        return rootState.filter.dataTypes.every((dataType) =>
           dataTypeSet.has(dataType)
         )
       })
@@ -102,11 +131,9 @@ export const actions = {
     commit("setEntryCount", processedSampleIDs.length)
     const patientIDSet = new Set()
     processedSampleIDs.forEach((sampleID) => {
-      rootState.sampleInit.sampleIDAndPatientIDTable[sampleID].forEach(
-        (patientID) => {
-          patientIDSet.add(patientID)
-        }
-      )
+      state.sampleIDAndPatientIDTable[sampleID].forEach((patientID) => {
+        patientIDSet.add(patientID)
+      })
     })
     commit("setPatientCount", patientIDSet.size)
     const { page, itemsPerPage } = state.options

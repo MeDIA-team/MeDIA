@@ -8,9 +8,7 @@ export const state = () => ({
   sampleIDs: [],
   dataTypeFields: {},
   totalPatientIDCount: 0,
-  totalSampleIDCount: 0,
-  sampleIDAndDataTypeTable: {},
-  sampleIDAndPatientIDTable: {}
+  totalSampleIDCount: 0
 })
 
 export const mutations = {
@@ -43,12 +41,6 @@ export const mutations = {
   },
   setTotalPatientIDCount(state, data) {
     state.totalPatientIDCount = data
-  },
-  setSampleIDAndDataTypeTable(state, data) {
-    state.sampleIDAndDataTypeTable = data
-  },
-  setSampleIDAndPatientIDTable(state, data) {
-    state.sampleIDAndPatientIDTable = data
   }
 }
 
@@ -93,16 +85,6 @@ export const actions = {
       {
         func: this.$dataFetcher.fetchDataTypeFields,
         mutation: "setDataTypeFields"
-      },
-      {
-        func: this.$dataFetcher.fetchSampleIDTable,
-        arg: "dataType",
-        mutation: "setSampleIDAndDataTypeTable"
-      },
-      {
-        func: this.$dataFetcher.fetchSampleIDTable,
-        arg: "patientID",
-        mutation: "setSampleIDAndPatientIDTable"
       }
     ]
     const promiseQueue = queue.map((item) => item.func(item.arg))

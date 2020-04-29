@@ -77,9 +77,7 @@ export default {
   computed: {
     bottomModel: {
       get() {
-        return this.$store.state[`${this.viewType}Filter`][
-          this.inputtedBottomValueKey
-        ]
+        return this.$store.state.filter[this.inputtedBottomValueKey]
       },
       set(value) {
         this.$store.commit(this.inputtedBottomValueCommit, value)
@@ -87,9 +85,7 @@ export default {
     },
     upperModel: {
       get() {
-        return this.$store.state[`${this.viewType}Filter`][
-          this.inputtedUpperValueKey
-        ]
+        return this.$store.state.filter[this.inputtedUpperValueKey]
       },
       set(value) {
         this.$store.commit(this.inputtedUpperValueCommit, value)

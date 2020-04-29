@@ -50,7 +50,7 @@
         v-for="chart in countCharts"
         :key="chart.labelKey"
         :class="{ 'mt-6': chart.marginTop }"
-        :color="color"
+        :color="RGBColor"
         :count-key="chart.countKey"
         :label-key="chart.labelKey"
         :total-count-key="chart.totalCountKey"
@@ -94,7 +94,7 @@ export default {
           label: "Project",
           type: "check",
           contentsKey: "projects",
-          selectedContentsCommit: `${this.viewType}Filter/setProjects`,
+          selectedContentsCommit: "filter/setProjects",
           selectedContentsKey: "projects"
         },
         {
@@ -102,7 +102,7 @@ export default {
           contentsKey: "patientIDs",
           fieldWidth: "660px",
           label: "Patient ID",
-          selectedContentsCommit: `${this.viewType}Filter/setPatientIDs`,
+          selectedContentsCommit: "filter/setPatientIDs",
           selectedContentsKey: "patientIDs",
           type: "chip"
         },
@@ -111,23 +111,23 @@ export default {
           contentsKey: "projectPatientIDs",
           fieldWidth: "660px",
           label: "Project Patient ID",
-          selectedContentsCommit: `${this.viewType}Filter/setProjectPatientIDs`,
+          selectedContentsCommit: "filter/setProjectPatientIDs",
           selectedContentsKey: "projectPatientIDs",
           type: "chip"
         },
         {
           contentsKey: "sexes",
           label: "Sex",
-          selectedContentsCommit: `${this.viewType}Filter/setSexes`,
+          selectedContentsCommit: "filter/setSexes",
           selectedContentsKey: "sexes",
           type: "check"
         },
         {
           boxWidth: "80px",
           fieldType: "number",
-          inputtedBottomValueCommit: `${this.viewType}Filter/setBottomAge`,
+          inputtedBottomValueCommit: "filter/setBottomAge",
           inputtedBottomValueKey: "bottomAge",
-          inputtedUpperValueCommit: `${this.viewType}Filter/setUpperAge`,
+          inputtedUpperValueCommit: "filter/setUpperAge",
           inputtedUpperValueKey: "upperAge",
           label: "Age",
           type: "text"
@@ -135,7 +135,7 @@ export default {
         {
           contentsKey: "diseases",
           label: "Disease",
-          selectedContentsCommit: `${this.viewType}Filter/setDiseases`,
+          selectedContentsCommit: "filter/setDiseases",
           selectedContentsKey: "diseases",
           type: "check"
         },
@@ -144,16 +144,16 @@ export default {
           contentsKey: "sampleIDs",
           fieldWidth: "660px",
           label: "Sample ID",
-          selectedContentsCommit: `${this.viewType}Filter/setSampleIDs`,
+          selectedContentsCommit: "filter/setSampleIDs",
           selectedContentsKey: "sampleIDs",
           type: "chip"
         },
         {
           boxWidth: "200px",
           fieldType: "date",
-          inputtedBottomValueCommit: `${this.viewType}Filter/setBottomSamplingDate`,
+          inputtedBottomValueCommit: "filter/setBottomSamplingDate",
           inputtedBottomValueKey: "bottomSamplingDate",
-          inputtedUpperValueCommit: `${this.viewType}Filter/setUpperSamplingDate`,
+          inputtedUpperValueCommit: "filter/setUpperSamplingDate",
           inputtedUpperValueKey: "upperSamplingDate",
           label: "Sampling Date",
           type: "text"
@@ -163,7 +163,7 @@ export default {
           contentsKey: "dataTypes",
           fieldWidth: "660px",
           label: "Data Type",
-          selectedContentsCommit: `${this.viewType}Filter/setDataTypes`,
+          selectedContentsCommit: "filter/setDataTypes",
           selectedContentsKey: "dataTypes",
           type: "chip"
         }
@@ -182,6 +182,13 @@ export default {
           totalCountKey: "totalPatientIDCount"
         }
       ]
+    }
+  },
+  computed: {
+    RGBColor() {
+      return this.color === "primary"
+        ? "rgba(30, 136, 229, 1)"
+        : "rgba(216, 27, 96, 1)"
     }
   }
 }

@@ -70,7 +70,7 @@ export default {
           {
             data: [
               this.$store.state[`${this.viewType}Entry`][this.countKey],
-              this.$store.state[`${this.viewType}Init`][this.totalCountKey] -
+              this.$store.state.init[this.totalCountKey] -
                 this.$store.state[`${this.viewType}Entry`][this.countKey]
             ],
             backgroundColor: [this.color, "rgba(255, 255, 255, 0)"],
@@ -84,7 +84,7 @@ export default {
       return this.$store.state[`${this.viewType}Entry`][this.countKey]
     },
     totalCount() {
-      return this.$store.state[`${this.viewType}Init`][this.totalCountKey]
+      return this.$store.state.init[this.totalCountKey]
     },
     label() {
       return this.$store.state.const.chartLabel[this.labelKey]

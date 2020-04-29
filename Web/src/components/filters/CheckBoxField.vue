@@ -45,13 +45,11 @@ export default {
   },
   computed: {
     contents() {
-      return this.$store.state[`${this.viewType}Init`][this.contentsKey]
+      return this.$store.state.init[this.contentsKey]
     },
     selectedContentsModel: {
       get() {
-        return this.$store.state[`${this.viewType}Filter`][
-          this.selectedContentsKey
-        ]
+        return this.$store.state.filter[this.selectedContentsKey]
       },
       set(value) {
         this.$store.commit(this.selectedContentsCommit, value)

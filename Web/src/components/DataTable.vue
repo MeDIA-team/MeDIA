@@ -56,23 +56,21 @@ export default {
     return {
       snackbar: false,
       snackbarText: "",
-      subscribeMutations: {
-        sample: [
-          "sampleFilter/setProjects",
-          "sampleFilter/setPatientIDs",
-          "sampleFilter/setProjectPatientIDs",
-          "sampleFilter/setSexes",
-          "sampleFilter/setBottomAge",
-          "sampleFilter/setUpperAge",
-          "sampleFilter/setDiseases",
-          "sampleFilter/setSampleIDs",
-          "sampleFilter/setBottomSamplingDate",
-          "sampleFilter/setUpperSamplingDate",
-          "sampleFilter/setDataTypes",
-          "sampleFilter/initialize",
-          "sampleEntry/setOptions"
-        ]
-      }
+      subscribeMutations: [
+        "filter/setProjects",
+        "filter/setPatientIDs",
+        "filter/setProjectPatientIDs",
+        "filter/setSexes",
+        "filter/setBottomAge",
+        "filter/setUpperAge",
+        "filter/setDiseases",
+        "filter/setSampleIDs",
+        "filter/setBottomSamplingDate",
+        "filter/setUpperSamplingDate",
+        "filter/setDataTypes",
+        "filter/initialize",
+        `${this.viewType}Entry/setOptions`
+      ]
     }
   },
   computed: {
@@ -111,19 +109,14 @@ export default {
       return { "items-per-page-options": this.$store.state.const.itemsPerPage }
     },
     parentDataTypes() {
-      return this.$store.state[`${this.viewType}Init`].dataTypes.map(
-        (ele) => "item." + ele
-      )
+      return this.$store.state.init.dataTypes.map((ele) => "item." + ele)
     },
     copyableHeaders() {
-      const headers = this.$store.state[
-        `${this.viewType}Selector`
-      ].requiredFields.map((field) => "item." + field)
-      for (const field of this.$store.state[`${this.viewType}Selector`]
-        .dataTypeFields) {
-        if (
-          !this.$store.state[`${this.viewType}Init`].dataTypes.includes(field)
-        ) {
+      const headers = this.$store.state.selector.requiredFields.map(
+        (field) => "item." + field
+      )
+      for (const field of this.$store.state.selector.dataTypeFields) {
+        if (!this.$store.state.init.dataTypes.includes(field)) {
           headers.push("item." + field)
         }
       }
@@ -133,11 +126,11 @@ export default {
   mounted() {
     this.$store.dispatch(`${this.viewType}Entry/updateEntries`)
     this.$store.subscribe((mutation) => {
-      if (this.subscribeMutations[this.viewType].includes(mutation.type)) {
+      if (this.subscribeMutations.includes(mutation.type)) {
         this.$store.dispatch(`${this.viewType}Entry/updateEntries`)
       }
       if (
-        this.subscribeMutations[this.viewType]
+        this.subscribeMutations
           .filter((ele) => ele !== `${this.viewType}Entry/setOptions`)
           .includes(mutation.type)
       ) {

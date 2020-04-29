@@ -21,26 +21,19 @@ export default {
   },
   computed: {
     buttonText() {
-      return this.$store.state[`${this.viewType}Selector`].openedTreeviewItems
-        .length === 0
+      return this.$store.state.selector.openedTreeviewItems.length === 0
         ? "Expand Tree"
         : "Contract Tree"
     }
   },
   methods: {
     operateTreeview() {
-      if (
-        this.$store.state[`${this.viewType}Selector`].openedTreeviewItems
-          .length !== 0
-      ) {
-        this.$store.commit(
-          `${this.viewType}Selector/setOpenedTreeviewItems`,
-          []
-        )
+      if (this.$store.state.selector.openedTreeviewItems.length !== 0) {
+        this.$store.commit("selector/setOpenedTreeviewItems", [])
       } else {
         this.$store.commit(
-          `${this.viewType}Selector/setOpenedTreeviewItems`,
-          this.$store.getters[`${this.viewType}Selector/treeviewItems`]
+          "selector/setOpenedTreeviewItems",
+          this.$store.getters["selector/treeviewItems"]
         )
       }
     }

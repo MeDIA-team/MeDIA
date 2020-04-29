@@ -64,13 +64,13 @@ export const mutations = {
 export const actions = {
   initialize({ commit, rootState }) {
     commit("initialize", {
-      projects: rootState.sampleInit.projects,
+      projects: rootState.init.projects,
       patientIDs: [],
       projectPatientIDs: [],
-      sexes: rootState.sampleInit.sexes,
+      sexes: rootState.init.sexes,
       bottomAge: "",
       upperAge: "",
-      diseases: rootState.sampleInit.diseases,
+      diseases: rootState.init.diseases,
       sampleIDs: [],
       bottomSamplingDate: "",
       upperSamplingDate: "",

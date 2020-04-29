@@ -35,9 +35,10 @@ export default {
   },
   async fetch({ store, error }) {
     const initActionQueue = [
-      "sampleInit/initialize",
-      "sampleFilter/initialize",
-      "sampleSelector/initialize"
+      "init/initialize",
+      "filter/initialize",
+      "selector/initialize",
+      "sampleEntry/initialize"
     ]
     for (const initAction of initActionQueue) {
       try {

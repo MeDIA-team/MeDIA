@@ -37,34 +37,29 @@ export default {
   computed: {
     selectedDataTypeFields: {
       get() {
-        return this.$store.state[`${this.viewType}Selector`].dataTypeFields.map(
-          (val) => {
-            return {
-              id: val,
-              name: val
-            }
+        return this.$store.state.selector.dataTypeFields.map((val) => {
+          return {
+            id: val,
+            name: val
           }
-        )
+        })
       },
       set(value) {
         this.$store.dispatch(
-          `${this.viewType}Selector/updateDataTypeFields`,
+          "selector/updateDataTypeFields",
           value.map((val) => val.id)
         )
       }
     },
     treeviewItems() {
-      return this.$store.getters[`${this.viewType}Selector/treeviewItems`]
+      return this.$store.getters["selector/treeviewItems"]
     },
     openedTreeviewItems: {
       get() {
-        return this.$store.state[`${this.viewType}Selector`].openedTreeviewItems
+        return this.$store.state.selector.openedTreeviewItems
       },
       set(value) {
-        this.$store.commit(
-          `${this.viewType}Selector/setOpenedTreeviewItems`,
-          value
-        )
+        this.$store.commit("selector/setOpenedTreeviewItems", value)
       }
     }
   }

@@ -5,12 +5,12 @@ export const state = () => ({
 })
 
 export const getters = {
-  treeviewItems(state, getters, rootState, rootGetters) {
-    return rootState.sampleInit.dataTypes.map((dataType) => {
+  treeviewItems(state, getters, rootState) {
+    return rootState.init.dataTypes.map((dataType) => {
       return {
         id: dataType,
         name: dataType,
-        children: rootState.sampleInit.dataTypeFields[dataType].map((field) => {
+        children: rootState.init.dataTypeFields[dataType].map((field) => {
           return {
             id: dataType + "_" + field,
             name: field
@@ -41,7 +41,7 @@ export const actions = {
         .map((item) => item.key)
         .filter((key) => key !== "dataType")
     )
-    commit("setDataTypeFields", rootState.sampleInit.dataTypes)
+    commit("setDataTypeFields", rootState.init.dataTypes)
   },
   updateRequiredFields({ commit, rootState }, payload) {
     const sortedData = rootState.const.requiredFields
@@ -51,11 +51,11 @@ export const actions = {
   },
   updateDataTypeFields({ commit, rootState }, payload) {
     const sortedData = []
-    for (const dataType of rootState.sampleInit.dataTypes) {
+    for (const dataType of rootState.init.dataTypes) {
       if (payload.includes(dataType)) {
         sortedData.push(dataType)
       }
-      for (const field of rootState.sampleInit.dataTypeFields[dataType]) {
+      for (const field of rootState.init.dataTypeFields[dataType]) {
         if (payload.includes(`${dataType}_${field}`)) {
           sortedData.push(`${dataType}_${field}`)
         }
