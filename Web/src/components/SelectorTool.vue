@@ -1,58 +1,46 @@
 <template>
   <div class="d-flex flex-column">
-    <required-fields-selector></required-fields-selector>
+    <required-fields-selector
+      :color="color"
+      :view-type="viewType"
+    ></required-fields-selector>
     <div class="d-flex">
-      <v-btn
-        color="info"
-        max-width="160"
-        min-width="160"
-        outlined
-        @click="setInitialState"
-        >Set Initial State</v-btn
-      >
-      <v-btn
-        class="ml-4"
-        color="info"
-        max-width="160"
-        min-width="160"
-        outlined
-        @click="operateTree"
-        >{{ operateTreeButtonText }}</v-btn
-      >
+      <set-initial-state-button
+        :view-type="viewType"
+      ></set-initial-state-button>
+      <operate-treeview-button :view-type="viewType"></operate-treeview-button>
     </div>
-    <data-type-fields-selector class="mt-2"></data-type-fields-selector>
+    <data-type-fields-selector
+      class="mt-2"
+      :color="color"
+      :view-type="viewType"
+    ></data-type-fields-selector>
   </div>
 </template>
 
 <script>
-import RequiredFieldsSelector from "~/components/selectors/RequiredFieldsSelector.vue"
 import DataTypeFieldsSelector from "~/components/selectors/DataTypeFieldsSelector.vue"
+import RequiredFieldsSelector from "~/components/selectors/RequiredFieldsSelector.vue"
+import SetInitialStateButton from "~/components/selectors/SetInitialStateButton.vue"
+import OperateTreeviewButton from "~/components/selectors/OperateTreeviewButton.vue"
 
 export default {
   components: {
+    DataTypeFieldsSelector,
+    OperateTreeviewButton,
     RequiredFieldsSelector,
-    DataTypeFieldsSelector
+    SetInitialStateButton
   },
-  computed: {
-    operateTreeButtonText() {
-      return this.$store.state.selector.treeviewOpen.length === 0
-        ? "Expand Tree"
-        : "Contract Tree"
-    }
-  },
-  methods: {
-    setInitialState() {
-      this.$store.dispatch("selector/initialize")
+  props: {
+    viewType: {
+      type: String,
+      default: "",
+      require: true
     },
-    operateTree() {
-      if (this.$store.state.selector.treeviewOpen.length !== 0) {
-        this.$store.dispatch("selector/updateTreeviewOpen", [])
-      } else {
-        this.$store.dispatch(
-          "selector/updateTreeviewOpen",
-          this.$store.getters["selector/treeviewItems"]
-        )
-      }
+    color: {
+      type: String,
+      default: "",
+      require: true
     }
   }
 }

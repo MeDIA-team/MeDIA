@@ -1,19 +1,20 @@
 <template>
   <div>
-    <span class="grey--text text--darken-3 title">
+    <span class="info--text title">
       Data Type
     </span>
     <v-treeview
       v-model="selectedDataTypeFields"
+      :color="color"
       :items="treeviewItems"
-      :open.sync="treeviewOpen"
-      class="grey--text text--darken-2"
+      :open.sync="openedTreeviewItems"
+      :selected-color="color"
+      class="info--text"
       dense
       hoverable
       return-object
       rounded
       selectable
-      selected-color="primary"
       selection-type="independent"
     ></v-treeview>
   </div>
@@ -21,32 +22,49 @@
 
 <script>
 export default {
+  props: {
+    viewType: {
+      type: String,
+      default: "",
+      require: true
+    },
+    color: {
+      type: String,
+      default: "",
+      require: true
+    }
+  },
   computed: {
     selectedDataTypeFields: {
       get() {
-        return this.$store.state.selector.selectedDataTypeFields.map((val) => {
-          return {
-            id: val,
-            name: val
+        return this.$store.state[`${this.viewType}Selector`].dataTypeFields.map(
+          (val) => {
+            return {
+              id: val,
+              name: val
+            }
           }
-        })
+        )
       },
       set(value) {
         this.$store.dispatch(
-          "selector/updateSelectedDataTypesFields",
+          `${this.viewType}Selector/updateDataTypeFields`,
           value.map((val) => val.id)
         )
       }
     },
     treeviewItems() {
-      return this.$store.getters["selector/treeviewItems"]
+      return this.$store.getters[`${this.viewType}Selector/treeviewItems`]
     },
-    treeviewOpen: {
+    openedTreeviewItems: {
       get() {
-        return this.$store.state.selector.treeviewOpen
+        return this.$store.state[`${this.viewType}Selector`].openedTreeviewItems
       },
       set(value) {
-        this.$store.dispatch("selector/updateTreeviewOpen", value)
+        this.$store.commit(
+          `${this.viewType}Selector/setOpenedTreeviewItems`,
+          value
+        )
       }
     }
   }

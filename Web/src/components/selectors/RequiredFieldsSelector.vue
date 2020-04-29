@@ -4,6 +4,7 @@
       v-for="requiredField in requiredFields"
       :key="requiredField.key"
       v-model="selectedRequiredFields"
+      :color="color"
       :label="requiredField.label"
       :value="requiredField.key"
       class="shrink my-0 mr-4 pt-0 align-center"
@@ -15,6 +16,18 @@
 
 <script>
 export default {
+  props: {
+    viewType: {
+      type: String,
+      default: "",
+      require: true
+    },
+    color: {
+      type: String,
+      default: "",
+      require: true
+    }
+  },
   computed: {
     requiredFields() {
       return this.$store.state.const.requiredFields.filter(
@@ -23,10 +36,13 @@ export default {
     },
     selectedRequiredFields: {
       get() {
-        return this.$store.state.selector.selectedRequiredFields
+        return this.$store.state[`${this.viewType}Selector`].requireFields
       },
       set(value) {
-        this.$store.dispatch("selector/updateSelectedRequiredFields", value)
+        this.$store.dispatch(
+          `${this.viewType}Selector/updateRequiredFields`,
+          value
+        )
       }
     }
   }

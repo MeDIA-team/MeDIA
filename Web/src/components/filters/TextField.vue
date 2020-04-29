@@ -2,6 +2,7 @@
   <div class="d-flex">
     <v-text-field
       v-model="bottomModel"
+      :color="color"
       :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
       :type="fieldType"
       class="my-1"
@@ -11,12 +12,13 @@
       single-line
     ></v-text-field>
     <div class="d-flex align-center mx-4">
-      <span class="grey--text text--darken-3 font-weight-medium headline">
+      <span class="font-weight-medium headline info--text">
         ~
       </span>
     </div>
     <v-text-field
       v-model="upperModel"
+      :color="color"
       :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
       :type="fieldType"
       class="my-1"
@@ -31,6 +33,16 @@
 <script>
 export default {
   props: {
+    viewType: {
+      type: String,
+      default: "",
+      require: true
+    },
+    color: {
+      type: String,
+      default: "",
+      require: true
+    },
     inputtedBottomValueKey: {
       type: String,
       default: "",
@@ -65,7 +77,9 @@ export default {
   computed: {
     bottomModel: {
       get() {
-        return this.$store.state.filter[this.inputtedBottomValueKey]
+        return this.$store.state[`${this.viewType}Filter`][
+          this.inputtedBottomValueKey
+        ]
       },
       set(value) {
         this.$store.commit(this.inputtedBottomValueCommit, value)
@@ -73,7 +87,9 @@ export default {
     },
     upperModel: {
       get() {
-        return this.$store.state.filter[this.inputtedUpperValueKey]
+        return this.$store.state[`${this.viewType}Filter`][
+          this.inputtedUpperValueKey
+        ]
       },
       set(value) {
         this.$store.commit(this.inputtedUpperValueCommit, value)

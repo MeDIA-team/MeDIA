@@ -4,6 +4,7 @@
       v-for="content in contents"
       :key="content"
       v-model="selectedContentsModel"
+      :color="color"
       :label="content"
       :value="content"
       class="shrink my-0 mr-6 pt-0 align-center"
@@ -16,6 +17,16 @@
 <script>
 export default {
   props: {
+    viewType: {
+      type: String,
+      default: "",
+      require: true
+    },
+    color: {
+      type: String,
+      default: "",
+      require: true
+    },
     contentsKey: {
       type: String,
       default: "",
@@ -34,11 +45,13 @@ export default {
   },
   computed: {
     contents() {
-      return this.$store.state.init[this.contentsKey]
+      return this.$store.state[`${this.viewType}Init`][this.contentsKey]
     },
     selectedContentsModel: {
       get() {
-        return this.$store.state.filter[this.selectedContentsKey]
+        return this.$store.state[`${this.viewType}Filter`][
+          this.selectedContentsKey
+        ]
       },
       set(value) {
         this.$store.commit(this.selectedContentsCommit, value)

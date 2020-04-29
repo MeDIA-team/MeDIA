@@ -21,7 +21,7 @@ export default {
   },
   methods: {
     setInitialState() {
-      this.$store.dispatch(`${this.viewType}Filter/initialize`)
+      this.$store.dispatch(`${this.viewType}Selector/initialize`)
     }
   }
 }

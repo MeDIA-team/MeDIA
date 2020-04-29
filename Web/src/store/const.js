@@ -1,5 +1,4 @@
 export const state = () => ({
-  titleText: "MeDIA",
   footerText: "",
   requiredFields: [
     {

@@ -92,7 +92,6 @@ export const actions = {
       },
       {
         func: this.$dataFetcher.fetchDataTypeFields,
-        arg: undefined,
         mutation: "setDataTypeFields"
       },
       {

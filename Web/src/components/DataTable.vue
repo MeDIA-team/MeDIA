@@ -40,6 +40,18 @@
 
 <script>
 export default {
+  props: {
+    viewType: {
+      type: String,
+      default: "",
+      require: true
+    },
+    color: {
+      type: String,
+      default: "",
+      require: true
+    }
+  },
   data() {
     return {
       snackbar: false,

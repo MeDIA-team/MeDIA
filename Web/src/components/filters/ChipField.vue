@@ -1,6 +1,7 @@
 <template>
   <v-autocomplete
     v-model="selectedContentsModel"
+    :color="color"
     :items="contents"
     :label="boxLabel"
     :search-input.sync="searchInput"
@@ -14,7 +15,7 @@
     @input="searchInput = null"
   >
     <template v-slot:selection="{ item }">
-      <v-chip close label @click:close="remove(item)">
+      <v-chip :color="color" close label @click:close="remove(item)">
         {{ item }}
       </v-chip>
     </template>
@@ -24,6 +25,16 @@
 <script>
 export default {
   props: {
+    viewType: {
+      type: String,
+      default: "",
+      require: true
+    },
+    color: {
+      type: String,
+      default: "",
+      require: true
+    },
     contentsKey: {
       type: String,
       default: "",
@@ -57,11 +68,13 @@ export default {
   },
   computed: {
     contents() {
-      return this.$store.state.init[this.contentsKey]
+      return this.$store.state[`${this.viewType}Init`][this.contentsKey]
     },
     selectedContentsModel: {
       get() {
-        return this.$store.state.filter[this.selectedContentsKey]
+        return this.$store.state[`${this.viewType}Filter`][
+          this.selectedContentsKey
+        ]
       },
       set(value) {
         this.$store.commit(this.selectedContentsCommit, value)

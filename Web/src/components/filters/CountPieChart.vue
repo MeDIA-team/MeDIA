@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-column" style="min-width: 250px;">
     <div class="d-inline-block" style="text-align: center;">
-      <span class="grey--text text--darken-3 font-weight-medium subtitle">
+      <span class="info--text font-weight-medium subtitle">
         {{ label }}
       </span>
     </div>
@@ -13,7 +13,7 @@
       style="margin: 20px auto 0;"
     ></pie-chart>
     <div class="d-inline-block mr-6 mt-2" style="text-align: right;">
-      <span class="grey--text text--darken-3 font-weight-medium subtitle">
+      <span class="info--text font-weight-medium subtitle">
         {{ count }} / {{ totalCount }}
       </span>
     </div>
@@ -22,9 +22,20 @@
 
 <script>
 import PieChart from "~/components/filters/PieChart.vue"
+
 export default {
   components: { PieChart },
   props: {
+    viewType: {
+      type: String,
+      default: "",
+      require: true
+    },
+    color: {
+      type: String,
+      default: "",
+      require: true
+    },
     countKey: {
       type: String,
       default: "",
@@ -58,25 +69,22 @@ export default {
         datasets: [
           {
             data: [
-              this.$store.state.entry[this.countKey],
-              this.$store.state.init[this.totalCountKey] -
-                this.$store.state.entry[this.countKey]
+              this.$store.state[`${this.viewType}Entry`][this.countKey],
+              this.$store.state[`${this.viewType}Init`][this.totalCountKey] -
+                this.$store.state[`${this.viewType}Entry`][this.countKey]
             ],
-            backgroundColor: [
-              "rgba(71, 145, 219, 1)",
-              "rgba(255, 255, 255, 0)"
-            ],
-            borderColor: "rgba(71, 145, 219, 1)",
+            backgroundColor: [this.color, "rgba(255, 255, 255, 0)"],
+            borderColor: this.color,
             borderWidth: 0.6
           }
         ]
       }
     },
     count() {
-      return this.$store.state.entry[this.countKey]
+      return this.$store.state[`${this.viewType}Entry`][this.countKey]
     },
     totalCount() {
-      return this.$store.state.init[this.totalCountKey]
+      return this.$store.state[`${this.viewType}Init`][this.totalCountKey]
     },
     label() {
       return this.$store.state.const.chartLabel[this.labelKey]
