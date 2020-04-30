@@ -12,13 +12,6 @@
 
 <script>
 export default {
-  props: {
-    viewType: {
-      type: String,
-      default: "",
-      require: true
-    }
-  },
   methods: {
     setInitialState() {
       this.$store.dispatch("filter/initialize")

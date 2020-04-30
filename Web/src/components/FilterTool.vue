@@ -13,7 +13,6 @@
             :contents-key="field.contentsKey"
             :selected-contents-commit="field.selectedContentsCommit"
             :selected-contents-key="field.selectedContentsKey"
-            :view-type="viewType"
           ></check-box-field>
         </div>
         <div v-else-if="field.type === 'chip'" class="my-2">
@@ -24,7 +23,6 @@
             :field-width="field.fieldWidth"
             :selected-contents-commit="field.selectedContentsCommit"
             :selected-contents-key="field.selectedContentsKey"
-            :view-type="viewType"
           ></chip-field>
         </div>
         <div v-else-if="field.type === 'text'">
@@ -36,14 +34,10 @@
             :inputted-bottom-value-key="field.inputtedBottomValueKey"
             :inputted-upper-value-commit="field.inputtedUpperValueCommit"
             :inputted-upper-value-key="field.inputtedUpperValueKey"
-            :view-type="viewType"
           ></text-field>
         </div>
       </div>
-      <set-initial-state-button
-        :view-type="viewType"
-        class="mt-2"
-      ></set-initial-state-button>
+      <set-initial-state-button class="mt-2"></set-initial-state-button>
     </div>
     <div class="d-flex flex-column ml-auto mr-10">
       <count-pie-chart

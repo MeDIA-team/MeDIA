@@ -12,13 +12,6 @@
 
 <script>
 export default {
-  props: {
-    viewType: {
-      type: String,
-      default: "",
-      require: true
-    }
-  },
   computed: {
     buttonText() {
       return this.$store.state.selector.openedTreeviewItems.length === 0

@@ -20,11 +20,7 @@
           ></filter-tool>
         </v-tab-item>
         <v-tab-item>
-          <selector-tool
-            :color="color"
-            :view-type="viewType"
-            class="px-10 py-4"
-          ></selector-tool>
+          <selector-tool :color="color" class="px-10 py-4"></selector-tool>
         </v-tab-item>
       </v-tabs-items>
     </v-card>

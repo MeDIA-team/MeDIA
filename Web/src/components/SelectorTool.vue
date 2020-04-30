@@ -1,19 +1,13 @@
 <template>
   <div class="d-flex flex-column">
-    <required-fields-selector
-      :color="color"
-      :view-type="viewType"
-    ></required-fields-selector>
+    <required-fields-selector :color="color"></required-fields-selector>
     <div class="d-flex">
-      <set-initial-state-button
-        :view-type="viewType"
-      ></set-initial-state-button>
-      <operate-treeview-button :view-type="viewType"></operate-treeview-button>
+      <set-initial-state-button></set-initial-state-button>
+      <operate-treeview-button></operate-treeview-button>
     </div>
     <data-type-fields-selector
       class="mt-2"
       :color="color"
-      :view-type="viewType"
     ></data-type-fields-selector>
   </div>
 </template>
@@ -32,11 +26,6 @@ export default {
     SetInitialStateButton
   },
   props: {
-    viewType: {
-      type: String,
-      default: "",
-      require: true
-    },
     color: {
       type: String,
       default: "",

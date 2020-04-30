@@ -17,11 +17,6 @@
 <script>
 export default {
   props: {
-    viewType: {
-      type: String,
-      default: "",
-      require: true
-    },
     color: {
       type: String,
       default: "",
