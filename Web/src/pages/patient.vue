@@ -1,6 +1,10 @@
 <template>
   <v-app>
-    <header-bar :color="color" :text="headerLabel"></header-bar>
+    <header-bar
+      :color="color"
+      :text="headerLabel"
+      :view-type="viewType"
+    ></header-bar>
 
     <v-content>
       <v-container fluid>

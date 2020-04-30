@@ -5,6 +5,31 @@ export const state = () => ({
 })
 
 export const getters = {
+  headers(state, getters, rootState) {
+    const headers = state.requiredFields
+      .filter((key) => key !== "dataType")
+      .map((key) => {
+        const field = rootState.const.requiredFields.find(
+          (item) => item.key === key
+        )
+        return {
+          text: field.label,
+          align: "start",
+          sortable: true,
+          value: field.key,
+          width: field.width
+        }
+      })
+    for (const field of state.dataTypeFields) {
+      headers.push({
+        text: field.includes("_") ? field.replace("_", ": ") : field,
+        align: field.includes("_") ? "start" : "center",
+        sortable: field.includes("_"),
+        value: field
+      })
+    }
+    return headers
+  },
   treeviewItems(state, getters, rootState) {
     return rootState.init.dataTypes.map((dataType) => {
       return {

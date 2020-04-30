@@ -87,7 +87,7 @@ export default {
       return `${this.viewType}ID`
     },
     headers() {
-      return this.$store.getters[`${this.viewType}Entry/headers`]
+      return this.$store.getters["selector/headers"]
     },
     options: {
       get() {

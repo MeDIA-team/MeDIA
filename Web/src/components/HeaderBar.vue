@@ -4,7 +4,10 @@
       {{ text }}
     </v-toolbar-title>
     <v-spacer></v-spacer>
-    <export-table-button></export-table-button>
+    <export-table-button
+      :color="color"
+      :view-type="viewType"
+    ></export-table-button>
   </v-app-bar>
 </template>
 
@@ -15,6 +18,11 @@ export default {
     ExportTableButton
   },
   props: {
+    viewType: {
+      type: String,
+      default: "",
+      require: true
+    },
     color: {
       type: String,
       default: "",

@@ -57,31 +57,6 @@ export const getters = {
     return state.selectedPatientIDs.map((patientID) => {
       return { patientID }
     })
-  },
-  headers(state, getters, rootState) {
-    const headers = rootState.selector.requiredFields
-      .filter((key) => key !== "dataType")
-      .map((key) => {
-        const field = rootState.const.requiredFields.find(
-          (item) => item.key === key
-        )
-        return {
-          text: field.label,
-          align: "start",
-          sortable: ["patientID", "sex", "age"].includes(field.key),
-          value: field.key,
-          width: field.width
-        }
-      })
-    for (const field of rootState.selector.dataTypeFields) {
-      headers.push({
-        text: field.includes("_") ? field.replace("_", ": ") : field,
-        align: field.includes("_") ? "start" : "center",
-        sortable: field.includes("_"),
-        value: field
-      })
-    }
-    return headers
   }
 }
 
@@ -133,6 +108,7 @@ export const actions = {
     commit("setProcessedPatientIDs", processedPatientIDs)
     commit("setSelectedPatientIDs", processedPatientIDs)
     commit("setPatientCount", processedPatientIDs.length)
+
     const sampleIDSet = new Set()
     processedPatientIDs.forEach((patientID) => {
       state.patientIDAndSampleIDTable[patientID].forEach((sampleID) => {
@@ -140,45 +116,64 @@ export const actions = {
       })
     })
     commit("setSampleCount", sampleIDSet.size)
+
     const { page, itemsPerPage } = state.options
     const shownPatientIDs = processedPatientIDs.slice(
       (page - 1) * itemsPerPage,
       page * itemsPerPage
     )
-    const entryDocs = await this.$dataFetcher
-      .fetchEntryDocs("patientID", shownPatientIDs)
-      .catch((err) => {
-        throw err
-      })
     const shownEntries = shownPatientIDs.reduce(
       (arr, cur) => ({ ...arr, [cur]: {} }),
       {}
     )
-    entryDocs.forEach((doc) => {
-      const patientID = doc.patientID
-      const dataType = doc.dataType
-      Object.entries(doc).forEach(([key, val]) => {
-        if (
-          rootState.const.requiredFields
-            .map((item) => item.key)
-            .filter((key) => key !== "dataType")
-            .includes(key)
-        ) {
-          if (!(key in shownEntries[patientID])) {
-            shownEntries[patientID][key] = new Set()
-          }
-          shownEntries[patientID][key].add(val)
-        } else if (key === "dataType") {
-          shownEntries[patientID][dataType] = true
-        } else {
-          const dataTypeKey = dataType + "_" + key
-          if (!(dataTypeKey in shownEntries[patientID])) {
-            shownEntries[patientID][dataTypeKey] = new Set()
-          }
-          shownEntries[patientID][dataTypeKey].add(val)
-        }
+    const showSampleIDSet = new Set()
+    shownPatientIDs.forEach((patientID) => {
+      state.patientIDAndSampleIDTable[patientID].forEach((sampleID) => {
+        showSampleIDSet.add(sampleID)
       })
     })
+    const shownSampleIDs = Array.from(showSampleIDSet)
+    for (
+      let i = 0;
+      i < shownSampleIDs.length;
+      i += rootState.const.dumpChunkSize
+    ) {
+      const sampleIDChunk = shownSampleIDs.slice(
+        i,
+        i + rootState.const.dumpChunkSize
+      )
+      const entryDocs = await this.$dataFetcher
+        .fetchEntryDocs("sampleID", sampleIDChunk)
+        .catch((err) => {
+          throw err
+        })
+      entryDocs.forEach((doc) => {
+        const patientID = doc.patientID
+        const dataType = doc.dataType
+        Object.entries(doc).forEach(([key, val]) => {
+          if (
+            rootState.const.requiredFields
+              .map((item) => item.key)
+              .filter((key) => key !== "dataType")
+              .includes(key)
+          ) {
+            if (!(key in shownEntries[patientID])) {
+              shownEntries[patientID][key] = new Set()
+            }
+            shownEntries[patientID][key].add(val)
+          } else if (key === "dataType") {
+            shownEntries[patientID][dataType] = true
+          } else {
+            const dataTypeKey = dataType + "_" + key
+            if (!(dataTypeKey in shownEntries[patientID])) {
+              shownEntries[patientID][dataTypeKey] = new Set()
+            }
+            shownEntries[patientID][dataTypeKey].add(val)
+          }
+        })
+      })
+    }
+
     for (const patientID of Object.keys(shownEntries)) {
       const entry = shownEntries[patientID]
       for (const key of Object.keys(entry)) {
