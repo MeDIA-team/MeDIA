@@ -1,8 +1,10 @@
 <template>
   <v-app-bar app :color="color" absolute>
-    <v-toolbar-title class="headline white--text">
-      {{ text }}
-    </v-toolbar-title>
+    <nuxt-link to="/">
+      <v-toolbar-title class="headline white--text">
+        {{ text }}
+      </v-toolbar-title>
+    </nuxt-link>
     <v-spacer></v-spacer>
     <export-table-button
       :color="color"
