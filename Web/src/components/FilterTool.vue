@@ -170,7 +170,7 @@ export default {
       ],
       countCharts: [
         {
-          countKey: "entryCount",
+          countKey: "sampleCount",
           labelKey: "sampleID",
           marginTop: false,
           totalCountKey: "totalSampleIDCount"

@@ -13,7 +13,7 @@ export const state = () => ({
   shownEntries: [],
   processedSampleIDs: [],
   selectedSampleIDs: [],
-  entryCount: 0,
+  sampleCount: 0,
   patientCount: 0,
   sampleIDAndDataTypeTable: {},
   sampleIDAndPatientIDTable: {}
@@ -38,8 +38,8 @@ export const mutations = {
   setSelectedSampleIDs(state, payload) {
     state.selectedSampleIDs = payload
   },
-  setEntryCount(state, payload) {
-    state.entryCount = payload
+  setSampleCount(state, payload) {
+    state.sampleCount = payload
   },
   setPatientCount(state, payload) {
     state.patientCount = payload
@@ -89,17 +89,21 @@ export const actions = {
   async initialize({ commit }) {
     const queue = [
       {
-        func: this.$dataFetcher.fetchSampleIDTable,
-        arg: "dataType",
+        func: this.$dataFetcher.fetchTable,
+        fromField: "sampleID",
+        toField: "dataType",
         mutation: "setSampleIDAndDataTypeTable"
       },
       {
-        func: this.$dataFetcher.fetchSampleIDTable,
-        arg: "patientID",
+        func: this.$dataFetcher.fetchTable,
+        fromField: "sampleID",
+        toField: "patientID",
         mutation: "setSampleIDAndPatientIDTable"
       }
     ]
-    const promiseQueue = queue.map((item) => item.func(item.arg))
+    const promiseQueue = queue.map((item) =>
+      item.func(item.fromField, item.toField)
+    )
     const results = await Promise.all(promiseQueue).catch((err) => {
       throw err
     })
@@ -111,7 +115,7 @@ export const actions = {
   async updateEntries({ commit, state, rootState }) {
     commit("setLoading", true)
     const filteredAndSortedSampleIDs = await this.$dataFetcher
-      .fetchFilteredAndSortedSampleIDs(state.options, rootState.filter)
+      .fetchFilteredAndSortedIDs("sampleID", state.options, rootState.filter)
       .catch((err) => {
         throw err
       })
@@ -128,7 +132,7 @@ export const actions = {
     }
     commit("setProcessedSampleIDs", processedSampleIDs)
     commit("setSelectedSampleIDs", processedSampleIDs)
-    commit("setEntryCount", processedSampleIDs.length)
+    commit("setSampleCount", processedSampleIDs.length)
     const patientIDSet = new Set()
     processedSampleIDs.forEach((sampleID) => {
       state.sampleIDAndPatientIDTable[sampleID].forEach((patientID) => {
@@ -142,7 +146,7 @@ export const actions = {
       page * itemsPerPage
     )
     const entryDocs = await this.$dataFetcher
-      .fetchEntryDocs(shownSampleIDs)
+      .fetchEntryDocs("sampleID", shownSampleIDs)
       .catch((err) => {
         throw err
       })
@@ -171,10 +175,10 @@ export const actions = {
     commit("setShownEntries", Object.values(shownEntries))
     commit("setLoading", false)
   },
-  updateSelectedSampleIDs({ commit }, data) {
+  updateSelectedIDs({ commit }, payload) {
     commit(
       "setSelectedSampleIDs",
-      data.map((item) => item.sampleID)
+      payload.map((item) => item.sampleID)
     )
   }
 }

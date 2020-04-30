@@ -103,7 +103,8 @@ export default (ctx, inject) => {
     return res.hits.hits.map((doc) => doc._source.dataType) || []
   }
 
-  const fetchFilteredAndSortedSampleIDs = async (
+  const fetchFilteredAndSortedIDs = async (
+    idType,
     optionContext,
     filterState
   ) => {
@@ -117,7 +118,7 @@ export default (ctx, inject) => {
             track_total_hits: true,
             size: ctx.store.state.const.elasticsearchSize,
             collapse: {
-              field: "sampleID"
+              field: idType
             },
             sort,
             query: filter,
@@ -130,10 +131,10 @@ export default (ctx, inject) => {
         throw err
       })
 
-    return res.hits.hits.map((doc) => doc.fields.sampleID[0]) || []
+    return res.hits.hits.map((doc) => doc.fields[idType][0]) || []
   }
 
-  const fetchSampleIDTable = async (field) => {
+  const fetchTable = async (fromField, toField) => {
     const res = await ctx.$axios
       .$get("/api/data/_search", {
         params: {
@@ -144,13 +145,13 @@ export default (ctx, inject) => {
               match_all: {}
             },
             collapse: {
-              field: "sampleID",
+              field: fromField,
               inner_hits: {
-                name: field,
+                name: toField,
                 size: ctx.store.state.const.elasticsearchSize,
-                _source: [field],
+                _source: [toField],
                 collapse: {
-                  field
+                  field: toField
                 }
               }
             },
@@ -164,16 +165,16 @@ export default (ctx, inject) => {
       })
     const table = {}
     for (const item of res.hits.hits) {
-      const sampleID = item.fields.sampleID[0]
-      table[sampleID] = new Set(
-        item.inner_hits[field].hits.hits.map((item) => item._source[field])
+      const fromContent = item.fields[fromField][0]
+      table[fromContent] = new Set(
+        item.inner_hits[toField].hits.hits.map((item) => item._source[toField])
       )
     }
 
     return table
   }
 
-  const fetchEntryDocs = async (sampleIDs) => {
+  const fetchEntryDocs = async (idType, IDs) => {
     const res = await ctx.$axios
       .$get("/api/data/_search", {
         params: {
@@ -182,7 +183,7 @@ export default (ctx, inject) => {
             size: ctx.store.state.const.elasticsearchSize,
             query: {
               terms: {
-                sampleID: sampleIDs
+                [idType]: IDs
               }
             }
           }),
@@ -199,8 +200,8 @@ export default (ctx, inject) => {
   const functions = {
     fetchUniqueValues,
     fetchDataTypeFields,
-    fetchFilteredAndSortedSampleIDs,
-    fetchSampleIDTable,
+    fetchFilteredAndSortedIDs,
+    fetchTable,
     fetchEntryDocs
   }
 
@@ -276,17 +277,17 @@ const filterStateToQuery = (filterState) => {
 
   if (sampleIDs.length !== 0) {
     query.bool.filter.push({
-      terms: { sampleIDs }
+      terms: { sampleID: sampleIDs }
     })
   }
   if (patientIDs.length !== 0) {
     query.bool.filter.push({
-      terms: { patientIDs }
+      terms: { patientID: patientIDs }
     })
   }
   if (projectPatientIDs.length !== 0) {
     query.bool.filter.push({
-      terms: { projectPatientIDs }
+      terms: { projectPatientID: projectPatientIDs }
     })
   }
 

@@ -4,8 +4,16 @@
 
     <v-content>
       <v-container fluid>
-        <tool-card class="mb-6" :color="color" view-type="sample"></tool-card>
-        <data-table class="mb-6" :color="color" view-type="sample"></data-table>
+        <tool-card
+          :color="color"
+          :view-type="viewType"
+          class="mb-6"
+        ></tool-card>
+        <data-table
+          :color="color"
+          :view-type="viewType"
+          class="mb-6"
+        ></data-table>
       </v-container>
     </v-content>
 

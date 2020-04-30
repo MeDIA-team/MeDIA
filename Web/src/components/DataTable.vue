@@ -4,6 +4,7 @@
       v-model="selectedEntries"
       :footer-props="footerProps"
       :headers="headers"
+      :item-key="itemKey"
       :items="shownEntries"
       :loading="loading"
       :options.sync="options"
@@ -11,7 +12,6 @@
       calculate-widths
       class="elevation-2"
       disable-filtering
-      item-key="sampleID"
       multi-sort
       show-select
     >
@@ -81,7 +81,10 @@ export default {
       return this.$store.state[`${this.viewType}Entry`].shownEntries
     },
     entryCount() {
-      return this.$store.state[`${this.viewType}Entry`].entryCount
+      return this.$store.state[`${this.viewType}Entry`][`${this.viewType}Count`]
+    },
+    itemKey() {
+      return `${this.viewType}ID`
     },
     headers() {
       return this.$store.getters[`${this.viewType}Entry/headers`]
@@ -99,10 +102,7 @@ export default {
         return this.$store.getters[`${this.viewType}Entry/getSelectedEntries`]
       },
       set(value) {
-        this.$store.dispatch(
-          `${this.viewType}Entry/updateSelectedSampleIDs`,
-          value
-        )
+        this.$store.dispatch(`${this.viewType}Entry/updateSelectedIDs`, value)
       }
     },
     footerProps() {
