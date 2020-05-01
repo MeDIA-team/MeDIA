@@ -1,4 +1,7 @@
 cluster.name: "docker-cluster"
 network.host: 0.0.0.0
 http.max_content_length: 2147483647b
-thread_pool.write.queue_size: 100000
+search.max_buckets: 10000000
+thread_pool.bulk.queue_size: 10000000
+thread_pool.search.queue_size: 10000000
+thread_pool.write.queue_size: 10000000

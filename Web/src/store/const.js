@@ -42,6 +42,6 @@ export const state = () => ({
   },
   itemsPerPage: [10, 30, 100],
   snackbarTimeout: 1000,
-  elasticsearchSize: 100000,
+  elasticsearchSize: 10000000,
   dumpChunkSize: 100
 })
