@@ -6,7 +6,7 @@
     outlined
     @click="setInitialState"
   >
-    Set Initial State
+    Reset Selector
   </v-btn>
 </template>
 

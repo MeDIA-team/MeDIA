@@ -6,7 +6,7 @@
     outlined
     @click="setInitialState"
   >
-    Set Initial State
+    Reset Filter
   </v-btn>
 </template>
 
