@@ -16,7 +16,7 @@ export default {
     buttonText() {
       return this.$store.state.selector.openedTreeviewItems.length === 0
         ? "Expand Tree"
-        : "Contract Tree"
+        : "Collapse Tree"
     }
   },
   methods: {
