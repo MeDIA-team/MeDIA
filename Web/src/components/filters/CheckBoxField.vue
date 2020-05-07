@@ -7,9 +7,9 @@
       :color="color"
       :label="content"
       :value="content"
-      class="shrink my-0 mr-6 pt-0 align-center"
+      class="shrink my-0 mr-12 pt-0 align-center"
       hide-details
-      style="width: 200px; height: 52px;"
+      style="height: 52px;"
     ></v-checkbox>
   </div>
 </template>

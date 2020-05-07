@@ -74,8 +74,6 @@ export default {
   data() {
     return {
       intBottomRule: (value) => {
-        console.log("CALLED")
-        console.log(value)
         if (this.fieldType === "number" && value < 0) {
           return "Please enter a value greater than zero."
         }
