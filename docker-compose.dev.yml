@@ -43,7 +43,6 @@ services:
     volumes:
       - ${PWD}/Elasticsearch/data:/usr/share/elasticsearch/data:rw
       - ${PWD}/Elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
-      - ${PWD}/Elasticsearch/log4j2.properties:/usr/share/elasticsearch/config/log4j2.properties:ro
     restart: always
 
   web:

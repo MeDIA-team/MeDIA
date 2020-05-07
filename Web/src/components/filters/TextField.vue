@@ -3,6 +3,7 @@
     <v-text-field
       v-model="bottomModel"
       :color="color"
+      :rules="[intBottomRule(bottomModel)]"
       :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
       :type="fieldType"
       class="my-1"
@@ -19,6 +20,7 @@
     <v-text-field
       v-model="upperModel"
       :color="color"
+      :rules="[intBottomRule]"
       :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
       :type="fieldType"
       class="my-1"
@@ -67,6 +69,19 @@ export default {
       type: String,
       default: "",
       require: true
+    }
+  },
+  data() {
+    return {
+      intBottomRule: (value) => {
+        console.log("CALLED")
+        console.log(value)
+        if (this.fieldType === "number" && value < 0) {
+          return "Please enter a value greater than zero."
+        }
+
+        return true
+      }
     }
   },
   computed: {

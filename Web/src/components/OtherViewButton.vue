@@ -62,14 +62,6 @@ export default {
       transitionColor: null
     }
   },
-  methods: {
-    transitionToOther(event) {
-      this.transition = true
-      this.transitionTo = this.viewType === "sample" ? "Patient" : "Sample"
-      this.transitionColor =
-        this.viewType === "sample" ? "secondary" : "primary"
-    }
-  },
   computed: {
     buttonIcon() {
       return this.viewType === "sample"
@@ -81,6 +73,14 @@ export default {
     },
     buttonLink() {
       return this.viewType === "sample" ? "/patient" : "/sample"
+    }
+  },
+  methods: {
+    transitionToOther(event) {
+      this.transition = true
+      this.transitionTo = this.viewType === "sample" ? "Patient" : "Sample"
+      this.transitionColor =
+        this.viewType === "sample" ? "secondary" : "primary"
     }
   }
 }

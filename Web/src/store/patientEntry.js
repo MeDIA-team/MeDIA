@@ -179,7 +179,9 @@ export const actions = {
       for (const key of Object.keys(entry)) {
         const value = entry[key]
         if (typeof value === "object") {
-          const joinedValue = Array.from(value).join(", ")
+          const joinedValue = Array.from(value)
+            .sort()
+            .join(", ")
           shownEntries[patientID][key] = joinedValue
         }
       }
