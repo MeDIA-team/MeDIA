@@ -13,9 +13,11 @@ services:
       BROWSER_BASE_URL: "http://127.0.0.1:8888"
       ES_URL: "http://db:9200"
       NUXT_HOST: "0.0.0.0"
-      NUXT_PORT: "8080"
+      NUXT_PORT: "8888"
     networks:
       - default
+    ports:
+      - "0.0.0.0:8888:8888"
     volumes:
       - ${PWD}/Web:/opt/MeDIA_Web
       - /opt/MeDIA_Web/node_modules
@@ -44,21 +46,6 @@ services:
       - ${PWD}/Elasticsearch/data:/usr/share/elasticsearch/data:rw
       - ${PWD}/Elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
     restart: always
-
-  web:
-    image: nginx:1.17
-    container_name: media_web
-    environment:
-      SERVER_NAME: "127.0.0.1"
-      APP_URL: "http://app:8080"
-    networks:
-      - default
-    ports:
-      - "0.0.0.0:8888:80"
-    volumes:
-      - ${PWD}/Nginx/nginx.conf.tmpl:/etc/nginx/conf.d/nginx.conf.tmpl:ro
-    restart: always
-    command: /bin/sh -c "envsubst '$$SERVER_NAME$$APP_URL' < /etc/nginx/conf.d/nginx.conf.tmpl > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
 
 networks:
   default:
