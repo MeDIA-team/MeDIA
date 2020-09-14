@@ -2,7 +2,7 @@
 "use strict"
 const fs = require("fs")
 
-const PATIENT_NUM = 100
+const PATIENT_NUM = 5
 const SEX = ["Male", "Female"]
 const LIBRARY_PREP = ["Kazusa", "Riken"]
 const BODY_REGION = ["Back", "Thigh", "Arm", "Others"]
@@ -42,8 +42,8 @@ const randomChoice = (arr) => {
 
 const generatePatientID = (len) => {
   const maxLen = 8
-  const min = Math.pow(16, Math.min(len, maxLen) - 1)
-  const max = Math.pow(16, Math.min(len, maxLen)) - 1
+  const min = 16 ** (Math.min(len, maxLen) - 1)
+  const max = 16 ** Math.min(len, maxLen) - 1
   const n = Math.floor(Math.random() * (max - min + 1)) + min
   let r = n.toString(16)
   while (r.length < len) {
@@ -86,12 +86,14 @@ const generateData = (projects, dataTypes, patients) => {
           const entry = {
             projectID: project.id,
             projectName: project.name,
+            projectPatientID: `${project.id}_${patient.id}`,
             patientID: patient.id,
             sex: patient.sex,
             age: getAge(
               new Date(patient.birthDate),
               new Date(sample.samplingDate)
             ),
+            disease: `Disease ${randomChoice[("A", "B", "C", "D", "E")]}`,
             sampleID: sample.id,
             samplingDate: new Date(sample.samplingDate),
             dataType: dataTypes[dataTypeIndex],
