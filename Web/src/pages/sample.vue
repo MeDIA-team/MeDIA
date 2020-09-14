@@ -41,7 +41,7 @@ export default {
     HeaderBar,
     ToolCard
   },
-  async fetch({ store, error }) {
+  async middleware({ store }) {
     const initActionQueue = [
       "init/initialize",
       "filter/initialize",
@@ -49,12 +49,7 @@ export default {
       "sampleEntry/initialize"
     ]
     for (const initAction of initActionQueue) {
-      try {
-        await store.dispatch(initAction)
-      } catch (err) {
-        error(err)
-        return
-      }
+      await store.dispatch(initAction)
     }
   },
   data() {

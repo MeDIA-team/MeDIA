@@ -24,10 +24,10 @@ export const mutations = {
   setDataTypes(state, data) {
     state.dataTypes = data
   },
-  setPatinetIDs(state, data) {
+  setPatientIDs(state, data) {
     state.patientIDs = data
   },
-  setProjectPatinetIDs(state, data) {
+  setProjectPatientIDs(state, data) {
     state.projectPatientIDs = data
   },
   setSampleIDs(state, data) {
@@ -70,12 +70,12 @@ export const actions = {
       {
         func: this.$dataFetcher.fetchUniqueValues,
         arg: "patientID",
-        mutation: "setPatinetIDs"
+        mutation: "setPatientIDs"
       },
       {
         func: this.$dataFetcher.fetchUniqueValues,
         arg: "projectPatientID",
-        mutation: "setProjectPatinetIDs"
+        mutation: "setProjectPatientIDs"
       },
       {
         func: this.$dataFetcher.fetchUniqueValues,
