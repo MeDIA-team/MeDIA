@@ -1,7 +1,7 @@
 import colors from "vuetify/es5/util/colors"
 
 export default {
-  mode: "spa",
+  ssr: false,
   head: {
     titleTemplate: "%s - " + process.env.npm_package_name,
     title: process.env.npm_package_name || "",
