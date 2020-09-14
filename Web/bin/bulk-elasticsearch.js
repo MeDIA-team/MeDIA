@@ -8,13 +8,9 @@ const client = new Client({
 const bulk = async (filePaths) => {
   console.log("Start bulk to elasticsearch")
   // File exists check, Validation を実行
-  await require("./validate-data-json")(filePaths).catch((err) => {
-    throw err
-  })
+  await require("./validate-data-json")(filePaths)
   // Connection check, Create index を実行
-  await require("./create-index")().catch((err) => {
-    throw err
-  })
+  await require("./create-index")()
 
   const errorFileList = []
   for (const file of filePaths) {
