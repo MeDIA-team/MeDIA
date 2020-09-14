@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 "use strict"
+// eslint-disable-next-line import/order
 const Validator = require("jsonschema").Validator
 const v = new Validator()
 
@@ -12,43 +13,33 @@ const validate = async (filePaths) => {
   const errorFileList = []
   for (const file of filePaths) {
     console.log(`Validating... ${file}`)
-    let data
-    try {
-      data = await require("fs").promises.readFile(file, "utf8")
-    } catch (err) {
-      errorFileList.push({
-        file: file,
-        errors: err
+    const result = await require("fs")
+      .promises.readFile(file, "utf8")
+      .then(async (data) => await JSON.parse(data))
+      .then((instance) => v.validate(instance, SCHEMA))
+      .catch((error) => {
+        errorFileList.push({
+          file,
+          error
+        })
       })
-      continue
-    }
-    let instance
-    try {
-      instance = JSON.parse(data)
-    } catch (err) {
+    if (!result.valid) {
       errorFileList.push({
-        file: file,
-        errors: err
-      })
-      continue
-    }
-    const result = v.validate(instance, SCHEMA)
-    if (result.errors.length !== 0) {
-      errorFileList.push({
-        file: file,
-        errors: result.errors
+        file,
+        error: result.errors
       })
     }
   }
+
   if (errorFileList.length === 0) {
     console.log("OK!!")
     console.log("Finish to validate the data json file.")
   } else {
     console.error("ERROR!!")
-    errorFileList.forEach((item) => {
-      console.error(`Error file: ${item.file}`)
-      console.error(JSON.stringify(item.errors, null, 2))
-    })
+    for (const errorFile of errorFileList) {
+      console.error(`Error file: ${errorFile.file}`)
+      console.error(errorFile.error)
+    }
     throw new Error("Validation Failed.")
   }
 }
@@ -60,10 +51,9 @@ const main = async () => {
     process.exit(1)
   }
   await validate(process.argv.slice(2)).catch((err) => {
-    JSON.stringify(err, null, 2)
+    console.error(err)
     process.exit(1)
   })
-  process.exit(0)
 }
 
 if (require.main === module) {

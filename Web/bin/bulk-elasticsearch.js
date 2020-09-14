@@ -19,35 +19,38 @@ const bulk = async (filePaths) => {
   const errorFileList = []
   for (const file of filePaths) {
     console.log(`Bulking... ${file}`)
-    const dataBuffer = require("fs").readFileSync(file, "utf8")
-    const data = JSON.parse(dataBuffer)
-    const body = []
-    data.forEach((ele) => {
-      body.push({ create: { _index: "data" } })
-      body.push(ele)
-    })
-    let res
-    try {
-      res = await client.bulk({ refresh: true, body })
-    } catch (err) {
-      errorFileList.push({
-        file,
-        errors: err
+    const res = await require("fs")
+      .promises.readFile(file, "utf8")
+      .then(async (dataBuffer) => await JSON.parse(dataBuffer))
+      .then(async (data) => {
+        const body = []
+        data.forEach((ele) => {
+          body.push({ create: { _index: "data" } })
+          body.push(ele)
+        })
+        return await client.bulk({ refresh: true, body })
       })
-      continue
-    }
-    if (res.body.errors) {
-      const errors = res.body.items.map((item) => {
-        if (item.create.status === 400) {
+      .catch((error) => {
+        errorFileList.push({
+          file,
+          error
+        })
+        return false
+      })
+
+    if (typeof res !== "undefined" && res.body.errors) {
+      const error = res.body.items.map((item) => {
+        if (item.create.status !== 200) {
           return item.create.error
         }
       })
       errorFileList.push({
         file,
-        errors
+        error
       })
     }
   }
+
   if (errorFileList.length === 0) {
     console.log("OK!!")
     await require("./update-index-fielddata")().catch((err) => {
@@ -56,10 +59,10 @@ const bulk = async (filePaths) => {
     console.log("Finish bulk to elasticsearch.")
   } else {
     console.error("ERROR!!")
-    errorFileList.forEach((item) => {
-      console.error(`Error file: ${item.file}`)
-      console.error(JSON.stringify(item.errors, null, 2))
-    })
+    for (const errorFile of errorFileList) {
+      console.error(`Error file: ${errorFile.file}`)
+      console.error(errorFile.error)
+    }
     throw new Error("Bulking Failed.")
   }
 }
@@ -71,7 +74,7 @@ const main = async () => {
     process.exit(1)
   }
   await bulk(process.argv.slice(2)).catch((err) => {
-    JSON.stringify(err, null, 2)
+    console.error(err)
     process.exit(1)
   })
 }

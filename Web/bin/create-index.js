@@ -74,10 +74,9 @@ const createIndex = async () => {
 
 const main = async () => {
   await createIndex().catch((err) => {
-    JSON.stringify(err, null, 2)
+    console.error(err)
     process.exit(1)
   })
-  process.exit(0)
 }
 
 if (require.main === module) {

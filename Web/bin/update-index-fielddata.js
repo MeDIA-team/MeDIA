@@ -46,7 +46,7 @@ const updateIndexFielddata = async () => {
   }
 
   if (Object.keys(query.properties).length !== 0) {
-    const res = await axios
+    await axios
       .put("/data/_mapping", JSON.parse(JSON.stringify(query)))
       .catch((err) => {
         throw err
@@ -58,10 +58,9 @@ const updateIndexFielddata = async () => {
 
 const main = async () => {
   await updateIndexFielddata().catch((err) => {
-    JSON.stringify(err, null, 2)
+    console.error(err)
     process.exit(1)
   })
-  process.exit(0)
 }
 
 if (require.main === module) {
