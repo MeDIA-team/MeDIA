@@ -44,6 +44,8 @@ services:
         hard: 65536
     networks:
       - default
+    ports:
+      - 9200:9200
     volumes:
       - ${PWD}/Elasticsearch/data:/usr/share/elasticsearch/data:rw
       - ${PWD}/Elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
