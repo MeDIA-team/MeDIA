@@ -1,0 +1,70 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "patientID": {
+        "type": "string"
+      },
+      "projects": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "projectID": {
+              "type": "string"
+            },
+            "projectName": {
+              "type": "string"
+            }
+          },
+          "required": ["projectID", "projectName"]
+        }
+      },
+      "projectPatientIDs": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "samples": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "sampleID": {
+              "type": "string"
+            },
+            "samplingDate": {
+              "type": "string"
+            },
+            "dataTypes": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "sex": {
+              "type": "string"
+            },
+            "age": {
+              "type": "integer"
+            },
+            "disease": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "sampleID",
+            "samplingDate",
+            "dataTypes",
+            "sex",
+            "age",
+            "disease"
+          ]
+        }
+      }
+    },
+    "required": ["patientID", "projects", "projectPatientIDs", "samples"]
+  }
+}
