@@ -1,0 +1,30 @@
+{
+  "name": "media-app",
+  "version": "1.0.1",
+  "description": "Web application for microflora information and clinical multimodal data",
+  "main": "index.js",
+  "repository": "https://github.com/MeDIA-team/MeDIA",
+  "author": "RIKEN",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt-ts",
+    "build": "nuxt-ts build",
+    "generate": "nuxt-ts generate",
+    "start": "nuxt-ts start",
+    "lint": "eslint --ext .ts,.js,.vue ."
+  },
+  "dependencies": {
+    "@nuxt/typescript-runtime": "^2.0.0",
+    "nuxt": "^2.14.11"
+  },
+  "devDependencies": {
+    "@nuxt/types": "^2.14.11",
+    "@nuxt/typescript-build": "^2.0.3",
+    "@nuxtjs/eslint-config-typescript": "^5.0.0",
+    "eslint": "^7.15.0",
+    "eslint-config-prettier": "^7.0.0",
+    "eslint-plugin-nuxt": "^2.0.0",
+    "prettier": "^2.2.1"
+  }
+}

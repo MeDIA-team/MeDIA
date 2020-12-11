@@ -1,4 +1,6 @@
+.dockerignore
 .nuxt
 data
+Dockerfile
 node_modules
 tests/test-data-*
