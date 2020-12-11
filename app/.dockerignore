@@ -1,0 +1,4 @@
+.nuxt
+data
+node_modules
+tests/test-data-*
