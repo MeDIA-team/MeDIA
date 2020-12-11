@@ -6,11 +6,12 @@ module.exports = {
   },
   extends: [
     '@nuxtjs/eslint-config-typescript',
+    'prettier/vue',
+    'prettier',
     'plugin:@typescript-eslint/recommended',
     'plugin:vue/recommended',
     'plugin:nuxt/recommended',
     'plugin:prettier/recommended',
-    'prettier',
   ],
   rules: {
     'no-console': 0,
