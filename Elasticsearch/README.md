@@ -1,9 +1,9 @@
 # Elasticsearch
 
 - RESTful な API を提供する分散型検索/分析エンジン
-- データを格納する DB としても動作する
+- データを格納する DB として動作
 
-Elasticsearch Container Image として `docker.elastic.co/elasticsearch/elasticsearch:7.6.1` を使っている。
+Elasticsearch Container Image として `docker.elastic.co/elasticsearch/elasticsearch:7.10.0` を使っている。
 
 ## Settings
 
@@ -13,11 +13,9 @@ Elasticsearch Container Image として `docker.elastic.co/elasticsearch/elastic
 
 ```yaml
 environment:
-  bootstrap.memory_lock: "true"
   discovery.type: "single-node"
   ELASTIC_PASSWORD: "media_elasticsearch_passwd"
   ES_JAVA_OPTS: "-Xms1g -Xmx16g -Xlog:disable -Xlog:all=warning:stderr:utctime,level,tags -Xlog:gc=warning:stderr:utctime"
-  TAKE_FILE_OWNERSHIP: "true"
 ```
 
 また、 `./elasticsearch.yml` や `./log4j2.properties` においてもいくつかの設定を行い、Container 内の `/usr/share/elasticsearch/config` 内に mount している。
@@ -32,7 +30,7 @@ ports:
   - 9300:9300
 ```
 
-または、docker-compose において、それぞれの Container 間で同一の Docker Network を使用しているため、MeDIA Web Container から `db:9200` で REST API リクエストを送ることが出来る。
+または、docker-compose において、それぞれの Container 間で同一の Docker Network を使用しているため、MeDIA app Container から `db:9200` で REST API リクエストを送ることが出来る。
 
 ```yaml
 $ docker-compose exec app curl http://db:9200/

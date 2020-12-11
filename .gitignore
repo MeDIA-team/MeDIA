@@ -1,4 +1,4 @@
-### https://raw.github.com/github/gitignore/55df35ee63aef4a6f859559af980c9fb87bee1a1/Global/Windows.gitignore
+### https://raw.github.com/github/gitignore/218a941be92679ce67d0484547e3e142b2f5f6f0/Global/Windows.gitignore
 
 # Windows thumbnail cache files
 Thumbs.db
@@ -26,7 +26,7 @@ $RECYCLE.BIN/
 *.lnk
 
 
-### https://raw.github.com/github/gitignore/55df35ee63aef4a6f859559af980c9fb87bee1a1/Global/macOS.gitignore
+### https://raw.github.com/github/gitignore/218a941be92679ce67d0484547e3e142b2f5f6f0/Global/macOS.gitignore
 
 # General
 .DS_Store
@@ -57,7 +57,7 @@ Temporary Items
 .apdisk
 
 
-### https://raw.github.com/github/gitignore/55df35ee63aef4a6f859559af980c9fb87bee1a1/Global/Linux.gitignore
+### https://raw.github.com/github/gitignore/218a941be92679ce67d0484547e3e142b2f5f6f0/Global/Linux.gitignore
 
 *~
 
@@ -74,13 +74,16 @@ Temporary Items
 .nfs*
 
 
-### https://raw.github.com/github/gitignore/55df35ee63aef4a6f859559af980c9fb87bee1a1/Global/VisualStudioCode.gitignore
+### https://raw.github.com/github/gitignore/218a941be92679ce67d0484547e3e142b2f5f6f0/Global/VisualStudioCode.gitignore
 
 .vscode/*
 *.code-workspace
 
+# Local History for Visual Studio Code
+.history/
 
-### https://raw.github.com/github/gitignore/55df35ee63aef4a6f859559af980c9fb87bee1a1/Node.gitignore
+
+### https://raw.github.com/github/gitignore/218a941be92679ce67d0484547e3e142b2f5f6f0/Node.gitignore
 
 # Logs
 logs
@@ -125,8 +128,8 @@ build/Release
 node_modules/
 jspm_packages/
 
-# TypeScript v1 declaration files
-typings/
+# Snowpack dependency directory (https://snowpack.dev/)
+web_modules/
 
 # TypeScript cache
 *.tsbuildinfo
@@ -158,9 +161,11 @@ typings/
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
+.parcel-cache
 
 # Next.js build output
 .next
+out
 
 # Nuxt.js build / generate output
 .nuxt
@@ -190,8 +195,15 @@ dist
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
 
-### https://raw.github.com/github/gitignore/55df35ee63aef4a6f859559af980c9fb87bee1a1/community/JavaScript/Vue.gitignore
+
+### https://raw.github.com/github/gitignore/218a941be92679ce67d0484547e3e142b2f5f6f0/community/JavaScript/Vue.gitignore
 
 # gitignore template for Vue.js projects
 #
@@ -203,5 +215,7 @@ docs/_book
 # TODO: where does this rule come from?
 test/
 
+
 Elasticsearch/data/*
-Web/data/*
+app/data/*
+app/tests/test-data-*

@@ -4,13 +4,11 @@
 
 コンポーネントとして、
 
-- MeDIA Web
+- MeDIA App
   - データの閲覧/出力を行う Web アプリケーション
 - Elasticsearch
   - RESTful な API を提供する分散型検索/分析エンジン
-  - データを格納する DB としても動作する
-- Nginx
-  - Web サーバ
+  - データを格納する DB として使用する
 
 からなる。
 
@@ -40,6 +38,5 @@ $ sysctl -p
 
 より詳細なドキュメントとして以下を参照する。
 
-- [MeDIA Web](https://github.com/suecharo/MeDIA/blob/develop/Web/README.md)
+- [MeDIA App](https://github.com/suecharo/MeDIA/blob/develop/app/README.md)
 - [Elasticsearch](https://github.com/suecharo/MeDIA/blob/develop/Elasticsearch/README.md)
-- [Nginx](https://github.com/suecharo/MeDIA/blob/develop/Nginx/README.md)

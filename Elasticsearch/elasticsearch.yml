@@ -1,6 +1,8 @@
 cluster.name: "docker-cluster"
+bootstrap.memory_lock: true
 network.host: 0.0.0.0
-http.max_content_length: 2147483647b
+gateway.auto_import_dangling_indices: true
+http.max_content_length: "2000mb"
+http.cors.enabled: true
+http.cors.allow-origin: "*"
 search.max_buckets: 10000000
-thread_pool.search.queue_size: 10000000
-thread_pool.write.queue_size: 10000000

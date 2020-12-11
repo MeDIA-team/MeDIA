@@ -1,6 +1,6 @@
-# MeDIA Web
+# MeDIA App
 
-- データの閲覧/出力を行う Web アプリケーション
+データの閲覧/出力を行うアプリケーション
 
 ## 使い方
 
@@ -54,16 +54,16 @@ environment:
 - `BASIC_ENABLED`
   - Basic 認証をかけるかどうか (true or false)
 - `BROWSER_BASE_URL`
-  - クライアントから見た際の、MeDIA Web の URL
+  - クライアントから見た際の、MeDIA App の URL
   - 基本的に nginx へと入るための URL を記述すればよい
 - `ES_URL`
   - Elasticsearch の URL
   - docker network で設定されているため、基本的に変更する必要がない
 - `NUXT_HOST`
-  - MeDIA Web を起動する Host
+  - MeDIA App を起動する Host
   - docker network で設定されているため、基本的に変更する必要がない
 - `NUXT_PORT`
-  - MeDIA Web を起動する Port
+  - MeDIA App を起動する Port
   - docker network で設定されているため、基本的に変更する必要がない
 
 ## JSON データの読み込み
@@ -83,10 +83,10 @@ $ npm run validate -- /your/json/file/path
 $ ls data
 your.json
 
-$ docker-compose exec app npm run validate -- /opt/MeDIA_Web/data/your.json
+$ docker-compose exec app npm run validate -- /app/data/your.json
 ```
 
-で Validate 処理が行える。ここで注意することとして、 `/opt/MeDIA_Web` に Host Machine の Web Dir が mount されていることである。
+で Validate 処理が行える。ここで注意することとして、 `/app` に Host Machine の app Dir が mount されていることである。
 
 ---
 
@@ -96,9 +96,9 @@ Dummy Data を用いて Test を行った際の、正常系と異常系の出力
 
 ```bash
 # 正常系
-$ docker-compose exec app npm run validate -- /opt/MeDIA_Web/tests/dummy-data.json
+$ docker-compose exec app npm run validate -- /app/tests/dummy-data.json
 
-> media-web@1.0.0 validate /opt/MeDIA_Web
+> media-app@1.0.0 validate /app
 > ./bin/validate-data-json.js "./tests/dummy-data.json"
 
 Start to validate the data json file.
@@ -106,9 +106,9 @@ OK!!
 Finish to validate the data json file.
 
 # 異常系 (一箇所、projectID を抜いている)
-docker-compose exec app npm run validate -- /opt/MeDIA_Web/tests/dummy-data.json
+docker-compose exec app npm run validate -- /app/tests/dummy-data.json
 
-> media-web@1.0.0 validate /opt/MeDIA_Web
+> media-app@1.0.0 validate /app
 > ./bin/validate-data-json.js "./tests/dummy-data.json"
 
 Start to validate the data json file.
@@ -151,17 +151,17 @@ $ npm run bulk -- /your/json/file/path
 $ ls data
 your.json
 
-$ docker-compose exec app npm run bulk -- /opt/MeDIA_Web/data/your.json
+$ docker-compose exec app npm run bulk -- /app/data/your.json
 ```
 
-で bulk 処理が行える。ここで注意することとして、 `/opt/MeDIA_Web` に Host Machine の Web Dir が mount されていることである。
+で bulk 処理が行える。ここで注意することとして、 `/app` に Host Machine の app Dir が mount されていることである。
 
 ---
 
 Dummy Data として、`./tests/dummy-data.json` が用意してある。そのため、Dummy Data を使って読み込む場合は、
 
 ```bash
-$ docker-compose exec app npm run bulk -- /opt/MeDIA_Web/tests/dummy-data.json
+$ docker-compose exec app npm run bulk -- /app/tests/dummy-data.json
 ```
 
 を実行する。
