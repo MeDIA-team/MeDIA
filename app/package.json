@@ -12,7 +12,8 @@
     "build": "nuxt-ts build",
     "generate": "nuxt-ts generate",
     "start": "nuxt-ts start",
-    "lint": "eslint --ext .ts,.js,.vue ."
+    "lint": "eslint --ext .ts,.js,.vue .",
+    "test:generateTestData": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" ./tests/generate-test-data.ts"
   },
   "dependencies": {
     "@nuxt/typescript-runtime": "^2.0.0",
@@ -23,6 +24,7 @@
     "@nuxt/typescript-build": "^2.0.3",
     "@nuxtjs/eslint-config-typescript": "^5.0.0",
     "@nuxtjs/vuetify": "^1.11.2",
+    "dayjs": "^1.9.7",
     "eslint": "^7.15.0",
     "eslint-config-prettier": "^7.0.0",
     "eslint-plugin-nuxt": "^2.0.0",

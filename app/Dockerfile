@@ -4,20 +4,20 @@ ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /usr/local/bi
 RUN chmod +x /usr/local/bin/tini
 
 RUN apt update && \
-    apt install -y --no-install-recommends \
-    build-essential \
-    curl \
-    python-dev \
-    wait-for-it && \
-    apt clean &&\
-    rm -rf /var/lib/apt/lists/*
+  apt install -y --no-install-recommends \
+  build-essential \
+  curl \
+  python-dev \
+  wait-for-it && \
+  apt clean &&\
+  rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# COPY package*.json yarn.lock ./
-# RUN yarn install
+COPY package*.json yarn.lock ./
+RUN yarn install
 
-# COPY . .
+COPY . .
 
 # RUN yarn build
 
@@ -26,5 +26,4 @@ ENV NUXT_PORT 8080
 EXPOSE 8080
 
 ENTRYPOINT ["tini", "--"]
-# CMD ["yarn", "start"]
-CMD ["sleep", "infinity"]
+CMD ["yarn", "start"]
