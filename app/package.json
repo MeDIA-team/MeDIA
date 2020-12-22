@@ -13,13 +13,21 @@
     "generate": "nuxt-ts generate",
     "start": "nuxt-ts start",
     "lint": "eslint --ext .ts,.js,.vue .",
-    "test:generateTestData": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\" ./tests/generate-test-data.ts"
+    "exec-ts-node": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\"",
+    "bulk:entry": "yarn exec-ts-node ./command/es-bulk-entry.ts",
+    "bulk:patient": "yarn exec-ts-node ./command/es-bulk-patient.ts",
+    "bulk:sample": "yarn exec-ts-node ./command/es-bulk-sample.ts",
+    "test:generateTestData": "yarn exec-ts-node ./tests/generate-test-data.ts",
+    "test:bulk:entry": "yarn bulk:entry ./tests/test-data-entries-1.json ./tests/test-data-entries-2.json",
+    "test:bulk:patient": "yarn bulk:patient ./tests/test-data-patients-1.json ./tests/test-data-patients-2.json",
+    "test:bulk:sample": "yarn bulk:sample ./tests/test-data-samples-1.json ./tests/test-data-samples-2.json"
   },
   "dependencies": {
     "@nuxt/typescript-runtime": "^2.0.0",
     "nuxt": "^2.14.11"
   },
   "devDependencies": {
+    "@elastic/elasticsearch": "^7.10.0",
     "@nuxt/types": "^2.14.11",
     "@nuxt/typescript-build": "^2.0.3",
     "@nuxtjs/eslint-config-typescript": "^5.0.0",
