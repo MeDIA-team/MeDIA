@@ -9,11 +9,29 @@ import {
   logStdout,
   logStderr,
   ValidationError,
-} from './es-bulk'
+} from './esBulk'
 
 const indexMappings = {
   properties: {
+    sampleID: {
+      type: 'keyword',
+    },
+    samplingDate: {
+      type: 'date',
+    },
+    dataTypes: {
+      type: 'keyword',
+    },
     patientID: {
+      type: 'keyword',
+    },
+    age: {
+      type: 'short',
+    },
+    sex: {
+      type: 'keyword',
+    },
+    disease: {
       type: 'keyword',
     },
     projects: {
@@ -30,34 +48,11 @@ const indexMappings = {
     projectPatientIDs: {
       type: 'keyword',
     },
-    samples: {
-      type: 'nested',
-      properties: {
-        sampleID: {
-          type: 'keyword',
-        },
-        samplingDate: {
-          type: 'date',
-        },
-        dataTypes: {
-          type: 'keyword',
-        },
-        age: {
-          type: 'short',
-        },
-        sex: {
-          type: 'keyword',
-        },
-        disease: {
-          type: 'keyword',
-        },
-      },
-    },
   },
 }
 
 const schemaFilePath = path.resolve(
-  path.dirname(__filename) + '/../es_schema/patient.json'
+  path.dirname(__filename) + '/../es_schema/sample.json'
 )
 
 const main = async (): Promise<void> => {
@@ -66,8 +61,8 @@ const main = async (): Promise<void> => {
     const filePaths: string[] = parseArgs()
     await validateFiles(filePaths, schemaFilePath)
     const esClient: Client = generateEsClient()
-    await createDataEsIndex(esClient, indexMappings)
-    await bulkData(esClient, filePaths, 'patient')
+    await createDataEsIndex(esClient, indexMappings, 'sample')
+    await bulkData(esClient, filePaths, 'sample')
   } catch (e) {
     if (e instanceof ValidationError) {
       logStderr(e.originalError)

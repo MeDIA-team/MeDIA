@@ -93,12 +93,16 @@ const INDEX_SETTINGS = {
   max_result_window: 10000000,
 }
 
-export const createDataEsIndex = async (esClient: Client, mappings: any) => {
-  const res = await esClient.indices.exists({ index: 'data' })
+export const createDataEsIndex = async (
+  esClient: Client,
+  mappings: any,
+  index: string
+) => {
+  const res = await esClient.indices.exists({ index })
   if (!res.body) {
     logStdout('Start to create ES index.')
     await esClient.indices.create({
-      index: 'data',
+      index,
       body: { settings: INDEX_SETTINGS, mappings },
     })
     logStdout('Finish to create ES index.')

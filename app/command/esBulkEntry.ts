@@ -9,7 +9,7 @@ import {
   logStdout,
   logStderr,
   ValidationError,
-} from './es-bulk'
+} from './esBulk'
 
 const indexMappings = {
   properties: {
@@ -56,7 +56,7 @@ const main = async (): Promise<void> => {
     const filePaths: string[] = parseArgs()
     await validateFiles(filePaths, schemaFilePath)
     const esClient: Client = generateEsClient()
-    await createDataEsIndex(esClient, indexMappings)
+    await createDataEsIndex(esClient, indexMappings, 'entry')
     await bulkData(esClient, filePaths, 'entry')
   } catch (e) {
     if (e instanceof ValidationError) {

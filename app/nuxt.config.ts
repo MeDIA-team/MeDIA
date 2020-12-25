@@ -28,7 +28,7 @@ const config: NuxtConfig = {
     'nuxt-clipboard2',
   ],
   axios: {
-    browserBaseURL: process.env.BROWSER_BASE_URL || null,
+    browserBaseURL: process.env.BROWSER_BASE_URL || undefined,
     headers: {
       get: {
         Authorization:

@@ -5,4 +5,6 @@ gateway.auto_import_dangling_indices: true
 http.max_content_length: "2000mb"
 http.cors.enabled: true
 http.cors.allow-origin: "*"
+http.cors.allow-credentials: true
+http.cors.allow-headers: Authorization, X-Requested-With, X-Auth-Token, Content-Type, Content-Length
 search.max_buckets: 10000000

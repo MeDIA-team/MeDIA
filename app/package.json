@@ -12,10 +12,10 @@
     "start": "nuxt-ts start",
     "lint": "eslint --ext .ts,.js,.vue .",
     "exec-ts-node": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\"",
-    "bulk:entry": "yarn exec-ts-node ./command/es-bulk-entry.ts",
-    "bulk:patient": "yarn exec-ts-node ./command/es-bulk-patient.ts",
-    "bulk:sample": "yarn exec-ts-node ./command/es-bulk-sample.ts",
-    "test:generateTestData": "yarn exec-ts-node ./tests/generate-test-data.ts",
+    "bulk:entry": "yarn exec-ts-node ./command/esBulkEntry.ts",
+    "bulk:patient": "yarn exec-ts-node ./command/esBulkPatient.ts",
+    "bulk:sample": "yarn exec-ts-node ./command/esBulkSample.ts",
+    "test:generateTestData": "yarn exec-ts-node ./tests/generateTestData.ts",
     "test:bulk:entry": "yarn bulk:entry ./tests/test-data-entries-1.json ./tests/test-data-entries-2.json",
     "test:bulk:patient": "yarn bulk:patient ./tests/test-data-patients-1.json ./tests/test-data-patients-2.json",
     "test:bulk:sample": "yarn bulk:sample ./tests/test-data-samples-1.json ./tests/test-data-samples-2.json"
@@ -33,6 +33,7 @@
     "@nuxtjs/eslint-config-typescript": "^5.0.0",
     "@nuxtjs/proxy": "^2.1.0",
     "@nuxtjs/vuetify": "^1.11.2",
+    "chart.js": "^2.9.4",
     "dayjs": "^1.9.7",
     "eslint": "^7.15.0",
     "eslint-config-prettier": "^7.0.0",
@@ -40,6 +41,7 @@
     "eslint-plugin-prettier": "^3.3.0",
     "nuxt-basic-auth-module": "^1.3.3",
     "nuxt-clipboard2": "^0.2.1",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "vue-chartjs": "^3.5.1"
   }
 }

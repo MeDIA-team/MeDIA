@@ -2,12 +2,10 @@
   <v-app>
     <header-bar view-type="patient" />
     <v-main class="background">
-      <v-content>
-        <v-container fluid>
-          <!-- <tool-card class="mb-6" view-type="patient" /> -->
-          <!-- <data-table class="mb-6" view-type="patient" /> -->
-        </v-container>
-      </v-content>
+      <v-container fluid>
+        <tool-card class="mb-6" view-type="patient" />
+        <!-- <data-table class="mb-6" view-type="patient" /> -->
+      </v-container>
     </v-main>
     <footer-bar view-type="patient" />
   </v-app>
@@ -17,7 +15,7 @@
 // import DataTable from '@/components/DataTable.vue'
 import FooterBar from '@/components/FooterBar.vue'
 import HeaderBar from '@/components/HeaderBar.vue'
-// import ToolCard from '@/components/ToolCard.vue'
+import ToolCard from '@/components/ToolCard.vue'
 import Vue from 'vue'
 
 export default Vue.extend({
@@ -25,7 +23,14 @@ export default Vue.extend({
     // DataTable,
     FooterBar,
     HeaderBar,
-    // ToolCard,
+    ToolCard,
+  },
+
+  async middleware({ store, $axios }) {
+    const initActionQueue = ['filter/initialize', 'selector/initialize']
+    for (const initAction of initActionQueue) {
+      await store.dispatch(initAction, { viewType: 'patient', axios: $axios })
+    }
   },
 })
 </script>
