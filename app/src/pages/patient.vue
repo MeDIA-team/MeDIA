@@ -4,7 +4,7 @@
     <v-main class="background">
       <v-container fluid>
         <tool-card class="mb-6" view-type="patient" />
-        <!-- <data-table class="mb-6" view-type="patient" /> -->
+        <data-table class="mb-6" view-type="patient" />
       </v-container>
     </v-main>
     <footer-bar view-type="patient" />
@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-// import DataTable from '@/components/DataTable.vue'
+import DataTable from '@/components/DataTable.vue'
 import FooterBar from '@/components/FooterBar.vue'
 import HeaderBar from '@/components/HeaderBar.vue'
 import ToolCard from '@/components/ToolCard.vue'
@@ -20,7 +20,7 @@ import Vue from 'vue'
 
 export default Vue.extend({
   components: {
-    // DataTable,
+    DataTable,
     FooterBar,
     HeaderBar,
     ToolCard,
