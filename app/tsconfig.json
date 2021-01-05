@@ -8,12 +8,12 @@
     "noEmit": true,
     "strict": true,
     "moduleResolution": "node",
-    "baseUrl": "./",
+    "baseUrl": ".",
     "paths": {
-      "~/*": ["./src/*"],
-      "@/*": ["./src/*"]
+      "~/*": ["src/*"],
+      "@/*": ["src/*"]
     },
-    "types": ["@types/node", "@nuxt/types"],
+    "typeRoots": ["./node_modules/@types", "./@nuxt/types", "./src/types"],
     "esModuleInterop": true
   },
   "exclude": ["node_modules", ".nuxt", "dist"]
