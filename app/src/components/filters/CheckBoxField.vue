@@ -60,14 +60,6 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       return this.viewType === 'sample' ? 'primary' : 'secondary'
     },
     contents() {
-      console.log('333333333333')
-      console.log(this.viewType)
-      console.log(
-        (this.$store as TypedStore).state.filter[
-          this.viewType as 'sample' | 'patient'
-        ][this.contentKey as 'projects' | 'sexes' | 'diseases']
-      )
-
       return (this.$store as TypedStore).state.filter[
         this.viewType as 'sample' | 'patient'
       ][this.contentKey as 'projects' | 'sexes' | 'diseases'].contents
