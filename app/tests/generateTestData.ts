@@ -129,7 +129,10 @@ type Patient = {
   samples: {
     sampleID: string
     samplingDate: string
-    dataTypes: string[]
+    dataTypes: {
+      name: string
+      [K: string]: string | number
+    }[]
     sex: string
     age: number
     disease: string
@@ -139,7 +142,10 @@ type Patient = {
 type Sample = {
   sampleID: string
   samplingDate: string
-  dataTypes: string[]
+  dataTypes: {
+    name: string
+    [K: string]: string | number
+  }[]
   patientID: string
   sex: string
   age: number
@@ -212,26 +218,50 @@ const generateTestData = (
           entriesData.push(entry)
         }
 
-        patientData.samples.push({
+        const ps = {
           sampleID: sampleId,
           samplingDate: dayjs(samplingDate).format('YYYY-MM-DD'),
-          dataTypes: dataTypeIndices.map((ind) => DATA_TYPE[ind]),
+          dataTypes: [] as {
+            name: string
+            [K: string]: string | number
+          }[],
           sex: patient.sex,
           age: getAge(patient.birthDate, samplingDate),
           disease: patient.disease,
-        })
-
-        samplesData.push({
+        }
+        const s: Sample = {
           sampleID: sampleId,
           samplingDate: dayjs(samplingDate).format('YYYY-MM-DD'),
-          dataTypes: dataTypeIndices.map((ind) => DATA_TYPE[ind]),
+          dataTypes: [] as {
+            name: string
+            [K: string]: string | number
+          }[],
           patientID: patient.patientID,
           sex: patient.sex,
           age: getAge(patient.birthDate, samplingDate),
           disease: patient.disease,
           projects: PROJECTS,
           projectPatientIDs,
-        })
+        }
+
+        for (const ind of dataTypeIndices) {
+          const d: {
+            name: string
+            [K: string]: string | number
+          } = {
+            name: DATA_TYPE[ind],
+          }
+          if (DATA_TYPE[ind] === 'RNAseq') {
+            d['Library Prep'] = randomChoice(LIBRARY_PREP)
+          } else if (DATA_TYPE[ind] === 'Skin image') {
+            d['Body Region'] = randomChoice(BODY_REGION)
+          }
+          ps.dataTypes.push(d)
+          s.dataTypes.push(d)
+        }
+
+        patientData.samples.push(ps)
+        samplesData.push(s)
       }
 
       patientsData.push(patientData)

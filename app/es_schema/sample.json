@@ -14,14 +14,11 @@
         "items": {
           "type": "object",
           "properties": {
-            "key": {
-              "type": "string"
-            },
-            "value": {
+            "name": {
               "type": "string"
             }
           },
-          "required": ["key", "value"]
+          "required": ["name"]
         }
       },
       "patientID": {

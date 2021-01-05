@@ -20,7 +20,12 @@ const indexMappings = {
       type: 'date',
     },
     dataTypes: {
-      type: 'keyword',
+      type: 'nested',
+      properties: {
+        name: {
+          type: 'keyword',
+        },
+      },
     },
     patientID: {
       type: 'keyword',

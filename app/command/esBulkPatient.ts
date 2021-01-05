@@ -40,7 +40,12 @@ const indexMappings = {
           type: 'date',
         },
         dataTypes: {
-          type: 'keyword',
+          type: 'nested',
+          properties: {
+            name: {
+              type: 'keyword',
+            },
+          },
         },
         age: {
           type: 'short',
