@@ -59,7 +59,7 @@ export const validateFiles = async (
   filePaths: string[],
   schemaFilePath: string
 ) => {
-  logStdout('Start to validate data json files...')
+  logStdout('Start to validate data json files.')
   const schema = JSON.parse(fs.readFileSync(schemaFilePath, 'utf-8'))
 
   const validateFile = async (filePath: string) => {
@@ -78,13 +78,13 @@ export const validateFiles = async (
 
   const queue = []
   for (const filePath of filePaths) {
-    logStdout(`Validating ${filePath}...`)
+    logStdout(`Validating ${filePath}.`)
     queue.push(validateFile(filePath))
   }
 
   await Promise.all(queue)
 
-  logStdout('Finish to validate data json files...')
+  logStdout('Finish to validate data json files.')
 }
 
 const INDEX_SETTINGS = {
@@ -98,9 +98,9 @@ export const createDataEsIndex = async (
   mappings: any,
   index: string
 ) => {
+  logStdout('Start to create ES index.')
   const res = await esClient.indices.exists({ index })
   if (!res.body) {
-    logStdout('Start to create ES index.')
     await esClient.indices.create({
       index,
       body: { settings: INDEX_SETTINGS, mappings },
@@ -158,7 +158,7 @@ export const bulkData = async (
   filePaths: string[],
   index: string
 ) => {
-  logStdout('Start to bulk data json files...')
+  logStdout('Start to bulk data json files.')
 
   const bulkFile = async (filePath: string) => {
     const fileContent = await fs.promises.readFile(filePath, 'utf-8')
@@ -194,7 +194,7 @@ export const bulkData = async (
 
   const errors: Array<BulkError | OtherBulkError> = []
   for (const filePath of filePaths) {
-    logStdout(`Bulking ${filePath}...`)
+    logStdout(`Bulking ${filePath}.`)
     await bulkFile(filePath).catch((e) => {
       if (e instanceof BulkError) {
         errors.push(e)
@@ -208,7 +208,56 @@ export const bulkData = async (
     throw new AllBulkError(errors)
   }
 
-  logStdout('Finish to bulk data json files...')
+  logStdout('Finish to bulk data json files.')
+}
+
+export const updateIndexFielddata = async (esClient: Client, index: string) => {
+  logStdout("Start to update index's fielddata.")
+  const res = await esClient.indices.getMapping({
+    index,
+  })
+  const mappings = res.body[index].mappings
+
+  if (index === 'sample') {
+    const dataTypesMappings = Object.assign(
+      {},
+      mappings.properties.dataTypes.properties
+    )
+    mappings.properties.dataTypes.properties = { name: { type: 'keyword' } }
+    for (const key of Object.keys(dataTypesMappings)) {
+      if (key === 'name') {
+        continue
+      }
+      mappings.properties.dataTypes.properties[key] = {
+        type: 'text',
+        fielddata: true,
+      }
+    }
+  } else if (index === 'patient') {
+    const dataTypesMappings = Object.assign(
+      {},
+      mappings.properties.samples.properties.dataTypes.properties
+    )
+    mappings.properties.samples.properties.dataTypes.properties = {
+      name: { type: 'keyword' },
+    }
+    for (const key of Object.keys(dataTypesMappings)) {
+      if (key === 'name') {
+        continue
+      }
+      mappings.properties.samples.properties.dataTypes.properties[key] = {
+        type: 'text',
+        fielddata: true,
+      }
+    }
+  }
+
+  await esClient.indices.putMapping({
+    index,
+    body: mappings,
+  })
+
+  logStdout("Finish to update index's fielddata.")
 }
 
 export const logStdout = (message: any, expand?: boolean): void => {

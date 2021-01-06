@@ -6,6 +6,7 @@ import {
   validateFiles,
   createDataEsIndex,
   bulkData,
+  updateIndexFielddata,
   logStdout,
   logStderr,
   ValidationError,
@@ -73,6 +74,7 @@ const main = async (): Promise<void> => {
     const esClient: Client = generateEsClient()
     await createDataEsIndex(esClient, indexMappings, 'patient')
     await bulkData(esClient, filePaths, 'patient')
+    await updateIndexFielddata(esClient, 'patient')
   } catch (e) {
     if (e instanceof ValidationError) {
       logStderr(e.originalError)
