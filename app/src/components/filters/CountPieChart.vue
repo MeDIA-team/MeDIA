@@ -90,7 +90,7 @@ const options: ThisTypedComponentOptionsWithRecordProps<
         : 'rgba(216, 27, 96, 1)'
     },
     label() {
-      return `Number of displayed ${this.viewType}s`
+      return `Number of displayed ${this.chartType}s`
     },
     filtered() {
       return (this.$store as TypedStore).state.filter[
