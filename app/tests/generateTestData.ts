@@ -77,7 +77,7 @@ const generateRandomDate = (start: Date, end: Date): Date => {
 
 const generatePatients = (patientNum: number) => {
   const patients = []
-  for (let i = 0; i <= patientNum; i++) {
+  for (let i = 0; i < patientNum; i++) {
     const patient = {
       patientID: generateRandomId(64),
       sex: randomChoice(SEX),
@@ -97,7 +97,7 @@ const randomInt = (min: number, max: number): number => {
   return Math.floor(Math.random() * (max + 1 - min)) + min
 }
 
-const randomChoice = (arr: string[]): string => {
+const randomChoice = <T>(arr: Array<T>): T => {
   return arr[Math.floor(Math.random() * arr.length)]
 }
 
@@ -166,37 +166,51 @@ const generateTestData = (
   const patientsData: Patient[] = []
   const samplesData: Sample[] = []
 
-  for (const project of PROJECTS) {
-    for (const patient of patients) {
-      const projectPatientIDs = PROJECTS.map(
-        (project) => `${project.projectID}_${patient.patientID}`
+  for (const patient of patients) {
+    const projects: {
+      projectName: string
+      projectID: string
+    }[] = []
+    const projectNum = randomInt(1, PROJECTS.length)
+    while (projects.length < projectNum) {
+      const project = randomChoice(PROJECTS)
+      if (
+        !projects
+          .map((project) => project.projectID)
+          .includes(project.projectID)
+      ) {
+        projects.push(project)
+      }
+    }
+    const projectPatientIDs = projects.map(
+      (project) => `${project.projectID}_${patient.patientID}`
+    )
+
+    const patientData: Patient = {
+      patientID: patient.patientID,
+      projects,
+      projectPatientIDs,
+      samples: [],
+    }
+
+    const sampleNum = randomInt(1, 5)
+    for (let i = 0; i < sampleNum; i++) {
+      const sampleId = generateRandomId(32)
+      const samplingDate = generateRandomDate(
+        new Date(2010, 1, 1),
+        new Date(2019, 12, 31)
       )
 
-      const patientData: Patient = {
-        patientID: patient.patientID,
-        projects: PROJECTS,
-        projectPatientIDs,
-        samples: [],
-      }
-
-      const sampleNum = randomInt(1, 10)
-      for (let i = 0; i < sampleNum; i++) {
-        const sampleId = generateRandomId(32)
-        const samplingDate = generateRandomDate(
-          new Date(2010, 1, 1),
-          new Date(2019, 12, 31)
-        )
-
-        const dataNum = randomInt(1, DATA_TYPE.length)
-        const dataTypeIndices: number[] = []
-        while (dataTypeIndices.length !== dataNum) {
-          const ind = randomInt(0, DATA_TYPE.length - 1)
-          if (!dataTypeIndices.includes(ind)) {
-            dataTypeIndices.push(ind)
-          }
+      const dataTypes: string[] = []
+      const dataNum = randomInt(1, DATA_TYPE.length)
+      while (dataTypes.length < dataNum) {
+        const dataType = randomChoice(DATA_TYPE)
+        if (!dataTypes.includes(dataType)) {
+          dataTypes.push(dataType)
         }
-
-        for (const dataTypeIndex of dataTypeIndices) {
+      }
+      for (const dataType of dataTypes) {
+        for (const project of projects) {
           const entry: Entry = {
             projectID: project.projectID,
             projectName: project.projectName,
@@ -207,65 +221,61 @@ const generateTestData = (
             disease: patient.disease,
             sampleID: sampleId,
             samplingDate: dayjs(samplingDate).format('YYYY-MM-DD'),
-            dataType: DATA_TYPE[dataTypeIndex],
-            'File Path': `/data/${project.projectID}/${DATA_TYPE[dataTypeIndex]}/${sampleId}.txt`,
+            dataType,
+            'File Path': `/data/${project.projectID}/${dataType}/${sampleId}.txt`,
           }
-          if (DATA_TYPE[dataTypeIndex] === 'RNAseq') {
+          if (dataType === 'RNAseq') {
             entry['Library Prep'] = randomChoice(LIBRARY_PREP)
-          } else if (DATA_TYPE[dataTypeIndex] === 'Skin image') {
+          } else if (dataType === 'Skin image') {
             entry['Body Region'] = randomChoice(BODY_REGION)
           }
           entriesData.push(entry)
         }
-
-        const ps = {
-          sampleID: sampleId,
-          samplingDate: dayjs(samplingDate).format('YYYY-MM-DD'),
-          dataTypes: [] as {
-            name: string
-            [K: string]: string | number
-          }[],
-          sex: patient.sex,
-          age: getAge(patient.birthDate, samplingDate),
-          disease: patient.disease,
-        }
-        const s: Sample = {
-          sampleID: sampleId,
-          samplingDate: dayjs(samplingDate).format('YYYY-MM-DD'),
-          dataTypes: [] as {
-            name: string
-            [K: string]: string | number
-          }[],
-          patientID: patient.patientID,
-          sex: patient.sex,
-          age: getAge(patient.birthDate, samplingDate),
-          disease: patient.disease,
-          projects: PROJECTS,
-          projectPatientIDs,
-        }
-
-        for (const ind of dataTypeIndices) {
-          const d: {
-            name: string
-            [K: string]: string | number
-          } = {
-            name: DATA_TYPE[ind],
-          }
-          if (DATA_TYPE[ind] === 'RNAseq') {
-            d['Library Prep'] = randomChoice(LIBRARY_PREP)
-          } else if (DATA_TYPE[ind] === 'Skin image') {
-            d['Body Region'] = randomChoice(BODY_REGION)
-          }
-          ps.dataTypes.push(d)
-          s.dataTypes.push(d)
-        }
-
-        patientData.samples.push(ps)
-        samplesData.push(s)
       }
-
-      patientsData.push(patientData)
+      const ps = {
+        sampleID: sampleId,
+        samplingDate: dayjs(samplingDate).format('YYYY-MM-DD'),
+        dataTypes: [] as {
+          name: string
+          [K: string]: string | number
+        }[],
+        sex: patient.sex,
+        age: getAge(patient.birthDate, samplingDate),
+        disease: patient.disease,
+      }
+      const s: Sample = {
+        sampleID: sampleId,
+        samplingDate: dayjs(samplingDate).format('YYYY-MM-DD'),
+        dataTypes: [] as {
+          name: string
+          [K: string]: string | number
+        }[],
+        patientID: patient.patientID,
+        sex: patient.sex,
+        age: getAge(patient.birthDate, samplingDate),
+        disease: patient.disease,
+        projects,
+        projectPatientIDs,
+      }
+      for (const dataType of dataTypes) {
+        const d: {
+          name: string
+          [K: string]: string | number
+        } = {
+          name: dataType,
+        }
+        if (dataType === 'RNAseq') {
+          d['Library Prep'] = randomChoice(LIBRARY_PREP)
+        } else if (dataType === 'Skin image') {
+          d['Body Region'] = randomChoice(BODY_REGION)
+        }
+        ps.dataTypes.push(d)
+        s.dataTypes.push(d)
+      }
+      patientData.samples.push(ps)
+      samplesData.push(s)
     }
+    patientsData.push(patientData)
   }
 
   return {
@@ -283,7 +293,7 @@ const main = () => {
     for (let i = 1; i < 3; i++) {
       const filePath = path.join(scriptDir, `test-data-${key}-${i}.json`)
       const arr = data[key as 'entries' | 'patients' | 'samples']
-      const start = i === 1 ? 0 : Math.floor(arr.length / 2)
+      const start = i === 1 ? 0 : Math.floor(arr.length / 2) + 1
       const end = i === 1 ? Math.floor(arr.length / 2) : arr.length + 1
       fs.writeFileSync(filePath, JSON.stringify(arr.slice(start, end), null, 2))
     }
