@@ -293,7 +293,7 @@ const main = () => {
     for (let i = 1; i < 3; i++) {
       const filePath = path.join(scriptDir, `test-data-${key}-${i}.json`)
       const arr = data[key as 'entries' | 'patients' | 'samples']
-      const start = i === 1 ? 0 : Math.floor(arr.length / 2) + 1
+      const start = i === 1 ? 0 : Math.floor(arr.length / 2)
       const end = i === 1 ? Math.floor(arr.length / 2) : arr.length + 1
       fs.writeFileSync(filePath, JSON.stringify(arr.slice(start, end), null, 2))
     }
