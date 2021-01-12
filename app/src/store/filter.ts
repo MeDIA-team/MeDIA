@@ -217,16 +217,31 @@ export const mutations: MutationTree<State> = {
     }
   ) {
     state[payload.viewType].projects.contents = payload.projects
+    state[payload.viewType].projects.selected = payload.projects
     state[payload.viewType].patientIDs.contents = payload.patientIDs
     state[payload.viewType].projectPatientIDs.contents =
       payload.projectPatientIDs
     state[payload.viewType].sexes.contents = payload.sexes
+    state[payload.viewType].sexes.selected = payload.sexes
     state[payload.viewType].diseases.contents = payload.diseases
+    state[payload.viewType].diseases.selected = payload.diseases
     state[payload.viewType].sampleIDs.contents = payload.sampleIDs
     state[payload.viewType].dataTypes.contents = payload.dataTypes
 
     state[payload.viewType].count.sample.total = payload.sampleIDs.length
     state[payload.viewType].count.patient.total = payload.patientIDs.length
+  },
+
+  setCount(
+    state,
+    payload: {
+      viewType: keyof State
+      sample: number
+      patient: number
+    }
+  ) {
+    state[payload.viewType].count.sample.filtered = payload.sample
+    state[payload.viewType].count.patient.filtered = payload.patient
   },
 }
 

@@ -132,7 +132,22 @@ export const state = (): State => ({
 })
 
 export const getters: GetterTree<State, RootState> = {
-  // dataTableHeaders(state) {},
+  headers: (state) => (payload: { viewType: keyof State }) => {
+    const header = [...state[payload.viewType].requiredFields.selected]
+    for (const dataTypeField of state[payload.viewType].dataTypeFields
+      .selected) {
+      const dataTypeHeader: DataTableHeader = {
+        text: dataTypeField.id.includes('_')
+          ? dataTypeField.id.replace('_', ': ')
+          : dataTypeField.id,
+        value: dataTypeField.id,
+        align: dataTypeField.id.includes('_') ? 'start' : 'center',
+        sortable: dataTypeField.id.includes('_'),
+      }
+      header.push(dataTypeHeader)
+    }
+    return header
+  }, // TODO
 }
 
 export const mutations: MutationTree<State> = {
