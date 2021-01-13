@@ -1,6 +1,10 @@
 .dockerignore
 .nuxt
+.vscode
+*.log
 data
 Dockerfile
 node_modules
 tests/test-data-*
+yarn-debug.log*
+yarn-error.log*
