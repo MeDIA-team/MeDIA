@@ -219,35 +219,50 @@ export const updateIndexFielddata = async (esClient: Client, index: string) => {
   const mappings = res.body[index].mappings
 
   if (index === 'sample') {
-    const dataTypesMappings = Object.assign(
-      {},
-      mappings.properties.dataTypes.properties
-    )
+    const dataTypesMappings: Record<
+      string,
+      Record<string, string>
+    > = Object.assign({}, mappings.properties.dataTypes.properties)
     mappings.properties.dataTypes.properties = { name: { type: 'keyword' } }
-    for (const key of Object.keys(dataTypesMappings)) {
+    for (const [key, value] of Object.entries(dataTypesMappings)) {
       if (key === 'name') {
         continue
       }
-      mappings.properties.dataTypes.properties[key] = {
-        type: 'text',
-        fielddata: true,
+      if (value?.type === 'text' || value?.type === 'keyword') {
+        mappings.properties.dataTypes.properties[key] = {
+          type: value?.type,
+          fielddata: true,
+        }
+      } else {
+        mappings.properties.dataTypes.properties[key] = {
+          type: value?.type,
+        }
       }
     }
   } else if (index === 'patient') {
-    const dataTypesMappings = Object.assign(
+    const dataTypesMappings: Record<
+      string,
+      Record<string, string>
+    > = Object.assign(
       {},
       mappings.properties.samples.properties.dataTypes.properties
     )
     mappings.properties.samples.properties.dataTypes.properties = {
       name: { type: 'keyword' },
     }
-    for (const key of Object.keys(dataTypesMappings)) {
+    for (const [key, value] of Object.entries(dataTypesMappings)) {
       if (key === 'name') {
         continue
       }
-      mappings.properties.samples.properties.dataTypes.properties[key] = {
-        type: 'text',
-        fielddata: true,
+      if (value?.type === 'text' || value?.type === 'keyword') {
+        mappings.properties.samples.properties.dataTypes.properties[key] = {
+          type: value?.type,
+          fielddata: true,
+        }
+      } else {
+        mappings.properties.samples.properties.dataTypes.properties[key] = {
+          type: value?.type,
+        }
       }
     }
   }
