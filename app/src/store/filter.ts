@@ -189,6 +189,19 @@ export const mutations: MutationTree<State> = {
     state[payload.viewType][payload.contentKey].selected = payload.value
   },
 
+  setSelectedIDs(
+    state,
+    payload: {
+      viewType: keyof State
+      anotherViewType: keyof State
+      value: string[]
+    }
+  ) {
+    const idKey =
+      payload.anotherViewType === 'sample' ? 'sampleIDs' : 'patientIDs'
+    state[payload.viewType][idKey].selected = payload.value
+  },
+
   resetFilter(state, payload: { viewType: keyof State }) {
     state[payload.viewType].projects.selected =
       state[payload.viewType].projects.contents
@@ -276,6 +289,21 @@ export const actions: ActionTree<State, RootState> = {
       diseases: results[4],
       sampleIDs: results[5],
       dataTypes: results[6],
+    })
+  },
+
+  setSelectedIDs({ commit, rootState }, payload: { viewType: keyof State }) {
+    // sample view で呼び出されたら、
+    // patient view の selected の中の patientIDs を sample filter state の
+    // patientID.selected に set する
+
+    const anotherViewType = payload.viewType === 'sample' ? 'patient' : 'sample'
+    commit('setSelectedIDs', {
+      viewType: payload.viewType,
+      anotherViewType,
+      value: rootState.entry[anotherViewType].selected.map((entry) =>
+        anotherViewType === 'sample' ? entry.sampleID : entry.patientID
+      ),
     })
   },
 }

@@ -2,6 +2,7 @@ cluster.name: "docker-cluster"
 bootstrap.memory_lock: true
 network.host: 0.0.0.0
 gateway.auto_import_dangling_indices: true
+http.max_initial_line_length: "100kb"
 http.max_content_length: "2000mb"
 http.cors.enabled: true
 http.cors.allow-origin: "*"

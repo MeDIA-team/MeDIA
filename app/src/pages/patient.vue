@@ -31,6 +31,9 @@ export default Vue.extend({
     for (const initAction of initActionQueue) {
       await store.dispatch(initAction, { viewType: 'patient', axios: $axios })
     }
+    store.dispatch('filter/setSelectedIDs', {
+      viewType: 'patient',
+    })
   },
 })
 </script>
