@@ -32,7 +32,7 @@ services:
     environment:
       discovery.type: "single-node"
       ELASTIC_PASSWORD: "media_elasticsearch_passwd"
-      ES_JAVA_OPTS: "-Xms4g -Xmx4g -Xlog:disable -Xlog:all=warning:stderr:utctime,level,tags -Xlog:gc=warning:stderr:utctime"
+      ES_JAVA_OPTS: "-Xms16g -Xmx16g -Xlog:disable -Xlog:all=warning:stderr:utctime,level,tags -Xlog:gc=warning:stderr:utctime"
     ulimits:
       memlock:
         soft: -1

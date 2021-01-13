@@ -2,10 +2,10 @@ import { NuxtConfig } from '@nuxt/types'
 import colors from 'vuetify/es5/util/colors'
 
 const config: NuxtConfig = {
+  target: 'server',
   ssr: false,
   head: {
-    titleTemplate: '%s - ' + process.env.npm_package_name,
-    title: process.env.npm_package_name || '',
+    title: 'MeDIA',
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },

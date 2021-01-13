@@ -19,7 +19,7 @@ RUN yarn install
 
 COPY . .
 
-# RUN yarn build
+RUN yarn build
 
 ENV NUXT_HOST 0.0.0.0
 ENV NUXT_PORT 8080
