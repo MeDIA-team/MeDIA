@@ -228,14 +228,16 @@ export const updateIndexFielddata = async (esClient: Client, index: string) => {
       if (key === 'name') {
         continue
       }
-      if (value?.type === 'text' || value?.type === 'keyword') {
-        mappings.properties.dataTypes.properties[key] = {
-          type: value?.type,
-          fielddata: true,
-        }
-      } else {
-        mappings.properties.dataTypes.properties[key] = {
-          type: value?.type,
+      if ('type' in value) {
+        if (['text', 'keyword'].includes(value.type)) {
+          mappings.properties.dataTypes.properties[key] = {
+            type: value.type,
+            fielddata: true,
+          }
+        } else {
+          mappings.properties.dataTypes.properties[key] = {
+            type: value.type,
+          }
         }
       }
     }
@@ -254,14 +256,16 @@ export const updateIndexFielddata = async (esClient: Client, index: string) => {
       if (key === 'name') {
         continue
       }
-      if (value?.type === 'text' || value?.type === 'keyword') {
-        mappings.properties.samples.properties.dataTypes.properties[key] = {
-          type: value?.type,
-          fielddata: true,
-        }
-      } else {
-        mappings.properties.samples.properties.dataTypes.properties[key] = {
-          type: value?.type,
+      if ('type' in value) {
+        if (['text', 'keyword'].includes(value.type)) {
+          mappings.properties.samples.properties.dataTypes.properties[key] = {
+            type: value.type,
+            fielddata: true,
+          }
+        } else {
+          mappings.properties.samples.properties.dataTypes.properties[key] = {
+            type: value.type,
+          }
         }
       }
     }
