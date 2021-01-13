@@ -190,13 +190,16 @@ export const mutations: MutationTree<State> = {
   },
 
   resetFilter(state, payload: { viewType: keyof State }) {
-    state[payload.viewType].projects.selected = []
+    state[payload.viewType].projects.selected =
+      state[payload.viewType].projects.contents
     state[payload.viewType].patientIDs.selected = []
     state[payload.viewType].projectPatientIDs.selected = []
-    state[payload.viewType].sexes.selected = []
+    state[payload.viewType].sexes.selected =
+      state[payload.viewType].sexes.contents
     state[payload.viewType].age.bottom = ''
     state[payload.viewType].age.upper = ''
-    state[payload.viewType].diseases.selected = []
+    state[payload.viewType].diseases.selected =
+      state[payload.viewType].diseases.contents
     state[payload.viewType].sampleIDs.selected = []
     state[payload.viewType].samplingDate.bottom = ''
     state[payload.viewType].samplingDate.upper = ''

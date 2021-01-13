@@ -1,24 +1,14 @@
 import { ActionTree, MutationTree } from 'vuex'
-import { RootState } from '@/store'
 import { DataOptions } from 'vuetify'
-import { NuxtAxiosInstance } from '@nuxtjs/axios'
-import { fetchEntries, fetchCount } from '@/utils/dataFetcher'
 import { Entry, PatientEntry, SampleEntry } from '@/types/entry'
-
-export type Pagination = {
-  page: number
-  itemsPerPage: number
-  pageStart: number
-  pageStop: number
-  pageCount: number
-  itemsLength: number
-}
+import { fetchEntries, fetchCount } from '@/utils/dataFetcher'
+import { NuxtAxiosInstance } from '@nuxtjs/axios'
+import { RootState } from '@/store'
 
 export type State = {
   patient: {
     loading: boolean
     options: DataOptions
-    pagination: Pagination
     count: number
     contents: Entry[]
     selected: Entry[]
@@ -26,7 +16,6 @@ export type State = {
   sample: {
     loading: boolean
     options: DataOptions
-    pagination: Pagination
     count: number
     contents: Entry[]
     selected: Entry[]
@@ -46,14 +35,6 @@ export const state = (): State => ({
       mustSort: false,
       multiSort: true,
     },
-    pagination: {
-      page: 1,
-      itemsPerPage: 30,
-      pageStart: 0,
-      pageStop: 0,
-      pageCount: 0,
-      itemsLength: 0,
-    },
     count: 0,
     contents: [],
     selected: [],
@@ -69,14 +50,6 @@ export const state = (): State => ({
       groupDesc: [],
       mustSort: false,
       multiSort: true,
-    },
-    pagination: {
-      page: 1,
-      itemsPerPage: 30,
-      pageStart: 0,
-      pageStop: 0,
-      pageCount: 0,
-      itemsLength: 0,
     },
     count: 0,
     contents: [],
@@ -104,17 +77,6 @@ export const mutations: MutationTree<State> = {
   ) {
     state[payload.viewType].options = payload.value
   },
-
-  setPagination(
-    state,
-    payload: {
-      viewType: keyof State
-      value: Pagination
-    }
-  ) {
-    state[payload.viewType].pagination = payload.value
-  },
-
   setSelected(
     state,
     payload: {
@@ -159,7 +121,6 @@ export const actions: ActionTree<State, RootState> = {
       payload.viewType,
       payload.axios,
       state[payload.viewType].options,
-      state[payload.viewType].pagination,
       rootState.filter
     )
 
@@ -218,6 +179,7 @@ export const actions: ActionTree<State, RootState> = {
           ),
         }
 
+        const dataTypeValues: Record<string, Array<string | number>> = {}
         for (const dataTypes of fetchedEntry.samples.map(
           (sample) => sample.dataTypes
         )) {
@@ -225,11 +187,18 @@ export const actions: ActionTree<State, RootState> = {
             entry[dataType.name] = true
             for (const [key, value] of Object.entries(dataType)) {
               if (key !== 'name') {
-                entry[`${dataType.name}_${key}`] = value
+                if (!(`${dataType.name}_${key}` in dataTypeValues)) {
+                  dataTypeValues[`${dataType.name}_${key}`] = [] as string[]
+                }
+                dataTypeValues[`${dataType.name}_${key}`].push(value)
               }
             }
           }
         }
+        for (const [key, value] of Object.entries(dataTypeValues)) {
+          entry[key] = arrayToString(value)
+        }
+
         entries.push(entry)
       }
     }

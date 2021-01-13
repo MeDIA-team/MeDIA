@@ -15,7 +15,7 @@
       multi-sort
       show-select
     >
-      <!-- <template
+      <template
         v-for="parentDataType in parentDataTypes"
         #[parentDataType]="{ value }"
       >
@@ -25,10 +25,8 @@
         <div :key="header" @click="copyText(value)">
           {{ shortenText(value) }}
         </div>
-      </template> -->
+      </template>
     </v-data-table>
-    {{ options }}
-    {{ footerProps }}
     <v-snackbar v-model="snackbar" :color="color" :timeout="1000" bottom>
       {{ snackbarText }}
     </v-snackbar>
@@ -39,13 +37,15 @@
 import Vue from 'vue'
 import { TypedStore } from '@/store'
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
-import { Pagination } from '@/store/entry'
 import { DataOptions, DataTableHeader } from 'vuetify'
 import { Entry } from '@/types/entry'
 
 type Data = {
   snackbar: boolean
   snackbarText: string
+  footerProps: {
+    'items-per-page-options': number[]
+  }
 }
 
 type Methods = {
@@ -57,15 +57,13 @@ type Computed = {
   color: string
   loading: boolean
   options: DataOptions
-  footerProps: {
-    'items-per-page-options': number[]
-    pagination: Pagination
-  }
   count: number
   headers: DataTableHeader[]
   contents: Entry[]
   itemKey: string
   selected: Entry[]
+  parentDataTypes: string[]
+  copyableHeaders: string[]
 }
 
 type Props = {
@@ -93,6 +91,9 @@ const options: ThisTypedComponentOptionsWithRecordProps<
     return {
       snackbar: false,
       snackbarText: '',
+      footerProps: {
+        'items-per-page-options': [10, 30, 100],
+      },
     }
   },
 
@@ -126,22 +127,6 @@ const options: ThisTypedComponentOptionsWithRecordProps<
         ].options
       },
     },
-    footerProps: {
-      set(value) {
-        this.$store.commit('entry/setPagination', {
-          viewType: this.viewType,
-          value: value.pagination,
-        })
-      },
-      get() {
-        return {
-          'items-per-page-options': [10, 30, 100],
-          pagination: (this.$store as TypedStore).state.entry[
-            this.viewType as 'sample' | 'patient'
-          ].pagination,
-        }
-      },
-    },
     count() {
       return (this.$store as TypedStore).state.entry[
         this.viewType as 'sample' | 'patient'
@@ -173,24 +158,16 @@ const options: ThisTypedComponentOptionsWithRecordProps<
         ].selected
       },
     },
-    // parentDataTypes() {
-    //   return this.$store.state.init.dataTypes.map(
-    //     (ele: string) => 'item.' + ele
-    //   )
-    // },
-    // copyableHeaders() {
-    //   const headers = this.$store.state.selector.requiredFields.map(
-    //     (field: string) => 'item.' + field
-    //   )
-    //   // @ts-ignore
-    //   for (const field of this.$store.state.selector.dataTypeFields) {
-    //     // @ts-ignore
-    //     if (!this.$store.state.init.dataTypes.includes(field)) {
-    //       headers.push('item.' + field)
-    //     }
-    //   }
-    //   return headers
-    // },
+    parentDataTypes() {
+      return this.$store.getters['selector/parentDataTypes']({
+        viewType: this.viewType,
+      })
+    },
+    copyableHeaders() {
+      return this.$store.getters['selector/copyableHeaders']({
+        viewType: this.viewType,
+      })
+    },
   },
 
   mounted() {

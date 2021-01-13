@@ -49,6 +49,10 @@ export type PatientEntry = {
   }[]
 }
 
+type TermQuery = {
+  term: Record<string, string>
+}
+
 type TermsQuery = {
   terms: {
     [key: string]: string[]
@@ -67,11 +71,7 @@ type RangeQuery = {
 type NestedQuery = {
   nested: {
     path: string
-    query: {
-      terms: {
-        [key: string]: string[]
-      }
-    }
+    query: TermQuery | TermsQuery
   }
 }
 
@@ -80,7 +80,7 @@ export type NestedFilterQuery = {
     path: string
     query: {
       bool: {
-        filter: Array<TermsQuery | RangeQuery | NestedQuery>
+        filter: Array<TermQuery | TermsQuery | RangeQuery | NestedQuery>
       }
     }
   }

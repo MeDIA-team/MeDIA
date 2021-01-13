@@ -1,6 +1,5 @@
 import { DataOptions } from 'vuetify'
 import { NuxtAxiosInstance } from '@nuxtjs/axios'
-import { Pagination } from '@/store/entry'
 import { requiredFields } from '@/store/selector'
 import {
   SampleEntry,
@@ -72,7 +71,7 @@ export const fetchDataTypeToMetadataFields = async (
   const res = await axios.$get('/api/entry/_mapping')
   const allFields: string[] = Object.keys(res.entry.mappings.properties)
   const metadataFields = allFields.filter(
-    (field) => !requiredFields.includes(field)
+    (field) => ![...requiredFields, 'dataType'].includes(field)
   )
   const dataTypes = await fetchUniqueValues(axios, 'dataType')
   const dataTypeToMetadataFields: Record<string, string[]> = dataTypes.reduce(
@@ -101,7 +100,6 @@ export const fetchEntries = async (
   viewType: 'sample' | 'patient',
   axios: NuxtAxiosInstance,
   options: DataOptions,
-  pagination: Pagination,
   filterState: FilterState
 ): Promise<Array<SampleEntry | PatientEntry>> => {
   const sort = dataOptionsToQuery(viewType, options)
@@ -110,8 +108,8 @@ export const fetchEntries = async (
     params: {
       source: JSON.stringify({
         track_total_hits: true,
-        from: (pagination.page - 1) * pagination.itemsPerPage,
-        size: pagination.itemsPerPage,
+        from: (options.page - 1) * options.itemsPerPage,
+        size: options.itemsPerPage,
         sort,
         query,
       }),
@@ -154,13 +152,30 @@ const dataOptionsToQuery = (
   for (let i = 0; i < sortBy.length; i++) {
     let key = sortBy[i]
     const desc = sortDesc[i]
+    let dataType: string
     switch (key) {
+      case 'patientID':
+        sort.push({
+          [key]: {
+            order: desc ? 'desc' : 'asc',
+          },
+        })
+        break
       case 'projectID':
       case 'projectName':
-        key = 'projects.' + key
+        sort.push({
+          ['projects.' + key]: {
+            order: desc ? 'desc' : 'asc',
+            nested_path: 'projects',
+          },
+        })
         break
-      case 'patientID':
-      case 'projectPatientIDs':
+      case 'projectPatientID':
+        sort.push({
+          projectPatientIDs: {
+            order: desc ? 'desc' : 'asc',
+          },
+        })
         break
       case 'sex':
       case 'age':
@@ -168,23 +183,53 @@ const dataOptionsToQuery = (
       case 'sampleID':
       case 'samplingDate':
         if (viewType === 'patient') {
-          key = 'samples.' + key
+          sort.push({
+            ['samples.' + key]: {
+              order: desc ? 'desc' : 'asc',
+              nested_path: 'samples',
+            },
+          })
+        } else {
+          sort.push({
+            [key]: {
+              order: desc ? 'desc' : 'asc',
+            },
+          })
         }
         break
       default:
+        dataType = key.split('_')[0]
         key = key.split('_')[1]
         if (viewType === 'sample') {
-          key = 'dataTypes.' + key
+          sort.push({
+            ['dataTypes.' + key]: {
+              order: desc ? 'desc' : 'asc',
+              nested: {
+                path: 'dataTypes',
+                filter: {
+                  term: {
+                    'dataTypes.name': dataType,
+                  },
+                },
+              },
+            },
+          })
         } else if (viewType === 'patient') {
-          key = 'samples.dataTypes.' + key
+          sort.push({
+            ['samples.dataTypes.' + key]: {
+              order: desc ? 'desc' : 'asc',
+              nested: {
+                path: 'samples.dataTypes',
+                filter: {
+                  term: {
+                    'samples.dataTypes.name': dataType,
+                  },
+                },
+              },
+            },
+          })
         }
     }
-
-    sort.push({
-      [key]: {
-        order: desc ? 'desc' : 'asc',
-      },
-    })
   }
 
   return sort
@@ -229,6 +274,16 @@ const filterStateToQuery = (
               },
             },
           },
+          {
+            nested: {
+              path: 'projects',
+              query: {
+                terms: {
+                  'projects.projectName': state.projects.selected,
+                },
+              },
+            },
+          },
         ],
       },
     }
@@ -240,16 +295,18 @@ const filterStateToQuery = (
       })
     }
     if (state.dataTypes.selected.length) {
-      query.bool.filter.push({
-        nested: {
-          path: 'dataTypes',
-          query: {
-            terms: {
-              'dataTypes.name': state.dataTypes.selected,
+      for (const dataType of state.dataTypes.selected) {
+        query.bool.filter.push({
+          nested: {
+            path: 'dataTypes',
+            query: {
+              term: {
+                'dataTypes.name': dataType,
+              },
             },
           },
-        },
-      })
+        })
+      }
     }
   } else {
     const nestedQuery: NestedFilterQuery = {
@@ -293,42 +350,44 @@ const filterStateToQuery = (
     if (state.sampleIDs.selected.length) {
       nestedQuery.nested.query.bool.filter.push({
         terms: {
-          sampleID: state.sampleIDs.selected,
+          'samples.sampleID': state.sampleIDs.selected,
         },
       })
     }
     if (state.dataTypes.selected.length) {
-      nestedQuery.nested.query.bool.filter.push({
-        nested: {
-          path: 'dataTypes',
-          query: {
-            terms: {
-              'dataTypes.name': state.dataTypes.selected,
+      for (const dataType of state.dataTypes.selected) {
+        nestedQuery.nested.query.bool.filter.push({
+          nested: {
+            path: 'samples.dataTypes',
+            query: {
+              term: {
+                'samples.dataTypes.name': dataType,
+              },
             },
           },
-        },
-      })
+        })
+      }
     }
 
     query = {
       bool: {
-        filter: [nestedQuery],
+        filter: [
+          nestedQuery,
+          {
+            nested: {
+              path: 'projects',
+              query: {
+                terms: {
+                  'projects.projectName': state.projects.selected,
+                },
+              },
+            },
+          },
+        ],
       },
     }
   }
 
-  if (state.projects.selected.length) {
-    query.bool.filter.push({
-      nested: {
-        path: 'projects',
-        query: {
-          terms: {
-            'projects.projectName': state.projects.selected,
-          },
-        },
-      },
-    })
-  }
   if (state.patientIDs.selected.length) {
     query.bool.filter.push({
       terms: {

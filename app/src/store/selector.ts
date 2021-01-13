@@ -110,7 +110,7 @@ export const state = (): State => ({
   sample: {
     requiredFields: {
       contents: requiredHeaders,
-      selected: [],
+      selected: requiredHeaders,
     },
     dataTypeFields: {
       contents: [],
@@ -121,7 +121,7 @@ export const state = (): State => ({
   patient: {
     requiredFields: {
       contents: requiredHeaders,
-      selected: [],
+      selected: requiredHeaders,
     },
     dataTypeFields: {
       contents: [],
@@ -133,7 +133,7 @@ export const state = (): State => ({
 
 export const getters: GetterTree<State, RootState> = {
   headers: (state) => (payload: { viewType: keyof State }) => {
-    const header = [...state[payload.viewType].requiredFields.selected]
+    const dataTypeHeaders: DataTableHeader[] = []
     for (const dataTypeField of state[payload.viewType].dataTypeFields
       .selected) {
       const dataTypeHeader: DataTableHeader = {
@@ -144,10 +144,40 @@ export const getters: GetterTree<State, RootState> = {
         align: dataTypeField.id.includes('_') ? 'start' : 'center',
         sortable: dataTypeField.id.includes('_'),
       }
-      header.push(dataTypeHeader)
+      dataTypeHeaders.push(dataTypeHeader)
     }
-    return header
-  }, // TODO
+    const headers = [
+      ...state[payload.viewType].requiredFields.selected,
+      ...dataTypeHeaders.sort((a, b) =>
+        a.value > b.value ? 1 : b.value > a.value ? -1 : 0
+      ),
+    ]
+    return headers
+  },
+
+  requiredFieldsSelected: (state) => (payload: { viewType: keyof State }) => {
+    return state[payload.viewType].requiredFields.selected.map(
+      (header) => header.value
+    )
+  },
+
+  parentDataTypes: (state) => (payload: { viewType: keyof State }) => {
+    return state[payload.viewType].dataTypeFields.contents.map(
+      (field) => `item.${field.id}`
+    )
+  },
+
+  copyableHeaders: (state) => (payload: { viewType: keyof State }) => {
+    const headers = requiredHeaders.map((header) => `item.${header.value}`)
+    for (const dataTypeField of state[
+      payload.viewType
+    ].dataTypeFields.contents.map((field) => field.id)) {
+      if (dataTypeField.includes('_')) {
+        headers.push(`item.dataTypeField`)
+      }
+    }
+    return headers
+  },
 }
 
 export const mutations: MutationTree<State> = {
@@ -155,10 +185,19 @@ export const mutations: MutationTree<State> = {
     state,
     payload: {
       viewType: keyof State
-      value: DataTableHeader[]
+      value: string[]
     }
   ) {
-    state[payload.viewType].requiredFields.selected = payload.value
+    const selected = []
+    for (const val of payload.value) {
+      for (const header of requiredHeaders) {
+        if (val === header.value) {
+          selected.push(header)
+          break
+        }
+      }
+    }
+    state[payload.viewType].requiredFields.selected = selected
   },
 
   setDataTypeFields(
@@ -182,9 +221,9 @@ export const mutations: MutationTree<State> = {
   },
 
   resetSelector(state, payload: { viewType: keyof State }) {
-    state[payload.viewType].requiredFields.selected = []
-    state[payload.viewType].dataTypeFields.selected = []
-    state[payload.viewType].dataTypeFields.opened = []
+    state[payload.viewType].requiredFields.selected = requiredHeaders
+    state[payload.viewType].dataTypeFields.selected =
+      state[payload.viewType].dataTypeFields.contents
   },
 
   setInitialState(
@@ -195,6 +234,7 @@ export const mutations: MutationTree<State> = {
     }
   ) {
     state[payload.viewType].dataTypeFields.contents = payload.dataTypeField
+    state[payload.viewType].dataTypeFields.selected = payload.dataTypeField
   },
 }
 

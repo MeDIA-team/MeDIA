@@ -106,7 +106,7 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       return {
         datasets: [
           {
-            data: [this.filtered, this.total - this.filtered],
+            data: [this.filtered, this.totalCount - this.filtered],
             backgroundColor: [this.color, 'rgba(255, 255, 255, 0)'],
             borderColor: this.color,
             borderWidth: 0.6,

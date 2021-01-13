@@ -27,7 +27,7 @@ type Methods = Record<string, never>
 type Computed = {
   color: string
   contents: DataTableHeader[]
-  selected: DataTableHeader[]
+  selected: string[]
 }
 
 type Props = {
@@ -61,9 +61,9 @@ const options: ThisTypedComponentOptionsWithRecordProps<
     },
     selected: {
       get() {
-        return (this.$store as TypedStore).state.selector[
-          this.viewType as 'sample' | 'patient'
-        ].requiredFields.selected
+        return this.$store.getters['selector/requiredFieldsSelected']({
+          viewType: this.viewType,
+        })
       },
       set(value) {
         this.$store.commit('selector/setRequiredFields', {
