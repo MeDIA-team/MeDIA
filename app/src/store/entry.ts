@@ -77,6 +77,7 @@ export const mutations: MutationTree<State> = {
   ) {
     state[payload.viewType].options = payload.value
   },
+
   setSelected(
     state,
     payload: {
