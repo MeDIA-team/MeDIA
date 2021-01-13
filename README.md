@@ -23,6 +23,14 @@ $ docker network create media_network
 $ docker-compose up -d --build
 ```
 
+`docker-compose.yml` 内で、Elasticsearch のヒープメモリとして `-Xms16g -Xmx16g` を指定しているため、通常のサーバではメモリ不足で落ちる場合がある。
+そのため、`docker-compose.dev.yml` を使って開発環境を用いると良い。
+
+```bash
+$ docker-compose -f docker-compose.dev.yml up -d --build
+$ docker-compose -f docker-compose.dev.yml exec app yarn dev
+```
+
 また、Elasticsearch、Nuxt.js のために HostOS の Kernel Option を変更しておく必要がある。
 
 ```bash
