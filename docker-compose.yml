@@ -16,6 +16,8 @@ services:
       NUXT_PORT: "8080"
     networks:
       - default
+    ports:
+      - "0.0.0.0:8080:8080"
     volumes:
       - ${PWD}/app/data:/app/data
     restart: on-failure
