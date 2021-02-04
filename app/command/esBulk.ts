@@ -92,6 +92,7 @@ const INDEX_SETTINGS = {
   number_of_replicas: 0,
   max_result_window: 10000000,
   'index.mapping.total_fields.limit': 10000,
+  'index.mapping.nested_objects.limit': 50000,
 }
 
 export const createDataEsIndex = async (
