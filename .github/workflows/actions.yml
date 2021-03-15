@@ -1,4 +1,4 @@
-name: Dispatch workflow manually to: build Docker image, push to GHCR, add image tag to .env, push to the branch, then create a release
+name: "Dispatch workflow manually to: build Docker image, push to GHCR, add image tag to .env, push to the branch, then create a release"
 on: workflow_dispatch
 jobs:
   build_and_push:
