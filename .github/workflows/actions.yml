@@ -20,7 +20,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: setenv: short commit hash
+      - name: "setenv: short commit hash"
         run: echo "GIT_HASH=$(git rev-parse --short ${GITHUB_SHA})" >> $GITHUB_ENV
 
       - name: Build and push
