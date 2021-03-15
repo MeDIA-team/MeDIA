@@ -41,7 +41,7 @@ jobs:
           git config --local user.email "media-team@media-team.org"
           git config --local user.name "media-team"
           git commit -m "Update envfile" -a
-          git tag ${{ env.DATE }}-${{ env.GIT_HASH}}
+          git tag ${{ env.DATE }}-${{ env.GIT_HASH }}
 
       - name: "Push changes"
         uses: ad-m/github-push-action@master
@@ -54,3 +54,5 @@ jobs:
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.DATE }}-${{ env.GIT_HASH }}
