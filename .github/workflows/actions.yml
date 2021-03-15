@@ -4,6 +4,7 @@ jobs:
   build_and_push:
     runs-on: ubuntu-latest
     env:
+      IMAGE_OWNER: media-team
       IMAGE_NAME: media_app
     steps:
       - name: checkout
@@ -19,7 +20,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Set env
+      - name: setenv: short commit hash
         run: echo "GIT_HASH=$(git rev-parse --short ${GITHUB_SHA})" >> $GITHUB_ENV
 
       - name: Build and push
@@ -28,7 +29,7 @@ jobs:
           context: ./app
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner.lowercase }}/${{ env.IMAGE_NAME }}:${{ env.GIT_HASH }}
+            ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.GIT_HASH }}
 
       - name: Update envfile
         run: echo "MEDIA_DOCKER_IMAGE_TAG=${{ env.GIT_HASH }}" > .env
