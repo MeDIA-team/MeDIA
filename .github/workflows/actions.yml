@@ -1,9 +1,5 @@
-name: Build Docker Image and Publish to GHCR
-on:
-  release:
-    types:
-      - published
-
+name: Dispatch workflow manually to: build Docker image, push to GHCR, add image tag to .env, push to the branch, then create a release
+on: workflow_dispatch
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
@@ -24,7 +20,7 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: Set env
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        run: echo "GIT_HASH=$(git rev-parse --short ${GITHUB_SHA})" >> $GITHUB_ENV
 
       - name: Build and push
         uses: docker/build-push-action@v2
@@ -32,4 +28,24 @@ jobs:
           context: ./app
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.RELEASE_VERSION }}
+            ghcr.io/${{ github.repository_owner }}/${{ env.IMAGE_NAME }}:${{ env.GIT_HASH }}
+
+      - name: Update envfile
+        run: echo "MEDIA_DOCKER_IMAGE_TAG=${{ env.GIT_HASH }}" > .env
+
+      - name: Commit the envfile
+        run: |
+          git config --local user.email "media-team@media-team.org"
+          git config --local user.name "media-team"
+          git commit -m "Update envfile" -a
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
+
+      - name: Create a release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
