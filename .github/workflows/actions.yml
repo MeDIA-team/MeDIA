@@ -7,23 +7,25 @@ jobs:
       IMAGE_OWNER: media-team
       IMAGE_NAME: media_app
     steps:
-      - name: checkout
+      - name: "checkout"
         uses: actions/checkout@v2
 
-      - name: Set up Docker Buildx
+      - name: "Set up Docker Buildx"
         uses: docker/setup-buildx-action@v1
 
-      - name: Login to GitHub Container Registry
+      - name: "Login to GitHub Container Registry"
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: "setenv: short commit hash"
-        run: echo "GIT_HASH=$(git rev-parse --short ${GITHUB_SHA})" >> $GITHUB_ENV
+      - name: "setenv: short commit hash and date"
+        run: |
+          echo "GIT_HASH=$(git rev-parse --short ${GITHUB_SHA})" >> $GITHUB_ENV
+          echo "DATE=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
-      - name: Build and push
+      - name: "Build and push"
         uses: docker/build-push-action@v2
         with:
           context: ./app
@@ -31,22 +33,24 @@ jobs:
           tags: |
             ghcr.io/${{ env.IMAGE_OWNER }}/${{ env.IMAGE_NAME }}:${{ env.GIT_HASH }}
 
-      - name: Update envfile
+      - name: "Update envfile"
         run: echo "MEDIA_DOCKER_IMAGE_TAG=${{ env.GIT_HASH }}" > .env
 
-      - name: Commit the envfile
+      - name: "Commit the envfile and tag"
         run: |
           git config --local user.email "media-team@media-team.org"
           git config --local user.name "media-team"
           git commit -m "Update envfile" -a
+          git tag ${{ env.DATE }}-${{ env.GIT_HASH}}
 
-      - name: Push changes
+      - name: "Push changes"
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
+          tags: true
 
-      - name: Create a release
+      - name: "Create a release"
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
