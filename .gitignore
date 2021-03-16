@@ -219,3 +219,4 @@ test/
 Elasticsearch/data/*
 app/data/*
 app/tests/test-data-*
+container_images
