@@ -4,7 +4,7 @@ services:
     build:
       context: ./app
       dockerfile: Dockerfile
-    image: media_app:${MEDIA_DOCKER_IMAGE_TAG}
+    image: ghcr.io/media-team/media_app:${MEDIA_DOCKER_IMAGE_TAG}
     container_name: media_app
     environment:
       BASIC_AUTH_PASS: "pass"
