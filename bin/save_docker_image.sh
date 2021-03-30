@@ -19,7 +19,7 @@ if [[ ! -e ${ENVFILE} ]]; then
   exit 1
 fi
 
-IMAGE_TAG=$(cat ${ENVFILE} | grep 'MEDIA_DOCKER_IMAGE_TAG' | cut -d '=' -f 2)
+IMAGE_TAG=$(grep 'MEDIA_DOCKER_IMAGE_TAG' ${ENVFILE} | cut -d '=' -f 2)
 CONTAINER_IMAGE_ID="ghcr.io/media-team/media_app:${IMAGE_TAG}"
 
 IMAGE_DIR="${BASEDIR}/container_images"
