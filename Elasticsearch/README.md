@@ -3,7 +3,7 @@
 - RESTful な API を提供する分散型検索/分析エンジン
 - データを格納する DB として動作
 
-Elasticsearch Container Image として `docker.elastic.co/elasticsearch/elasticsearch:7.10.0` を使っている。
+Elasticsearch Container Image として `docker.elastic.co/elasticsearch/elasticsearch:7.13.1` を使っている。
 
 ## Settings
 

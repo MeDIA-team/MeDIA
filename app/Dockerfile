@@ -1,13 +1,11 @@
-FROM node:15.2.1-stretch-slim
-
-ADD https://github.com/krallin/tini/releases/download/v0.18.0/tini /usr/local/bin/tini
-RUN chmod +x /usr/local/bin/tini
+FROM node:16.3.0-buster-slim
 
 RUN apt update && \
   apt install -y --no-install-recommends \
   build-essential \
   curl \
   python-dev \
+  tini \
   wait-for-it && \
   apt clean &&\
   rm -rf /var/lib/apt/lists/*
