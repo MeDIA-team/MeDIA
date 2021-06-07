@@ -1,10 +1,12 @@
-.dockerignore
-.nuxt
-.vscode
-*.log
-data
-Dockerfile
-node_modules
-tests/test-data-*
-yarn-debug.log*
-yarn-error.log*
+# Ignore everything
+**
+
+!command
+!es_schema
+!nuxt.config.ts
+!package.json
+!README.md
+!src
+!tests/generateTestData.ts
+!tsconfig.json
+!yarn.lock
