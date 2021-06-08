@@ -27,12 +27,12 @@ DOCKER_COMPOSE_FILE="${BASEDIR}/docker-compose.yml"
 get_image_tag() {
   local image_name=${1}
   case ${image_name} in
-    "app" )
-      grep 'MEDIA_DOCKER_IMAGE_TAG' ${ENVFILE} | cut -d '=' -f 2
-      ;;
-    "elasticsearch" )
-      grep 'docker.elastic.co' ${DOCKER_COMPOSE_FILE} | awk -F':' '$0=$3'
-      ;;
+  "app")
+    grep 'MEDIA_DOCKER_IMAGE_TAG' ${ENVFILE} | cut -d '=' -f 2
+    ;;
+  "elasticsearch")
+    grep 'docker.elastic.co' ${DOCKER_COMPOSE_FILE} | awk -F':' '$0=$3'
+    ;;
   esac
 }
 
@@ -40,12 +40,12 @@ get_image_id() {
   local image_name=${1}
   local image_tag=${2}
   case ${image_name} in
-    "app" )
-      echo "ghcr.io/media-team/media_app:${image_tag}"
-      ;;
-    "elasticsearch" )
-      grep 'docker.elastic.co' ${DOCKER_COMPOSE_FILE} | awk '$0=$2'
-      ;;
+  "app")
+    echo "ghcr.io/media-team/media_app:${image_tag}"
+    ;;
+  "elasticsearch")
+    grep 'docker.elastic.co' ${DOCKER_COMPOSE_FILE} | awk '$0=$2'
+    ;;
   esac
 }
 
@@ -59,7 +59,7 @@ for image_name in "app" "elasticsearch"; do
   echo "### done."
 
   echo "### Saving docker container image ${container_image_id} ..."
-  docker save ${container_image_id} | gzip > ${image_out_path}
+  docker save ${container_image_id} | gzip >${image_out_path}
   echo "### done."
 
   if [[ ! -e ${image_out_path} ]]; then
