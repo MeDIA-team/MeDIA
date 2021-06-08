@@ -2,45 +2,49 @@ import fs from 'fs'
 import path from 'path'
 import dayjs from 'dayjs'
 
-const SEX: string[] = ['Male', 'Female']
+const SEX: string[] = ['Male', 'Female'] // NA
 const LIBRARY_PREP: string[] = ['Kazusa', 'Riken']
 const BODY_REGION: string[] = ['Back', 'Thigh', 'Arm', 'Others']
-const PROJECTS: { projectName: string; projectID: string }[] = [
+const RESEARCHES: { researchName: string; researchNameAbbr: string }[] = [
   {
-    projectName: 'Retrospective clinical data',
-    projectID: 'RCD',
+    researchName: 'Retrospective clinical data',
+    researchNameAbbr: 'RCD',
   },
   {
-    projectName: 'Microbiome',
-    projectID: 'K999',
+    researchName: 'Microbiome',
+    researchNameAbbr: 'K999',
   },
   {
-    projectName: 'Bleach bath',
-    projectID: 'ADc-KO99',
+    researchName: 'Bleach bath',
+    researchNameAbbr: 'ADc-KO99',
   },
   {
-    projectName: 'Maemuki',
-    projectID: 'M999',
+    researchName: 'Maemuki',
+    researchNameAbbr: 'M999',
   },
   {
-    projectName: 'Biomaker',
-    projectID: 'P999',
+    researchName: 'Biomaker',
+    researchNameAbbr: 'P999',
   },
   {
-    projectName: 'Microbiome with intervention',
-    projectID: 'WWWW0000',
+    researchName: 'Microbiome with intervention',
+    researchNameAbbr: 'WWWW0000',
   },
   {
-    projectName: 'Genome',
-    projectID: 'Genome0001',
+    researchName: 'Genome',
+    researchNameAbbr: 'Genome0001',
   },
   {
-    projectName: 'Mobile app',
-    projectID: 'A9920',
+    researchName: 'Mobile app',
+    researchNameAbbr: 'A9920',
   },
   {
-    projectName: 'Tight junction',
-    projectID: 'TJ111',
+    researchName: 'Tight junction',
+    researchNameAbbr: 'TJ111',
+  },
+  {
+    researchName: 'NA',
+    researchNameAbbr: 'NA',
   },
 ]
 const DATA_TYPE: string[] = [
@@ -55,6 +59,27 @@ const DATA_TYPE: string[] = [
   'Cytokine',
   'Nerve imaging',
 ]
+const Disease: string[] = [
+  'Basal_cell_carcinoma',
+  'Chronic_granulomatous_disease',
+  'Dermatomyositis',
+  'Dystrophic_Epidermolysis_bullosa_pruriginosa',
+  'Epidermolysis_bullosa_acquisita',
+  'Hypereosinophilic_syndrome',
+  'IdA_pemphigus',
+  'acne',
+  'chronic_eczema',
+  'confluent_and_reticulated_papillomatosis',
+  'insect_bite',
+  'lymphedema_associated_neutrophilic_disease',
+  'pemphigus_foliaceus',
+  'pemphigus_vulgaris',
+  'prurigo',
+  'prurigo_nodularis',
+  'psoriasis_vulgaris',
+  'seborrheic_dermatitis',
+  'seborrheic_dermatitis',
+] // AD, NA, Normal
 
 const generateRandomId = (len: number): string => {
   const maxLen = 8
@@ -78,14 +103,32 @@ const generateRandomDate = (start: Date, end: Date): Date => {
 const generatePatients = (patientNum: number) => {
   const patients = []
   for (let i = 0; i < patientNum; i++) {
+    const sex = Math.random() <= 0.1 ? 'NA' : randomChoice(SEX)
+    let diseaseRandom = Math.random()
+    let disease
+    let diseaseCategory
+    if (diseaseRandom <= 0.4) {
+      disease = 'AD'
+      diseaseCategory = 'AD'
+    } else if (diseaseRandom <= 0.5) {
+      disease = 'NA'
+      diseaseCategory = 'NA'
+    } else if (diseaseRandom <= 0.7) {
+      disease = 'Normal'
+      diseaseCategory = 'Normal'
+    } else {
+      disease = randomChoice(Disease)
+      diseaseCategory = 'Other'
+    }
     const patient = {
-      patientID: generateRandomId(64),
-      sex: randomChoice(SEX),
+      AID: generateRandomId(64),
+      sex,
       birthDate: generateRandomDate(
         new Date(1920, 1, 1),
         new Date(1999, 12, 31)
       ),
-      disease: `Disease ${randomChoice(['A', 'B', 'C', 'D', 'E'])}`,
+      disease,
+      diseaseCategory,
     }
     patients.push(patient)
   }
@@ -105,53 +148,59 @@ const getAge = (from: Date, to: Date) => {
   return dayjs(to).diff(dayjs(from), 'year')
 }
 
-type Project = {
-  projectID: string
-  projectName: string
+type Research = {
+  researchNameAbbr: string
+  researchName: string
 }
 
 type DataType = {
   name: string
+  category: string
   [K: string]: string | number
 }
 
 const defaultFields: string[] = [
-  'projectID',
-  'projectName',
-  'projectPatientID',
-  'patientID',
+  'researchNameAbbr',
+  'researchName',
+  'researchID',
+  'AID',
   'sex',
   'age',
+  'diseaseCategory',
   'disease',
   'sampleID',
   'samplingDate',
+  'dataTypeCategory',
   'dataType',
 ]
 
 type Entry = {
-  projectID: string
-  projectName: string
-  projectPatientID: string
-  patientID: string
+  researchNameAbbr: string
+  researchName: string
+  researchID: string
+  AID: string
   sex: string
   age: number
+  diseaseCategory: string
   disease: string
   sampleID: string
   samplingDate: string
+  dataTypeCategory: string
   dataType: string
   [K: string]: string | number
 }
 
 type Patient = {
-  patientID: string
-  projects: Project[]
-  projectPatientIDs: string[]
+  AID: string
+  researches: Research[]
+  researchIDs: string[]
   samples: {
     sampleID: string
     samplingDate: string
     dataTypes: DataType[]
     sex: string
     age: number
+    diseaseCategory: string
     disease: string
   }[]
 }
@@ -160,20 +209,21 @@ type Sample = {
   sampleID: string
   samplingDate: string
   dataTypes: DataType[]
-  patientID: string
+  AID: string
   sex: string
   age: number
+  diseaseCategory: string
   disease: string
-  projects: Project[]
-  projectPatientIDs: string[]
+  researches: Research[]
+  researchIDs: string[]
 }
 
-const mergeProject = (projectArr: Project[], project: Project) => {
-  const projectNames = projectArr.map((p) => p.projectID)
-  if (!projectNames.includes(project.projectID)) {
-    return [...projectArr, project]
+const mergeResearches = (researchArr: Research[], research: Research) => {
+  const researchNameAbbr = researchArr.map((p) => p.researchNameAbbr)
+  if (!researchNameAbbr.includes(research.researchNameAbbr)) {
+    return [...researchArr, research]
   }
-  return projectArr
+  return researchArr
 }
 
 const mergeStringArr = (arr: string[], val: string) => {
@@ -187,7 +237,10 @@ const mergeDataType = (dataTypeArr: DataType[], entry: Entry) => {
   const dataType = entry.dataType
   const dataTypeNames = dataTypeArr.map((d) => d.name)
   if (!dataTypeNames.includes(dataType)) {
-    dataTypeArr.push({ name: dataType })
+    dataTypeArr.push({
+      name: entry.dataType,
+      category: entry.dataTypeCategory,
+    })
   }
   for (const [key, val] of Object.entries(entry)) {
     if (!defaultFields.includes(key)) {
@@ -208,6 +261,7 @@ const mergeSample = (
     dataTypes: DataType[]
     sex: string
     age: number
+    diseaseCategory: string
     disease: string
   }[],
   entry: Entry
@@ -221,6 +275,7 @@ const mergeSample = (
       dataTypes: [],
       sex: entry.sex,
       age: entry.age,
+      diseaseCategory: entry.diseaseCategory,
       disease: entry.disease,
     })
   }
@@ -238,19 +293,19 @@ const generateTestData = (
   const entriesData: Entry[] = []
   const patients = generatePatients(patientNum)
   for (const patient of patients) {
-    const projects: Project[] = []
-    const projectNum = randomInt(1, PROJECTS.length)
-    while (projects.length < projectNum) {
-      const project = randomChoice(PROJECTS)
+    const researches: Research[] = []
+    const researchNum = randomInt(1, 3)
+    while (researches.length < researchNum) {
+      const research = randomChoice(RESEARCHES)
       if (
-        !projects
-          .map((project) => project.projectID)
-          .includes(project.projectID)
+        !researches
+          .map((research) => research.researchNameAbbr)
+          .includes(research.researchNameAbbr)
       ) {
-        projects.push(project)
+        researches.push(research)
       }
     }
-    for (const project of projects) {
+    for (const research of researches) {
       const sampleNum = randomInt(1, 5)
       for (let i = 0; i < sampleNum; i++) {
         const sampleId = generateRandomId(32)
@@ -258,9 +313,8 @@ const generateTestData = (
           new Date(2010, 1, 1),
           new Date(2019, 12, 31)
         )
-
         const dataTypes: string[] = []
-        const dataNum = randomInt(1, DATA_TYPE.length)
+        const dataNum = randomInt(1, 5)
         while (dataTypes.length < dataNum) {
           const dataType = randomChoice(DATA_TYPE)
           if (!dataTypes.includes(dataType)) {
@@ -268,18 +322,34 @@ const generateTestData = (
           }
         }
         for (const dataType of dataTypes) {
+          let dataTypeCategory
+          if (
+            ['Skin image', 'Microbiome', 'Cutometer', 'RNAseq'].includes(
+              dataType
+            )
+          ) {
+            dataTypeCategory = 'CategoryA'
+          } else if (
+            ['Medication data', 'Genome', 'Histology'].includes(dataType)
+          ) {
+            dataTypeCategory = 'CategoryB'
+          } else {
+            dataTypeCategory = 'CategoryC'
+          }
           const entry: Entry = {
-            projectID: project.projectID,
-            projectName: project.projectName,
-            projectPatientID: `${project.projectID}_${patient.patientID}`,
-            patientID: patient.patientID,
+            researchNameAbbr: research.researchNameAbbr,
+            researchName: research.researchName,
+            researchID: `${research.researchNameAbbr}_${research.researchName}`,
+            AID: patient.AID,
             sex: patient.sex,
             age: getAge(patient.birthDate, samplingDate),
+            diseaseCategory: patient.diseaseCategory,
             disease: patient.disease,
             sampleID: sampleId,
             samplingDate: dayjs(samplingDate).format('YYYY-MM-DD'),
+            dataTypeCategory,
             dataType,
-            'File Path': `/data/${project.projectID}/${dataType}/${sampleId}.txt`,
+            'File Path': `/data/${research.researchNameAbbr}/${dataType}/${sampleId}.txt`,
           }
           if (dataType === 'RNAseq') {
             entry['Library Prep'] = randomChoice(LIBRARY_PREP)
@@ -300,45 +370,52 @@ const generateTestData = (
         sampleID: entry.sampleID,
         samplingDate: entry.samplingDate,
         dataTypes: [],
-        patientID: entry.patientID,
+        AID: entry.AID,
         sex: entry.sex,
         age: entry.age,
+        diseaseCategory: entry.diseaseCategory,
         disease: entry.disease,
-        projects: [],
-        projectPatientIDs: [],
+        researches: [],
+        researchIDs: [],
       }
     }
     samplesData[entry.sampleID].dataTypes = mergeDataType(
       samplesData[entry.sampleID].dataTypes,
       entry
     )
-    samplesData[entry.sampleID].projects = mergeProject(
-      samplesData[entry.sampleID].projects,
-      { projectName: entry.projectName, projectID: entry.projectID }
+    samplesData[entry.sampleID].researches = mergeResearches(
+      samplesData[entry.sampleID].researches,
+      {
+        researchNameAbbr: entry.researchNameAbbr,
+        researchName: entry.researchName,
+      }
     )
-    samplesData[entry.sampleID].projectPatientIDs = mergeStringArr(
-      samplesData[entry.sampleID].projectPatientIDs,
-      entry.projectPatientID
+    samplesData[entry.sampleID].researchIDs = mergeStringArr(
+      samplesData[entry.sampleID].researchIDs,
+      entry.researchID
     )
 
-    if (!(entry.patientID in patientsData)) {
-      patientsData[entry.patientID] = {
-        patientID: entry.patientID,
-        projects: [],
-        projectPatientIDs: [],
+    if (!(entry.AID in patientsData)) {
+      patientsData[entry.AID] = {
+        AID: entry.AID,
+        researches: [],
+        researchIDs: [],
         samples: [],
       }
     }
-    patientsData[entry.patientID].projects = mergeProject(
-      patientsData[entry.patientID].projects,
-      { projectName: entry.projectName, projectID: entry.projectID }
+    patientsData[entry.AID].researches = mergeResearches(
+      patientsData[entry.AID].researches,
+      {
+        researchName: entry.researchName,
+        researchNameAbbr: entry.researchNameAbbr,
+      }
     )
-    patientsData[entry.patientID].projectPatientIDs = mergeStringArr(
-      patientsData[entry.patientID].projectPatientIDs,
-      entry.projectPatientID
+    patientsData[entry.AID].researchIDs = mergeStringArr(
+      patientsData[entry.AID].researchIDs,
+      entry.researchID
     )
-    patientsData[entry.patientID].samples = mergeSample(
-      patientsData[entry.patientID].samples,
+    patientsData[entry.AID].samples = mergeSample(
+      patientsData[entry.AID].samples,
       entry
     )
   }
@@ -352,16 +429,23 @@ const generateTestData = (
 
 const main = () => {
   console.log('Start generate test data.')
-  const data = generateTestData(100)
+  const patientNum = parseInt(process.argv[2]) || 100
+  console.log(`PatientNum: ${patientNum}`)
+  const data = generateTestData(patientNum)
   const scriptDir = path.dirname(__filename)
   for (const key of ['entries', 'patients', 'samples']) {
-    for (let i = 1; i < 3; i++) {
-      const filePath = path.join(scriptDir, `test-data-${key}-${i}.json`)
-      const arr = data[key as 'entries' | 'patients' | 'samples']
-      const start = i === 1 ? 0 : Math.floor(arr.length / 2)
-      const end = i === 1 ? Math.floor(arr.length / 2) : arr.length + 1
-      fs.writeFileSync(filePath, JSON.stringify(arr.slice(start, end), null, 2))
+    const filePath = path.join(scriptDir, `test-data-${key}.json`)
+    const arr = data[key as 'entries' | 'patients' | 'samples']
+    if (key === 'entries') {
+      console.log(`Generated EntryNum: ${arr.length}`)
+    } else if (key === 'patients') {
+      console.log(`Generated PatientNum: ${arr.length}`)
+    } else if (key === 'samples') {
+      console.log(`Generated SampleNum: ${arr.length}`)
     }
+    fs.writeFileSync(filePath, JSON.stringify(arr, null, 2))
+    const stat = fs.statSync(filePath)
+    console.log(`FileSize: ${stat.size}`)
   }
   console.log('Finish generate test data.')
 }

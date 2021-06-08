@@ -77,6 +77,9 @@ $ yarn dev
 # ./tests 以下に dummy data を生成
 $ yarn test:generateTestData
 
+# patientNum の default は 100. 変更したい場合は下記
+$ yarn test:generateTestData 1000
+
 # Elasticsearch に bulk import
 $ yarn test:bulk:entry
 $ yarn test:bulk:sample
