@@ -16,12 +16,15 @@
           "properties": {
             "name": {
               "type": "string"
+            },
+            "category": {
+              "type": "string"
             }
           },
-          "required": ["name"]
+          "required": ["name", "category"]
         }
       },
-      "patientID": {
+      "AID": {
         "type": "string"
       },
       "sex": {
@@ -30,25 +33,28 @@
       "age": {
         "type": "integer"
       },
+      "diseaseCategory": {
+        "type": "string"
+      },
       "disease": {
         "type": "string"
       },
-      "projects": {
+      "researches": {
         "type": "array",
         "items": {
           "type": "object",
           "properties": {
-            "projectID": {
+            "researchNameAbbr": {
               "type": "string"
             },
-            "projectName": {
+            "researchName": {
               "type": "string"
             }
           },
-          "required": ["projectID", "projectName"]
+          "required": ["researchNameAbbr", "researchName"]
         }
       },
-      "projectPatientIDs": {
+      "AIDs": {
         "type": "array",
         "items": {
           "type": "string"
@@ -59,12 +65,13 @@
       "sampleID",
       "samplingDate",
       "dataTypes",
-      "patientID",
+      "AID",
       "sex",
       "age",
+      "diseaseCategory",
       "disease",
-      "projects",
-      "projectPatientIDs"
+      "researches",
+      "AIDs"
     ]
   }
 }
