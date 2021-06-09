@@ -3,8 +3,8 @@ services:
   app:
     build:
       context: ./app
-      dockerfile: Dockerfile
-    image: media_app:dev
+      dockerfile: Dockerfile-dev
+    image: media_app_dev
     container_name: media_app_dev
     environment:
       BASIC_AUTH_PASS: "pass"
