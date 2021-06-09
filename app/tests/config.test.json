@@ -1,0 +1,156 @@
+{
+  "primaryKey": {
+    "patient": "patientId",
+    "sample": "sampleId"
+  },
+  "selector": {
+    "fields": [
+      {
+        "id": "research",
+        "label": "Research",
+        "form": {
+          "type": "checkbox"
+        }
+      },
+      {
+        "id": "patientId",
+        "label": "AID",
+        "form": {
+          "type": "chip",
+          "fieldWidth": "660px",
+          "boxLabel": "is"
+        }
+      },
+      {
+        "id": "researchId",
+        "label": "Research ID",
+        "form": {
+          "type": "chip",
+          "fieldWidth": "660px",
+          "boxLabel": "is"
+        }
+      },
+      {
+        "id": "sex",
+        "label": "Sex",
+        "form": {
+          "type": "checkbox"
+        }
+      },
+      {
+        "id": "age",
+        "label": "Age",
+        "form": {
+          "type": "text",
+          "fieldWidth": "80px",
+          "fieldType": "number"
+        }
+      },
+      {
+        "id": "diseaseCategory",
+        "label": "Disease Category",
+        "form": {
+          "type": "checkbox"
+        }
+      },
+      {
+        "id": "disease",
+        "label": "Disease",
+        "form": {
+          "type": "checkbox"
+        }
+      },
+      {
+        "id": "sampleId",
+        "label": "Sample ID",
+        "form": {
+          "type": "chip",
+          "fieldWidth": "660px",
+          "boxLabel": "is"
+        }
+      },
+      {
+        "id": "samplingDate",
+        "label": "Sampling Date",
+        "form": {
+          "type": "text",
+          "fieldWidth": "200px",
+          "fieldType": "date"
+        }
+      },
+      {
+        "id": "dataType",
+        "label": "Data Type",
+        "form": {
+          "type": "chip",
+          "fieldWidth": "660px",
+          "boxLabel": "must have"
+        }
+      }
+    ]
+  },
+  "filter": {
+    "dataType": [
+      {
+        "id": "categoryA",
+        "label": "Category A",
+        "child": [
+          {
+            "id": "skinImage",
+            "label": "Skin image"
+          },
+          {
+            "id": "microbiome",
+            "label": "Microbiome"
+          },
+          {
+            "id": "cutometer",
+            "label": "Cutometer"
+          }
+        ]
+      },
+      {
+        "id": "categoryB",
+        "label": "Category B",
+        "child": [
+          {
+            "id": "RNAseq",
+            "label": "RNA-seq"
+          },
+          {
+            "id": "medicationData",
+            "label": "Medication data"
+          }
+        ]
+      },
+      {
+        "id": "categoryC",
+        "label": "Category C",
+        "child": [
+          {
+            "id": "genome",
+            "label": "Genome"
+          },
+          {
+            "id": "histology",
+            "label": "Histology"
+          },
+          {
+            "id": "clinicalLabData",
+            "label": "Clinical lab data",
+            "child": [
+              {
+                "id": "cytokine",
+                "label": "Cytokine"
+              },
+              {
+                "id": "nerveImaging",
+                "label": "Nerve imaging"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

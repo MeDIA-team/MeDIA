@@ -1,0 +1,143 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "required": ["filter", "selector"],
+  "additionalProperties": false,
+  "properties": {
+    "filter": {
+      "type": "object",
+      "required": ["fields"],
+      "additionalProperties": false,
+      "properties": {
+        "fields": {
+          "type": "array",
+          "additionalItems": false,
+          "items": {
+            "oneOf": [
+              { "$ref": "#/definitions/checkboxField" },
+              { "$ref": "#/definitions/chipField" },
+              { "$ref": "#/definitions/textField" }
+            ]
+          }
+        }
+      }
+    },
+    "selector": {
+      "type": "object",
+      "required": ["dataType"],
+      "additionalProperties": false,
+      "properties": {
+        "dataType": {
+          "type": "array",
+          "additionalItems": false,
+          "items": {
+            "$ref": "#/definitions/selectorField"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "checkboxField": {
+      "type": "object",
+      "required": ["id", "label", "form", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "form": {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["checkbox"]
+            }
+          }
+        },
+        "type": {
+          "type": "string",
+          "enum": ["string"]
+        }
+      }
+    },
+    "chipField": {
+      "type": "object",
+      "required": ["id", "label", "form", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "form": {
+          "type": "object",
+          "required": ["type", "logic"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["chip"]
+            },
+            "logic": {
+              "type": "string",
+              "enum": ["OR", "AND"]
+            },
+            "boxWidth": {
+              "type": "string",
+              "pattern": "^[0-9]+px$"
+            },
+            "boxLabel": { "type": "string" }
+          }
+        },
+        "type": {
+          "type": "string",
+          "enum": ["string"]
+        }
+      }
+    },
+    "textField": {
+      "type": "object",
+      "required": ["id", "label", "form", "type"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "form": {
+          "type": "object",
+          "required": ["type"],
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["text"]
+            },
+            "boxWidth": {
+              "type": "string",
+              "pattern": "^[0-9]+px$"
+            }
+          }
+        },
+        "type": {
+          "type": "string",
+          "enum": ["integer", "date"]
+        }
+      }
+    },
+    "selectorField": {
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "label": { "type": "string" },
+        "child": {
+          "type": "array",
+          "additionalItems": false,
+          "items": {
+            "$ref": "#/definitions/selectorField"
+          }
+        }
+      }
+    }
+  }
+}
