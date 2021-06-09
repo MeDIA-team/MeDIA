@@ -155,6 +155,13 @@ class AllBulkError extends Error {
   }
 }
 
+const splitArr = (arr: Record<string, any>[], splitNum: number) => {
+  const chunkSize = Math.ceil(arr.length / splitNum)
+  return new Array(splitNum)
+    .fill(null)
+    .map((_, i) => arr.slice(i * chunkSize, (i + 1) * chunkSize))
+}
+
 export const bulkData = async (
   esClient: Client,
   filePaths: string[],
@@ -163,34 +170,54 @@ export const bulkData = async (
   logStdout('Start to bulk data json files.')
 
   const bulkFile = async (filePath: string) => {
+    // test data とそのファイルサイズの関係
+    // Generated EntryNum: 17969
+    // FileSize: 9537003 -> 9MB
+    // Generated PatientNum: 1000
+    // FileSize: 5354591 -> 5MB
+    // Generated SampleNum: 5970
+    // FileSize: 5850980 -> 6MB
+    //
+    // bulk は http request body size の制限から 100MB までの制限がある
+    // filePath の size を確認して、適度に分割する処理を書く
+    // 50MB を上限として分割することにする
+    // fileSize を取得 -> 50MB で割る -> 分割数に応じて中に含まれている arr を split する -> Bulk insert
     const fileContent = await fs.promises.readFile(filePath, 'utf-8')
     const fileObj = await JSON.parse(fileContent)
-    const body = fileObj.flatMap((doc: any) => [
-      { index: { _index: index } },
-      doc,
-    ])
-    const { body: bulkResponse } = await esClient.bulk({ refresh: true, body })
-    if (bulkResponse.errors) {
-      const errorDocs: {
-        status: any
-        error: any
-        operation: any
-        document: any
-      }[] = []
-      bulkResponse.items.forEach(
-        (action: { [x: string]: { error: any; status: any } }, i: number) => {
-          const operation = Object.keys(action)[0]
-          if (action[operation].error) {
-            errorDocs.push({
-              status: action[operation].status,
-              error: action[operation].error,
-              operation: body[i * 2],
-              document: body[i * 2 + 1],
-            })
+    const fileSize = (await fs.promises.stat(filePath)).size
+    const splitNum = Math.ceil(fileSize / 50000000)
+    const splitFileObj = splitArr(fileObj, splitNum)
+    for (const obj of splitFileObj) {
+      const body = obj.flatMap((doc: any) => [
+        { index: { _index: index } },
+        doc,
+      ])
+      const { body: bulkResponse } = await esClient.bulk({
+        refresh: true,
+        body,
+      })
+      if (bulkResponse.errors) {
+        const errorDocs: {
+          status: any
+          error: any
+          operation: any
+          document: any
+        }[] = []
+        bulkResponse.items.forEach(
+          (action: { [x: string]: { error: any; status: any } }, i: number) => {
+            const operation = Object.keys(action)[0]
+            if (action[operation].error) {
+              errorDocs.push({
+                status: action[operation].status,
+                error: action[operation].error,
+                operation: body[i * 2],
+                document: body[i * 2 + 1],
+              })
+            }
           }
-        }
-      )
-      throw new BulkError(filePath, errorDocs)
+        )
+        throw new BulkError(filePath, errorDocs)
+      }
     }
   }
 
@@ -225,9 +252,12 @@ export const updateIndexFielddata = async (esClient: Client, index: string) => {
       string,
       Record<string, string>
     > = Object.assign({}, mappings.properties.dataTypes.properties)
-    mappings.properties.dataTypes.properties = { name: { type: 'keyword' } }
+    mappings.properties.dataTypes.properties = {
+      name: { type: 'keyword' },
+      category: { type: 'keyword' },
+    }
     for (const [key, value] of Object.entries(dataTypesMappings)) {
-      if (key === 'name') {
+      if (key === 'name' || key === 'category') {
         continue
       }
       if ('type' in value) {
@@ -253,9 +283,10 @@ export const updateIndexFielddata = async (esClient: Client, index: string) => {
     )
     mappings.properties.samples.properties.dataTypes.properties = {
       name: { type: 'keyword' },
+      category: { type: 'keyword' },
     }
     for (const [key, value] of Object.entries(dataTypesMappings)) {
-      if (key === 'name') {
+      if (key === 'name' || key === 'category') {
         continue
       }
       if ('type' in value) {

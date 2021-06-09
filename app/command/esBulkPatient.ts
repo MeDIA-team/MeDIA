@@ -14,21 +14,21 @@ import {
 
 const indexMappings = {
   properties: {
-    patientID: {
+    AID: {
       type: 'keyword',
     },
-    projects: {
+    researches: {
       type: 'nested',
       properties: {
-        projectID: {
+        researchNameAbbr: {
           type: 'keyword',
         },
-        projectName: {
+        researchName: {
           type: 'keyword',
         },
       },
     },
-    projectPatientIDs: {
+    researchIDs: {
       type: 'keyword',
     },
     samples: {
@@ -46,12 +46,18 @@ const indexMappings = {
             name: {
               type: 'keyword',
             },
+            category: {
+              type: 'keyword',
+            },
           },
         },
         age: {
           type: 'short',
         },
         sex: {
+          type: 'keyword',
+        },
+        diseaseCategory: {
           type: 'keyword',
         },
         disease: {

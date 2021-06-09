@@ -19,16 +19,16 @@ const indexMappings = {
     dataType: {
       type: 'keyword',
     },
-    projectPatientID: {
+    researchID: {
       type: 'keyword',
     },
-    patientID: {
+    AID: {
       type: 'keyword',
     },
-    projectID: {
+    researchNameAbbr: {
       type: 'keyword',
     },
-    projectName: {
+    researchName: {
       type: 'keyword',
     },
     sampleID: {
@@ -38,6 +38,9 @@ const indexMappings = {
       type: 'date',
     },
     sex: {
+      type: 'keyword',
+    },
+    diseaseCategory: {
       type: 'keyword',
     },
     disease: {

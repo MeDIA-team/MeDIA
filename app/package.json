@@ -16,9 +16,9 @@
     "bulk:patient": "yarn exec-ts-node ./command/esBulkPatient.ts",
     "bulk:sample": "yarn exec-ts-node ./command/esBulkSample.ts",
     "test:generateTestData": "yarn exec-ts-node ./tests/generateTestData.ts",
-    "test:bulk:entry": "yarn bulk:entry ./tests/test-data-entries-1.json ./tests/test-data-entries-2.json",
-    "test:bulk:patient": "yarn bulk:patient ./tests/test-data-patients-1.json ./tests/test-data-patients-2.json",
-    "test:bulk:sample": "yarn bulk:sample ./tests/test-data-samples-1.json ./tests/test-data-samples-2.json"
+    "test:bulk:entry": "yarn bulk:entry ./tests/test-data-entries.json",
+    "test:bulk:patient": "yarn bulk:patient ./tests/test-data-patients.json",
+    "test:bulk:sample": "yarn bulk:sample ./tests/test-data-samples.json"
   },
   "dependencies": {
     "nuxt": "^2.15.6"

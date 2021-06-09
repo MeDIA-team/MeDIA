@@ -26,9 +26,12 @@ const indexMappings = {
         name: {
           type: 'keyword',
         },
+        category: {
+          type: 'keyword',
+        },
       },
     },
-    patientID: {
+    AID: {
       type: 'keyword',
     },
     age: {
@@ -37,21 +40,24 @@ const indexMappings = {
     sex: {
       type: 'keyword',
     },
+    diseaseCategory: {
+      type: 'keyword',
+    },
     disease: {
       type: 'keyword',
     },
-    projects: {
+    researches: {
       type: 'nested',
       properties: {
-        projectID: {
+        researchNameAbbr: {
           type: 'keyword',
         },
-        projectName: {
+        researchName: {
           type: 'keyword',
         },
       },
     },
-    projectPatientIDs: {
+    researchIDs: {
       type: 'keyword',
     },
   },

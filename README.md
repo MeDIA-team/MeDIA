@@ -17,6 +17,10 @@
 環境構築として、[Docker](https://www.docker.com)、[docker-compose](https://docs.docker.com/compose/) を使用している。
 
 ```bash
+# [追記] 先に Elasticsearch/data の directory を作成したほうが良い
+# Elasticsearch docker image の問題であるが、書き込み権限周りで ES container が起動しないケースがある
+$ mkdir Elasticsearch/data
+
 # Docker network の作成
 $ docker network create media_network
 # 全てのコンポーネントの起動

@@ -54,7 +54,7 @@
           "required": ["researchNameAbbr", "researchName"]
         }
       },
-      "AIDs": {
+      "researchIDs": {
         "type": "array",
         "items": {
           "type": "string"
@@ -71,7 +71,7 @@
       "diseaseCategory",
       "disease",
       "researches",
-      "AIDs"
+      "researchIDs"
     ]
   }
 }
