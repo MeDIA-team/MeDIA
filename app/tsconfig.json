@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "ES2018",
     "module": "ESNext",
-    "lib": [
-      "ESNext",
-      "ESNext.AsyncIterable",
-      "DOM"
-    ],
+    "lib": ["ESNext", "ESNext.AsyncIterable", "DOM"],
     "allowJs": true,
     "sourceMap": true,
     "noEmit": true,
@@ -14,12 +10,8 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "~/*": [
-        "src/*"
-      ],
-      "@/*": [
-        "src/*"
-      ]
+      "~/*": ["src/*"],
+      "@/*": ["src/*"]
     },
     "typeRoots": [
       "./node_modules/@types",
@@ -29,9 +21,5 @@
     ],
     "esModuleInterop": true
   },
-  "exclude": [
-    "node_modules",
-    ".nuxt",
-    "dist"
-  ]
+  "exclude": ["node_modules", ".nuxt", "dist"]
 }
