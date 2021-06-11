@@ -200,5 +200,7 @@ dist
 Elasticsearch/data/*
 app/data/*
 app/schema/*
-app/tests/test-data-*
+app/tests/data.test.json
+app/tests/patient.test.json
+app/tests/sample.test.json
 container_images

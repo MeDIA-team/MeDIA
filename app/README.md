@@ -28,6 +28,30 @@ $ ls schema/
 data.schema.json  patient.schema.json  sample.schema.json
 ```
 
+test data の生成
+
+```bash
+root@478c6ba7f094:/app# yarn test:generateTestData 10000
+[2021/06/11 06:31:04] Start to generate the test data.
+[2021/06/11 06:31:05] PatientNum: 10000
+Generated DataNum: 179535
+FileSize: 95218764
+Generated PatientNum: 10000
+FileSize: 63093396
+Generated SampleNum: 59871
+FileSize: 57779415
+[2021/06/11 06:31:21] Finish to generate the test data.
+Done in 21.52s.
+root@478c6ba7f094:/app# ls -lah tests | grep test.json
+-rw-rw-r-- 1 node node 3.0K Jun 10 10:10 config.test.json
+-rw-rw-r-- 1 node node  816 Jun 11 01:31 data.schema.test.json
+-rw-r--r-- 1 root root  91M Jun 11 06:31 data.test.json
+-rw-rw-r-- 1 node node 2.3K Jun 11 02:02 patient.schema.test.json
+-rw-r--r-- 1 root root  61M Jun 11 06:31 patient.test.json
+-rw-rw-r-- 1 node node 1.7K Jun 11 01:59 sample.schema.test.json
+-rw-r--r-- 1 root root  56M Jun 11 06:31 sample.test.json
+```
+
 ## 設定
 
 設定項目は、`../docker-compose.yml` の environment に集約されている。
