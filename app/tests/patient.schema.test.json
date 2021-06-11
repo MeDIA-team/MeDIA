@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "additionalItems": false,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": ["patientId", "samples"],
+    "properties": {
+      "patientId": { "type": "string" },
+      "samples": {
+        "type": "array",
+        "additionalItems": false,
+        "items": {
+          "type": "object",
+          "required": [
+            "sampleId",
+            "research",
+            "researchId",
+            "sex",
+            "age",
+            "diseaseCategory",
+            "disease",
+            "samplingDate",
+            "dataType"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "sampleId": { "type": "string" },
+            "research": {
+              "type": "array",
+              "additionalItems": false,
+              "items": { "type": "string" }
+            },
+            "researchId": {
+              "type": "array",
+              "additionalItems": false,
+              "items": { "type": "string" }
+            },
+            "sex": {
+              "type": "array",
+              "additionalItems": false,
+              "items": { "type": "string" }
+            },
+            "age": {
+              "type": "array",
+              "additionalItems": false,
+              "items": {
+                "type": "integer"
+              }
+            },
+            "diseaseCategory": {
+              "type": "array",
+              "additionalItems": false,
+              "items": { "type": "string" }
+            },
+            "disease": {
+              "type": "array",
+              "additionalItems": false,
+              "items": { "type": "string" }
+            },
+            "samplingDate": {
+              "type": "array",
+              "additionalItems": false,
+              "items": { "type": "string" }
+            },
+            "dataType": {
+              "type": "array",
+              "additionalItems": false,
+              "items": {
+                "type": "object",
+                "additionalProperties": true,
+                "required": ["name"],
+                "properties": {
+                  "name": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

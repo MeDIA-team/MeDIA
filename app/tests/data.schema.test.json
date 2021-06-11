@@ -1,0 +1,33 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "additionalItems": false,
+  "items": {
+    "type": "object",
+    "additionalProperties": true,
+    "required": [
+      "research",
+      "patientId",
+      "researchId",
+      "sex",
+      "age",
+      "diseaseCategory",
+      "disease",
+      "sampleId",
+      "samplingDate",
+      "dataType"
+    ],
+    "properties": {
+      "research": { "type": "string" },
+      "patientId": { "type": "string" },
+      "researchId": { "type": "string" },
+      "sex": { "type": "string" },
+      "age": { "type": "integer" },
+      "diseaseCategory": { "type": "string" },
+      "disease": { "type": "string" },
+      "sampleId": { "type": "string" },
+      "samplingDate": { "type": "string" },
+      "dataType": { "type": "string" }
+    }
+  }
+}

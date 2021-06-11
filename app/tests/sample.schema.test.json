@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "array",
+  "additionalItems": false,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "sampleId",
+      "patientId",
+      "research",
+      "researchId",
+      "sex",
+      "age",
+      "diseaseCategory",
+      "disease",
+      "samplingDate",
+      "dataType"
+    ],
+    "properties": {
+      "sampleId": { "type": "string" },
+      "patientId": { "type": "string" },
+      "research": {
+        "type": "array",
+        "additionalItems": false,
+        "items": { "type": "string" }
+      },
+      "researchId": {
+        "type": "array",
+        "additionalItems": false,
+        "items": { "type": "string" }
+      },
+      "sex": {
+        "type": "array",
+        "additionalItems": false,
+        "items": { "type": "string" }
+      },
+      "age": {
+        "type": "array",
+        "additionalItems": false,
+        "items": {
+          "type": "integer"
+        }
+      },
+      "diseaseCategory": {
+        "type": "array",
+        "additionalItems": false,
+        "items": { "type": "string" }
+      },
+      "disease": {
+        "type": "array",
+        "additionalItems": false,
+        "items": { "type": "string" }
+      },
+      "samplingDate": {
+        "type": "array",
+        "additionalItems": false,
+        "items": { "type": "string" }
+      },
+      "dataType": {
+        "type": "array",
+        "additionalItems": false,
+        "items": {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["name"],
+          "properties": {
+            "name": { "type": "string" }
+          }
+        }
+      }
+    }
+  }
+}
