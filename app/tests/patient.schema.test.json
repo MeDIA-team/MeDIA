@@ -4,8 +4,8 @@
   "additionalItems": false,
   "items": {
     "type": "object",
-    "additionalProperties": false,
     "required": ["patientId", "samples"],
+    "additionalProperties": false,
     "properties": {
       "patientId": { "type": "string" },
       "samples": {
@@ -14,15 +14,15 @@
         "items": {
           "type": "object",
           "required": [
-            "sampleId",
             "research",
             "researchId",
             "sex",
             "age",
             "diseaseCategory",
             "disease",
+            "sampleId",
             "samplingDate",
-            "dataType"
+            "dataTypes"
           ],
           "additionalProperties": false,
           "properties": {
@@ -64,13 +64,13 @@
               "additionalItems": false,
               "items": { "type": "string" }
             },
-            "dataType": {
+            "dataTypes": {
               "type": "array",
               "additionalItems": false,
               "items": {
                 "type": "object",
-                "additionalProperties": true,
                 "required": ["name"],
+                "additionalProperties": true,
                 "properties": {
                   "name": { "type": "string" }
                 }

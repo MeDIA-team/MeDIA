@@ -87,3 +87,141 @@ export const validate = async (config: Record<any, any>): Promise<void> => {
     )
   }
 }
+
+interface GeneratedSchema {
+  $schema: 'http://json-schema.org/draft-07/schema#'
+  type: 'array'
+  additionalItems: false
+  items: {
+    type: 'object'
+    required: string[]
+    additionalProperties: boolean
+    properties: Record<any, any>
+  }
+}
+
+class SchemaTemplate implements GeneratedSchema {
+  $schema: 'http://json-schema.org/draft-07/schema#'
+  type: 'array'
+  additionalItems: false
+  items: {
+    type: 'object'
+    required: string[]
+    additionalProperties: boolean
+    properties: Record<any, any>
+  }
+
+  constructor() {
+    this.$schema = 'http://json-schema.org/draft-07/schema#'
+    this.type = 'array'
+    this.additionalItems = false
+    this.items = {
+      type: 'object',
+      required: [],
+      additionalProperties: true,
+      properties: {},
+    }
+  }
+}
+
+export const generateDataSchema = (config: Config): GeneratedSchema => {
+  const dataSchema = new SchemaTemplate()
+  dataSchema.items.required = config.filter.fields.map((field) => field.id)
+  for (const field of config.filter.fields) {
+    dataSchema.items.properties[field.id] = {
+      type: field.type === 'date' ? 'string' : field.type,
+    }
+  }
+  return dataSchema
+}
+
+export const generatePatientSchema = (config: Config): GeneratedSchema => {
+  const patientSchema = new SchemaTemplate()
+  patientSchema.items.required = ['patientId', 'samples']
+  patientSchema.items.additionalProperties = false
+  patientSchema.items.properties.patientId = { type: 'string' }
+  patientSchema.items.properties.samples = {
+    type: 'array',
+    additionalItems: false,
+    items: {
+      type: 'object',
+      required: [
+        ...config.filter.fields
+          .map((field) => field.id)
+          .filter((id) => !['patientId', 'dataType'].includes(id)),
+        'dataTypes',
+      ],
+      additionalProperties: false,
+      properties: {
+        sampleId: { type: 'string' },
+        dataTypes: {
+          type: 'array',
+          additionalItems: false,
+          items: {
+            type: 'object',
+            required: ['name'],
+            additionalProperties: true,
+            properties: {
+              name: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+  }
+  for (const field of config.filter.fields) {
+    if (['patientId', 'sampleId', 'dataType'].includes(field.id)) {
+      continue
+    }
+    patientSchema.items.properties.samples.items.properties[field.id] = {
+      type: 'array',
+      additionalItems: false,
+      items: { type: field.type === 'date' ? 'string' : field.type },
+    }
+  }
+  return patientSchema
+}
+
+export const generateSampleSchema = (config: Config): GeneratedSchema => {
+  const sampleSchema = new SchemaTemplate()
+  sampleSchema.items.required = [
+    ...config.filter.fields
+      .map((field) => field.id)
+      .filter((id) => id !== 'dataType'),
+    'dataTypes',
+  ]
+  sampleSchema.items.additionalProperties = false
+  sampleSchema.items.properties = {
+    sampleId: { type: 'string' },
+    patientId: { type: 'string' },
+    dataTypes: {
+      type: 'array',
+      additionalItems: false,
+      items: {
+        type: 'object',
+        required: ['name'],
+        additionalProperties: true,
+        properties: {
+          name: { type: 'string' },
+        },
+      },
+    },
+  }
+  for (const field of config.filter.fields) {
+    if (['patientId', 'sampleId', 'dataType'].includes(field.id)) {
+      continue
+    }
+    sampleSchema.items.properties[field.id] = {
+      type: 'array',
+      additionalItems: false,
+      items: { type: field.type === 'date' ? 'string' : field.type },
+    }
+  }
+  return sampleSchema
+}
+
+const dumpSchemas = (config: Config): void => {
+  const dataSchema = generateDataSchema(config)
+  const patientSchema = generatePatientSchema(config)
+  const sampleSchema = generateSampleSchema(config)
+}

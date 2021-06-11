@@ -4,7 +4,6 @@
   "additionalItems": false,
   "items": {
     "type": "object",
-    "additionalProperties": true,
     "required": [
       "research",
       "patientId",
@@ -17,6 +16,7 @@
       "samplingDate",
       "dataType"
     ],
+    "additionalProperties": true,
     "properties": {
       "research": { "type": "string" },
       "patientId": { "type": "string" },

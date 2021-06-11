@@ -4,19 +4,19 @@
   "additionalItems": false,
   "items": {
     "type": "object",
-    "additionalProperties": false,
     "required": [
-      "sampleId",
-      "patientId",
       "research",
+      "patientId",
       "researchId",
       "sex",
       "age",
       "diseaseCategory",
       "disease",
+      "sampleId",
       "samplingDate",
-      "dataType"
+      "dataTypes"
     ],
+    "additionalProperties": false,
     "properties": {
       "sampleId": { "type": "string" },
       "patientId": { "type": "string" },
@@ -57,13 +57,13 @@
         "additionalItems": false,
         "items": { "type": "string" }
       },
-      "dataType": {
+      "dataTypes": {
         "type": "array",
         "additionalItems": false,
         "items": {
           "type": "object",
-          "additionalProperties": true,
           "required": ["name"],
+          "additionalProperties": true,
           "properties": {
             "name": { "type": "string" }
           }
