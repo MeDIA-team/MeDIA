@@ -2,6 +2,32 @@
 
 データの閲覧/出力を行うアプリケーション
 
+## config file
+
+config file の validate
+
+```bash
+$ yarn config:validate ./tests/config.test.json
+[2021/06/11 02:38:10] Start to validate the config.
+[2021/06/11 02:38:10] validating...
+[2021/06/11 02:38:10] Finish to validate the config.
+Done in 5.48s.
+```
+
+投入用データの schema 生成
+
+```bash
+$ yarn config:dumpSchemas ./tests/config.test.json
+[2021/06/11 02:40:23] Start to dump schemas.
+[2021/06/11 02:40:23] validating...
+[2021/06/11 02:40:23] dumping...
+[2021/06/11 02:40:23] Finish to dump schemas.
+Done in 5.25s.
+
+$ ls schema/
+data.schema.json  patient.schema.json  sample.schema.json
+```
+
 ## 設定
 
 設定項目は、`../docker-compose.yml` の environment に集約されている。

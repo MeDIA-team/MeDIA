@@ -13,6 +13,8 @@
     "lint": "eslint --ext .ts,.js,.vue .",
     "test": "jest --silent",
     "exec-ts-node": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\"",
+    "config:validate": "yarn exec-ts-node ./command/configValidate.ts",
+    "config:dumpSchemas": "yarn exec-ts-node ./command/configDumpSchemas.ts",
     "bulk:entry": "yarn exec-ts-node ./command/esBulkEntry.ts",
     "bulk:patient": "yarn exec-ts-node ./command/esBulkPatient.ts",
     "bulk:sample": "yarn exec-ts-node ./command/esBulkSample.ts",

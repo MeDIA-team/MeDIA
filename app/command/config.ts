@@ -220,8 +220,24 @@ export const generateSampleSchema = (config: Config): GeneratedSchema => {
   return sampleSchema
 }
 
-const dumpSchemas = (config: Config): void => {
+export const dumpSchemas = (config: Config): void => {
   const dataSchema = generateDataSchema(config)
   const patientSchema = generatePatientSchema(config)
   const sampleSchema = generateSampleSchema(config)
+  const schemaDirPath = path.resolve(`${__dirname}/../schema`)
+  if (!fs.existsSync(schemaDirPath)) {
+    fs.mkdirSync(schemaDirPath)
+  }
+  fs.writeFileSync(
+    `${schemaDirPath}/data.schema.json`,
+    JSON.stringify(dataSchema, null, 2)
+  )
+  fs.writeFileSync(
+    `${schemaDirPath}/patient.schema.json`,
+    JSON.stringify(patientSchema, null, 2)
+  )
+  fs.writeFileSync(
+    `${schemaDirPath}/sample.schema.json`,
+    JSON.stringify(sampleSchema, null, 2)
+  )
 }

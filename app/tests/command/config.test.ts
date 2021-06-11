@@ -77,3 +77,14 @@ describe('generateSchema', () => {
     expect(sampleSchema).toEqual(expectSampleSchema)
   })
 })
+
+describe('dumpSchemas', () => {
+  const config = JSON.parse(fs.readFileSync(configTestFile, 'utf-8'))
+  expect(() => {
+    commandConfig.dumpSchemas(config)
+  }).not.toThrow()
+  const schemaDirPath = path.resolve(`${__dirname}/../../schema`)
+  expect(fs.existsSync(`${schemaDirPath}/data.schema.json`)).toBe(true)
+  expect(fs.existsSync(`${schemaDirPath}/patient.schema.json`)).toBe(true)
+  expect(fs.existsSync(`${schemaDirPath}/sample.schema.json`)).toBe(true)
+})

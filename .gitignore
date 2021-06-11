@@ -199,5 +199,6 @@ dist
 
 Elasticsearch/data/*
 app/data/*
+app/schema/*
 app/tests/test-data-*
 container_images
