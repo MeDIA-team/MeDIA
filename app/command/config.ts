@@ -66,7 +66,7 @@ export const parseAndValidateArgs = (): string => {
 }
 
 export const validate = async (config: Record<any, any>): Promise<void> => {
-  const schemeFilePath = path.resolve(`${__dirname}/../config.schema.json`)
+  const schemeFilePath = path.resolve(`${__filename}/../../config.schema.json`)
   if (!fs.existsSync(schemeFilePath)) {
     throw Error(`Could not find schema file: ${schemeFilePath}.`)
   }
@@ -224,7 +224,7 @@ export const dumpSchemas = (config: Config): void => {
   const dataSchema = generateDataSchema(config)
   const patientSchema = generatePatientSchema(config)
   const sampleSchema = generateSampleSchema(config)
-  const schemaDirPath = path.resolve(`${__dirname}/../schema`)
+  const schemaDirPath = path.resolve(`${__filename}/../../schema`)
   if (!fs.existsSync(schemaDirPath)) {
     fs.mkdirSync(schemaDirPath)
   }

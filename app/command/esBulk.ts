@@ -311,17 +311,3 @@ export const updateIndexFielddata = async (esClient: Client, index: string) => {
 
   logStdout("Finish to update index's fielddata.")
 }
-
-export const logStdout = (message: any, expand?: boolean): void => {
-  if (expand) {
-    message = '\n' + JSON.stringify(message, null, '\t')
-  }
-  console.log(`[${dayjs().format('YYYY/MM/DD hh:mm:ss')}] ${message}`)
-}
-
-export const logStderr = (message: any, expand?: boolean): void => {
-  if (expand) {
-    message = '\n' + JSON.stringify(message, null, '\t')
-  }
-  console.error(`[${dayjs().format('YYYY/MM/DD hh:mm:ss')}] ${message}`)
-}

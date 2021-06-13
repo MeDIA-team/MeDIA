@@ -4,35 +4,37 @@ import path from 'path'
 
 import * as commandConfig from '../../command/config'
 
-const configTestFile = path.resolve(`${__dirname}/../config.test.json`)
-const dataSchemaTestFile = path.resolve(`${__dirname}/../data.schema.test.json`)
+const configTestFile = path.resolve(`${__filename}/../../config.test.json`)
+const dataSchemaTestFile = path.resolve(
+  `${__filename}/../../data.schema.test.json`
+)
 const patientSchemaTestFile = path.resolve(
-  `${__dirname}/../patient.schema.test.json`
+  `${__filename}/../../patient.schema.test.json`
 )
 const sampleSchemaTestFile = path.resolve(
-  `${__dirname}/../sample.schema.test.json`
+  `${__filename}/../../sample.schema.test.json`
 )
 
+const PRE_ARGV = [...process.argv]
+
 describe('parseAndValidateArgs', () => {
+  afterEach(() => {
+    process.argv = [...PRE_ARGV]
+  })
+
   test('ok', () => {
-    const preArgv = [...process.argv]
-    process.argv = [process.argv[0], process.argv[1], configTestFile]
+    process.argv = [PRE_ARGV[0], PRE_ARGV[1], configTestFile]
     expect(commandConfig.parseAndValidateArgs()).toEqual(configTestFile)
-    process.argv = [...preArgv]
   })
 
   test('error due to no argument', () => {
-    const preArgv = [...process.argv]
-    process.argv = [process.argv[0], process.argv[1]]
+    process.argv = [PRE_ARGV[0], PRE_ARGV[1]]
     expect(() => commandConfig.parseAndValidateArgs()).toThrow()
-    process.argv = [...preArgv]
   })
 
   test('error due to non-existence', () => {
-    const preArgv = [...process.argv]
-    process.argv = [process.argv[0], process.argv[1], '/tmp/foobar.json']
+    process.argv = [PRE_ARGV[0], PRE_ARGV[1], '/tmp/foobar.json']
     expect(() => commandConfig.parseAndValidateArgs()).toThrow()
-    process.argv = [...preArgv]
   })
 })
 
@@ -83,7 +85,7 @@ describe('dumpSchemas', () => {
   expect(() => {
     commandConfig.dumpSchemas(config)
   }).not.toThrow()
-  const schemaDirPath = path.resolve(`${__dirname}/../../schema`)
+  const schemaDirPath = path.resolve(`${__filename}/../../../schema`)
   expect(fs.existsSync(`${schemaDirPath}/data.schema.json`)).toBe(true)
   expect(fs.existsSync(`${schemaDirPath}/patient.schema.json`)).toBe(true)
   expect(fs.existsSync(`${schemaDirPath}/sample.schema.json`)).toBe(true)

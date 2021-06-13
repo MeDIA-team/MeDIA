@@ -2,7 +2,7 @@ import dayjs from 'dayjs'
 import fs from 'fs'
 import path from 'path'
 
-import { logStderr, logStdout } from '../command/utils'
+import { logStdout } from '../command/utils'
 
 const RESEARCHES: string[] = [
   'Retrospective clinical data',
@@ -352,33 +352,29 @@ const generateTestData = (
   }
 }
 
-const main = () => {
+export const main = () => {
   logStdout('Start to generate the test data.')
-  try {
-    const patientNum = parseInt(process.argv[2]) || 100
-    logStdout(`PatientNum: ${patientNum}`)
-    const data = generateTestData(patientNum)
-    const testDirPath = path.resolve(__dirname)
-    for (const key of ['data', 'patient', 'sample']) {
-      const filePath = path.join(testDirPath, `${key}.test.json`)
-      const arr = data[key as 'data' | 'patient' | 'sample']
-      if (key === 'data') {
-        console.log(`Generated DataNum: ${arr.length}`)
-      } else if (key === 'patient') {
-        console.log(`Generated PatientNum: ${arr.length}`)
-      } else if (key === 'sample') {
-        console.log(`Generated SampleNum: ${arr.length}`)
-      }
-      fs.writeFileSync(filePath, JSON.stringify(arr, null, 2))
-      const stat = fs.statSync(filePath)
-      console.log(`FileSize: ${stat.size}`)
+  const patientNum = parseInt(process.argv[2]) || 100
+  logStdout(`PatientNum: ${patientNum}`)
+  const data = generateTestData(patientNum)
+  const testDirPath = path.resolve(__dirname)
+  for (const key of ['data', 'patient', 'sample']) {
+    const filePath = path.join(testDirPath, `${key}.test.json`)
+    const arr = data[key as 'data' | 'patient' | 'sample']
+    if (key === 'data') {
+      console.log(`Generated DataNum: ${arr.length}`)
+    } else if (key === 'patient') {
+      console.log(`Generated PatientNum: ${arr.length}`)
+    } else if (key === 'sample') {
+      console.log(`Generated SampleNum: ${arr.length}`)
     }
-  } catch (e) {
-    logStderr(e, true)
-    process.exit(1)
+    fs.writeFileSync(filePath, JSON.stringify(arr, null, 2))
+    const stat = fs.statSync(filePath)
+    console.log(`FileSize: ${stat.size}`)
   }
   logStdout('Finish to generate the test data.')
-  process.exit(0)
 }
 
-main()
+if (require.main === module) {
+  main()
+}
