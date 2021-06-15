@@ -1,25 +1,138 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import 'dayjs/locale/ja'
-
-import fs from 'fs'
-import Ajv from 'ajv'
 import { Client } from '@elastic/elasticsearch'
+import Ajv, { ValidationError } from 'ajv'
 import dayjs from 'dayjs'
+import 'dayjs/locale/ja'
+import fs from 'fs'
+import path from 'path'
+import {
+  Config,
+  dumpSchemas as configDumpSchemas,
+  flattenDataTypeIds,
+  validate as configValidate,
+} from './config'
+import { logStdout } from './utils'
 
 dayjs.locale('ja')
 
-export const parseArgs = (): string[] => {
-  if (process.argv.length < 3) {
-    throw new Error(
-      'The file paths you want to do bulk processing are not included.'
-    )
-  }
+export type EntryFileType = 'data' | 'patient' | 'sample'
 
-  return process.argv.slice(2)
+interface DataEntry {
+  patientId: string
+  sampleId: string
+  dataType: string
+  [k: string]: unknown
 }
 
-export const generateEsClient = (): Client => {
+interface PatientEntry {
+  patientId: string
+  samples: {
+    sampleId: string
+    dataTypes: {
+      name: string
+      [k: string]: unknown
+    }[]
+    [k: string]: unknown
+  }[]
+}
+
+interface SampleEntry {
+  sampleId: string
+  patientId: string
+  dataTypes: {
+    name: string
+    [k: string]: unknown
+  }[]
+  [k: string]: unknown
+}
+
+// ts-node <script> ['data' | 'patient' | 'sample'] <configFilePath> <entryFilePath>
+export const parseAndValidateArgs = (): [EntryFileType, string, string] => {
+  if (process.argv.length < 5) {
+    throw Error(
+      "The argument is incorrect.\n    `ts-node <script> ['data' | 'patient' | 'sample'] <configFilePath> <entryFilePath>`"
+    )
+  }
+  const entryFileType = process.argv[2]
+  const configFilePath = path.resolve(process.argv[3])
+  const entryFilePath = path.resolve(process.argv[4])
+  if (!['data', 'patient', 'sample'].includes(entryFileType)) {
+    throw Error(
+      'For entry file type, specify one of [data, patient, or sample].'
+    )
+  }
+  if (!fs.existsSync(configFilePath)) {
+    throw Error(
+      `The inputted config file path: ${configFilePath} does not exist.`
+    )
+  }
+  if (!fs.existsSync(entryFilePath)) {
+    throw Error(
+      `The inputted entry file path: ${entryFilePath} does not exist.`
+    )
+  }
+  return [entryFileType as EntryFileType, configFilePath, entryFilePath]
+}
+
+export const validateEntryFile = async (
+  entryFileType: EntryFileType,
+  configFilePath: string,
+  entryFilePath: string
+) => {
+  const schemaFilePath = path.resolve(
+    `${__filename}/../../schema/${entryFileType}.schema.json`
+  )
+  if (!fs.existsSync(schemaFilePath)) {
+    throw Error(`Could not find schema file: ${schemaFilePath}.`)
+  }
+  const schema = JSON.parse(fs.readFileSync(schemaFilePath, 'utf-8'))
+  const entries = JSON.parse(fs.readFileSync(entryFilePath, 'utf-8'))
+  const ajv = new Ajv()
+  const valid = await ajv.validate(schema, entries)
+  if (!valid) {
+    if (ajv.errors) {
+      throw new ValidationError(ajv.errors)
+    } else {
+      throw new Error('Unexpected error occurred in validation.')
+    }
+  }
+  const config: Config = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'))
+  const dataTypeIds: string[] = config.selector.dataType.flatMap((field) =>
+    flattenDataTypeIds(field)
+  )
+  if (entryFileType === 'data') {
+    for (const entry of entries as DataEntry[]) {
+      if (!dataTypeIds.includes(entry.dataType)) {
+        throw new Error(
+          `[Validation Error] The inputted entry file contained an invalid id: ${entry.dataType}, which is not included in the inputted config file.`
+        )
+      }
+    }
+  } else if (entryFileType === 'patient') {
+    for (const entry of entries as PatientEntry[]) {
+      for (const sample of entry.samples) {
+        for (const dataType of sample.dataTypes) {
+          if (!dataTypeIds.includes(dataType.name)) {
+            throw new Error(
+              `[Validation Error] The inputted entry file contained an invalid id: ${dataType.name}, which is not included in the inputted config file.`
+            )
+          }
+        }
+      }
+    }
+  } else if (entryFileType === 'sample') {
+    for (const entry of entries as SampleEntry[]) {
+      for (const dataType of entry.dataTypes) {
+        if (!dataTypeIds.includes(dataType.name)) {
+          throw new Error(
+            `[Validation Error] The inputted entry file contained an invalid id: ${dataType.name}, which is not included in the inputted config file.`
+          )
+        }
+      }
+    }
+  }
+}
+
+export const newEsClient = () => {
   const esClient = new Client({
     node: process.env.ES_URL || 'http://db:9200',
   })
@@ -34,280 +147,226 @@ export const generateEsClient = (): Client => {
       `The status of the es client connection is ${esClient.connectionPool.connections[0].status}.`
     )
   }
-
   return esClient
-}
-
-export class ValidationError extends Error {
-  filePath: string
-  originalError: Error
-  errors: Ajv.ErrorObject[] | null | undefined
-
-  constructor(
-    originalError: Error,
-    filePath: string,
-    errors?: Ajv.ErrorObject[] | null | undefined
-  ) {
-    super(originalError.message)
-    this.filePath = filePath
-    this.originalError = originalError
-    this.errors = errors
-  }
-}
-
-export const validateFiles = async (
-  filePaths: string[],
-  schemaFilePath: string
-) => {
-  logStdout('Start to validate data json files.')
-  const schema = JSON.parse(fs.readFileSync(schemaFilePath, 'utf-8'))
-
-  const validateFile = async (filePath: string) => {
-    const fileContent = await fs.promises.readFile(filePath, 'utf-8')
-    const fileObj = await JSON.parse(fileContent)
-    const ajv = new Ajv()
-    const valid = await ajv.validate(schema, fileObj)
-    if (!valid) {
-      throw new ValidationError(
-        new Error('Validation failed'),
-        filePath,
-        ajv.errors
-      )
-    }
-  }
-
-  const queue = []
-  for (const filePath of filePaths) {
-    logStdout(`Validating ${filePath}.`)
-    queue.push(validateFile(filePath))
-  }
-
-  await Promise.all(queue)
-
-  logStdout('Finish to validate data json files.')
 }
 
 const INDEX_SETTINGS = {
   number_of_shards: 1,
   number_of_replicas: 0,
+}
+
+const INDEX_SETTINGS_FOR_ENTRIES = {
+  ...INDEX_SETTINGS,
   max_result_window: 10000000,
   'index.mapping.total_fields.limit': 10000,
   'index.mapping.nested_objects.limit': 50000,
 }
 
-export const createDataEsIndex = async (
+export const existsIndex = async (
   esClient: Client,
-  mappings: any,
-  index: string
+  index: EntryFileType | 'config'
 ) => {
-  logStdout('Start to create ES index.')
   const res = await esClient.indices.exists({ index })
-  if (!res.body) {
+  return !!res.body
+}
+
+export const createIndex = async (
+  esClient: Client,
+  index: EntryFileType | 'config',
+  settings: typeof INDEX_SETTINGS | typeof INDEX_SETTINGS_FOR_ENTRIES,
+  mappings: Record<string, unknown>
+) => {
+  if (!(await existsIndex(esClient, index))) {
     await esClient.indices.create({
       index,
-      body: { settings: INDEX_SETTINGS, mappings },
+      body: { settings, mappings },
     })
-    logStdout('Finish to create ES index.')
   }
 }
 
-class BulkError extends Error {
-  filePath: string
-  errorDocs: {
-    status: any
-    error: any
-    operation: any
-    document: any
-  }[]
-
-  constructor(
-    filePath: string,
-    errorDocs: {
-      status: any
-      error: any
-      operation: any
-      document: any
-    }[]
-  ) {
-    super('Bulk processing failed.')
-    this.filePath = filePath
-    this.errorDocs = errorDocs
-  }
+interface NestedObj {
+  type: 'nested'
+  properties: Record<string, unknown>
 }
 
-class OtherBulkError extends Error {
-  originalError: Error
-  filePath: string
-
-  constructor(originalError: Error, filePath: string) {
-    super('Bulk processing failed.')
-    this.originalError = originalError
-    this.filePath = filePath
-  }
+const esType = (jsonSchemaType: 'string' | 'integer' | 'date') => {
+  return jsonSchemaType === 'string' ? 'keyword' : jsonSchemaType
 }
 
-class AllBulkError extends Error {
-  errors: Array<Error | OtherBulkError>
-
-  constructor(errors: Array<Error | OtherBulkError>) {
-    super('Bulk processing failed.')
-    this.errors = errors
+export const esMappings = (
+  entryFileType: EntryFileType,
+  configFilePath: string
+) => {
+  const config: Config = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'))
+  const mappings = {
+    properties: {} as Record<string, unknown>,
   }
+  if (entryFileType === 'data') {
+    for (const field of config.filter.fields) {
+      mappings.properties[field.id] = { type: esType(field.type) }
+    }
+  } else if (entryFileType === 'patient') {
+    mappings.properties['samples'] = {
+      type: 'nested',
+      properties: {} as Record<string, unknown>,
+    }
+    for (const field of config.filter.fields) {
+      if (field.id === 'patientId') {
+        mappings.properties['patientId'] = { type: esType(field.type) }
+      } else if (field.id === 'dataType') {
+        ;(mappings.properties.samples as NestedObj).properties['dataTypes'] = {
+          type: 'nested',
+          properties: {
+            name: { type: esType(field.type) },
+          },
+        }
+      } else {
+        ;(mappings.properties.samples as NestedObj).properties[field.id] = {
+          type: esType(field.type),
+        }
+      }
+    }
+  } else if (entryFileType === 'sample') {
+    for (const field of config.filter.fields) {
+      if (field.id === 'dataType') {
+        mappings.properties['dataTypes'] = {
+          type: 'nested',
+          properties: {
+            name: { type: esType(field.type) },
+          },
+        }
+      } else {
+        mappings.properties[field.id] = { type: esType(field.type) }
+      }
+    }
+  }
+  return mappings
 }
 
-const splitArr = (arr: Record<string, any>[], splitNum: number) => {
-  const chunkSize = Math.ceil(arr.length / splitNum)
+const splitEntries = (entries: Record<string, unknown>[], splitNum: number) => {
+  const chunkSize = Math.ceil(entries.length / splitNum)
   return new Array(splitNum)
     .fill(null)
-    .map((_, i) => arr.slice(i * chunkSize, (i + 1) * chunkSize))
+    .map((_, i) => entries.slice(i * chunkSize, (i + 1) * chunkSize))
 }
 
+// bulk は http request body size の制限から 100MB までの制限がある
+// entryFilePath の size を確認して、適度に分割する
+// 50MB を上限として分割する
+// fileSize を取得 -> 50MB で割る -> 分割数に応じて中に含まれている arr を split する -> Bulk insert
 export const bulkData = async (
   esClient: Client,
-  filePaths: string[],
-  index: string
+  index: EntryFileType,
+  entryFilePath: string
 ) => {
-  logStdout('Start to bulk data json files.')
-
-  const bulkFile = async (filePath: string) => {
-    // test data とそのファイルサイズの関係
-    // Generated EntryNum: 17969
-    // FileSize: 9537003 -> 9MB
-    // Generated PatientNum: 1000
-    // FileSize: 5354591 -> 5MB
-    // Generated SampleNum: 5970
-    // FileSize: 5850980 -> 6MB
-    //
-    // bulk は http request body size の制限から 100MB までの制限がある
-    // filePath の size を確認して、適度に分割する処理を書く
-    // 50MB を上限として分割することにする
-    // fileSize を取得 -> 50MB で割る -> 分割数に応じて中に含まれている arr を split する -> Bulk insert
-    const fileContent = await fs.promises.readFile(filePath, 'utf-8')
-    const fileObj = await JSON.parse(fileContent)
-    const fileSize = (await fs.promises.stat(filePath)).size
-    const splitNum = Math.ceil(fileSize / 50000000)
-    const splitFileObj = splitArr(fileObj, splitNum)
-    for (const obj of splitFileObj) {
-      const body = obj.flatMap((doc: any) => [
-        { index: { _index: index } },
-        doc,
-      ])
-      const { body: bulkResponse } = await esClient.bulk({
-        refresh: true,
-        body,
-      })
-      if (bulkResponse.errors) {
-        const errorDocs: {
-          status: any
-          error: any
-          operation: any
-          document: any
-        }[] = []
-        bulkResponse.items.forEach(
-          (action: { [x: string]: { error: any; status: any } }, i: number) => {
-            const operation = Object.keys(action)[0]
-            if (action[operation].error) {
-              errorDocs.push({
-                status: action[operation].status,
-                error: action[operation].error,
-                operation: body[i * 2],
-                document: body[i * 2 + 1],
-              })
-            }
-          }
-        )
-        throw new BulkError(filePath, errorDocs)
-      }
+  const originalEntries = JSON.parse(fs.readFileSync(entryFilePath, 'utf-8'))
+  const fileSize = fs.statSync(entryFilePath).size
+  for (const entries of splitEntries(
+    originalEntries,
+    Math.ceil(fileSize / 50000000)
+  )) {
+    const body = entries.flatMap((entry) => [
+      { index: { _index: index } },
+      entry,
+    ])
+    const { body: bulkResponse } = await esClient.bulk({
+      refresh: true,
+      body,
+    })
+    if (bulkResponse.errors) {
+      const errorDocs = bulkResponse.items.flatMap(
+        (action: Record<string, { error?: any; status?: any }>, i: number) => {
+          Object.values(action)
+            .filter((val) => !!val.error)
+            .map((val) => ({
+              status: val.status,
+              error: val.error,
+              operation: body[i * 2],
+              document: body[i * 2 + 1],
+            }))
+        }
+      )
+      throw new Error(`[Bulk Error]\n${JSON.stringify(errorDocs, null, 2)}`)
     }
   }
-
-  const errors: Array<BulkError | OtherBulkError> = []
-  for (const filePath of filePaths) {
-    logStdout(`Bulking ${filePath}.`)
-    await bulkFile(filePath).catch((e) => {
-      if (e instanceof BulkError) {
-        errors.push(e)
-      } else {
-        errors.push(new OtherBulkError(e, filePath))
-      }
-    })
-  }
-
-  if (errors.length) {
-    throw new AllBulkError(errors)
-  }
-
-  logStdout('Finish to bulk data json files.')
 }
 
-export const updateIndexFielddata = async (esClient: Client, index: string) => {
-  logStdout("Start to update index's fielddata.")
-  const res = await esClient.indices.getMapping({
-    index,
-  })
-  const mappings = res.body[index].mappings
-
-  if (index === 'sample') {
-    const dataTypesMappings: Record<
-      string,
-      Record<string, string>
-    > = Object.assign({}, mappings.properties.dataTypes.properties)
-    mappings.properties.dataTypes.properties = {
-      name: { type: 'keyword' },
-      category: { type: 'keyword' },
-    }
-    for (const [key, value] of Object.entries(dataTypesMappings)) {
-      if (key === 'name' || key === 'category') {
-        continue
-      }
-      if ('type' in value) {
-        if (['text', 'keyword'].includes(value.type)) {
-          mappings.properties.dataTypes.properties[key] = {
-            type: value.type,
-            fielddata: true,
+export const updateIndexFielddata = async (
+  esClient: Client,
+  index: EntryFileType
+) => {
+  if (['patient', 'sample'].includes(index)) {
+    const res = await esClient.indices.getMapping({
+      index,
+    })
+    const mappings = res.body[index].mappings
+    if (index === 'patient') {
+      for (const dataType of mappings.properties.samples.properties.dataTypes) {
+        for (const [key, value] of Object.entries(dataType.properties)) {
+          if ((value as { type: string }).type === 'text') {
+            mappings.properties.samples.properties.dataTypes.properties[
+              key
+            ].fielddata = true
           }
-        } else {
-          mappings.properties.dataTypes.properties[key] = {
-            type: value.type,
+        }
+      }
+    } else if (index === 'sample') {
+      for (const dataType of mappings.properties.dataTypes) {
+        for (const [key, value] of Object.entries(dataType.properties)) {
+          if ((value as { type: string }).type === 'text') {
+            mappings.properties.dataTypes.properties[key].fielddata = true
           }
         }
       }
     }
-  } else if (index === 'patient') {
-    const dataTypesMappings: Record<
-      string,
-      Record<string, string>
-    > = Object.assign(
-      {},
-      mappings.properties.samples.properties.dataTypes.properties
-    )
-    mappings.properties.samples.properties.dataTypes.properties = {
-      name: { type: 'keyword' },
-      category: { type: 'keyword' },
-    }
-    for (const [key, value] of Object.entries(dataTypesMappings)) {
-      if (key === 'name' || key === 'category') {
-        continue
-      }
-      if ('type' in value) {
-        if (['text', 'keyword'].includes(value.type)) {
-          mappings.properties.samples.properties.dataTypes.properties[key] = {
-            type: value.type,
-            fielddata: true,
-          }
-        } else {
-          mappings.properties.samples.properties.dataTypes.properties[key] = {
-            type: value.type,
-          }
-        }
-      }
-    }
+    await esClient.indices.putMapping({
+      index,
+      body: mappings,
+    })
   }
+}
 
-  await esClient.indices.putMapping({
-    index,
-    body: mappings,
+const insertConfigData = async (esClient: Client, configFilePath: string) => {
+  const config: Config = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'))
+  await esClient.index({
+    index: 'config',
+    body: config,
   })
+}
 
-  logStdout("Finish to update index's fielddata.")
+export const main = async () => {
+  logStdout('Start to bulk the entry file.')
+  const esClient: Client = newEsClient()
+  const [entryFileType, configFilePath, entryFilePath] = parseAndValidateArgs()
+  const config = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'))
+  logStdout('Validating the config file...')
+  await configValidate(config)
+  logStdout('Dumping entry file schemas...')
+  configDumpSchemas(config)
+  logStdout('Validating the entry file...')
+  await validateEntryFile(entryFileType, configFilePath, entryFilePath)
+  if (await existsIndex(esClient, entryFileType)) {
+    logStdout(`Index: ${entryFileType} already exists.`)
+  } else {
+    logStdout(`Creating the ES index: ${entryFileType}...`)
+    await createIndex(
+      esClient,
+      entryFileType,
+      INDEX_SETTINGS_FOR_ENTRIES,
+      esMappings(entryFileType, configFilePath)
+    )
+  }
+  logStdout('Bulking the entry data...')
+  await bulkData(esClient, entryFileType, entryFilePath)
+  logStdout('Updating the dataTypes filed in mappings....')
+  await updateIndexFielddata(esClient, entryFileType)
+  if (!(await existsIndex(esClient, 'config'))) {
+    logStdout('Inserting config data...')
+    await insertConfigData(esClient, configFilePath)
+  }
+  logStdout('Finish to bulk the entry file.')
+}
+
+if (require.main === module) {
+  main()
 }

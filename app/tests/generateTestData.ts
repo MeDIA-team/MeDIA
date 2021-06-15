@@ -1,7 +1,6 @@
 import dayjs from 'dayjs'
 import fs from 'fs'
 import path from 'path'
-
 import { logStdout } from '../command/utils'
 
 const RESEARCHES: string[] = [
@@ -38,16 +37,16 @@ const DISEASE: string[] = [
   'seborrheic_dermatitis',
 ] // AD, NA, Normal
 const DATA_TYPE: string[] = [
-  'Skin image',
-  'Microbiome',
-  'Cutometer',
+  'skinImage',
+  'microbiome',
+  'cutometer',
   'RNAseq',
-  'Medication data',
-  'Genome',
-  'Histology',
-  'Clinical lab data',
-  'Cytokine',
-  'Nerve imaging',
+  'medicationData',
+  'genome',
+  'histology',
+  'clinicalLabData',
+  'cytokine',
+  'nerveImaging',
 ]
 const LIBRARY_PREP: string[] = ['Kazusa', 'Riken']
 const BODY_REGION: string[] = ['Back', 'Thigh', 'Arm', 'Others']
@@ -244,7 +243,7 @@ const mergeSample = (
   return sampleArr
 }
 
-const generateTestData = (
+const generateTestEntries = (
   patientNum: number
 ): { data: Data[]; patient: Patient[]; sample: Sample[] } => {
   const patients = generatePatients(patientNum)
@@ -353,14 +352,14 @@ const generateTestData = (
 }
 
 export const main = () => {
-  logStdout('Start to generate the test data.')
+  logStdout('Start to generate test entry files.')
   const patientNum = parseInt(process.argv[2]) || 100
   logStdout(`PatientNum: ${patientNum}`)
-  const data = generateTestData(patientNum)
+  const entries = generateTestEntries(patientNum)
   const testDirPath = path.resolve(__dirname)
   for (const key of ['data', 'patient', 'sample']) {
     const filePath = path.join(testDirPath, `${key}.test.json`)
-    const arr = data[key as 'data' | 'patient' | 'sample']
+    const arr = entries[key as 'data' | 'patient' | 'sample']
     if (key === 'data') {
       console.log(`Generated DataNum: ${arr.length}`)
     } else if (key === 'patient') {
@@ -372,7 +371,7 @@ export const main = () => {
     const stat = fs.statSync(filePath)
     console.log(`FileSize: ${stat.size}`)
   }
-  logStdout('Finish to generate the test data.')
+  logStdout('Finish to generate test entry files.')
 }
 
 if (require.main === module) {

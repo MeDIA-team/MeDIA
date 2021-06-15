@@ -134,9 +134,13 @@
             "label": "Histology"
           },
           {
-            "id": "clinicalLabData",
-            "label": "Clinical lab data",
+            "id": "childCategoryD",
+            "label": "Child Category D",
             "child": [
+              {
+                "id": "clinicalLabData",
+                "label": "Clinical lab data"
+              },
               {
                 "id": "cytokine",
                 "label": "Cytokine"

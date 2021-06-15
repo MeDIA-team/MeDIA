@@ -199,7 +199,7 @@ dist
 
 Elasticsearch/data/*
 app/data/*
-app/schema/*
+app/schema
 app/tests/data.test.json
 app/tests/patient.test.json
 app/tests/sample.test.json

@@ -14,14 +14,13 @@
     "exec-ts-node": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\"",
     "config:validate": "yarn exec-ts-node ./command/configValidate.ts",
     "config:dumpSchemas": "yarn exec-ts-node ./command/configDumpSchemas.ts",
-    "bulk:entry": "yarn exec-ts-node ./command/esBulkEntry.ts",
-    "bulk:patient": "yarn exec-ts-node ./command/esBulkPatient.ts",
-    "bulk:sample": "yarn exec-ts-node ./command/esBulkSample.ts",
+    "bulk": "yarn exec-ts-node ./command/esBulk.ts",
+    "bulk:validate": "yarn exec-ts-node ./command/esBulkValidate.ts",
     "test": "jest --silent",
-    "test:generateTestData": "yarn exec-ts-node ./tests/generateTestData.ts",
-    "test:bulk:entry": "yarn bulk:entry ./tests/test-data-entries.json",
-    "test:bulk:patient": "yarn bulk:patient ./tests/test-data-patients.json",
-    "test:bulk:sample": "yarn bulk:sample ./tests/test-data-samples.json"
+    "test:generateTestEntries": "yarn exec-ts-node ./tests/generateTestEntries.ts",
+    "test:bulk:data": "yarn bulk data ./tests/config.test.json ./tests/data.test.json",
+    "test:bulk:patient": "yarn bulk patient ./tests/config.test.json ./tests/patient.test.json",
+    "test:bulk:sample": "yarn bulk sample ./tests/config.test.json ./tests/sample.test.json"
   },
   "dependencies": {
     "nuxt": "^2.15.6"

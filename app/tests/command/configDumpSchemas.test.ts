@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-
 import { main as configDumpSchemas } from '../../command/configDumpSchemas'
 
 const configTestFile = path.resolve(`${__filename}/../../config.test.json`)

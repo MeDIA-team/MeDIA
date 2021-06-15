@@ -1,6 +1,5 @@
 import fs from 'fs'
 import path from 'path'
-
 import { main as generateTestData } from './generateTestData'
 
 const PRE_ARGV = [...process.argv]

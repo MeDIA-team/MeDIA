@@ -1,7 +1,6 @@
 import { ValidationError } from 'ajv'
 import fs from 'fs'
 import path from 'path'
-
 import * as commandConfig from '../../command/config'
 
 const configTestFile = path.resolve(`${__filename}/../../config.test.json`)
@@ -52,7 +51,7 @@ describe('validate', () => {
 })
 
 describe('generateSchema', () => {
-  test('ok in generating data schema', () => {
+  test('ok in generating the data schema', () => {
     const config = JSON.parse(fs.readFileSync(configTestFile, 'utf-8'))
     const dataSchema = commandConfig.generateDataSchema(config)
     const expectDataSchema = JSON.parse(
@@ -61,7 +60,7 @@ describe('generateSchema', () => {
     expect(dataSchema).toEqual(expectDataSchema)
   })
 
-  test('ok in generating patient schema', () => {
+  test('ok in generating the patient schema', () => {
     const config = JSON.parse(fs.readFileSync(configTestFile, 'utf-8'))
     const patientSchema = commandConfig.generatePatientSchema(config)
     const expectPatientSchema = JSON.parse(
@@ -70,7 +69,7 @@ describe('generateSchema', () => {
     expect(patientSchema).toEqual(expectPatientSchema)
   })
 
-  test('ok in generating sample schema', () => {
+  test('ok in generating the sample schema', () => {
     const config = JSON.parse(fs.readFileSync(configTestFile, 'utf-8'))
     const sampleSchema = commandConfig.generateSampleSchema(config)
     const expectSampleSchema = JSON.parse(
@@ -81,12 +80,40 @@ describe('generateSchema', () => {
 })
 
 describe('dumpSchemas', () => {
-  const config = JSON.parse(fs.readFileSync(configTestFile, 'utf-8'))
-  expect(() => {
-    commandConfig.dumpSchemas(config)
-  }).not.toThrow()
-  const schemaDirPath = path.resolve(`${__filename}/../../../schema`)
-  expect(fs.existsSync(`${schemaDirPath}/data.schema.json`)).toBe(true)
-  expect(fs.existsSync(`${schemaDirPath}/patient.schema.json`)).toBe(true)
-  expect(fs.existsSync(`${schemaDirPath}/sample.schema.json`)).toBe(true)
+  test('ok', () => {
+    const config = JSON.parse(fs.readFileSync(configTestFile, 'utf-8'))
+    expect(() => {
+      commandConfig.dumpSchemas(config)
+    }).not.toThrow()
+    const schemaDirPath = path.resolve(`${__filename}/../../../schema`)
+    expect(fs.existsSync(`${schemaDirPath}/data.schema.json`)).toBe(true)
+    expect(fs.existsSync(`${schemaDirPath}/patient.schema.json`)).toBe(true)
+    expect(fs.existsSync(`${schemaDirPath}/sample.schema.json`)).toBe(true)
+  })
+})
+
+describe('dataTypeIds', () => {
+  test('ok', () => {
+    const config: commandConfig.Config = JSON.parse(
+      fs.readFileSync(configTestFile, 'utf-8')
+    )
+    const dataTypeIds = config.selector.dataType.flatMap((field) =>
+      commandConfig.flattenDataTypeIds(field)
+    )
+    dataTypeIds.sort()
+    const expectDataTypeIds = [
+      'skinImage',
+      'microbiome',
+      'cutometer',
+      'RNAseq',
+      'medicationData',
+      'genome',
+      'histology',
+      'clinicalLabData',
+      'cytokine',
+      'nerveImaging',
+    ]
+    expectDataTypeIds.sort()
+    expect(dataTypeIds).toEqual(expectDataTypeIds)
+  })
 })

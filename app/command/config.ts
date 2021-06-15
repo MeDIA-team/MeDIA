@@ -66,11 +66,11 @@ export const parseAndValidateArgs = (): string => {
 }
 
 export const validate = async (config: Record<any, any>): Promise<void> => {
-  const schemeFilePath = path.resolve(`${__filename}/../../config.schema.json`)
-  if (!fs.existsSync(schemeFilePath)) {
-    throw Error(`Could not find schema file: ${schemeFilePath}.`)
+  const schemaFilePath = path.resolve(`${__filename}/../../config.schema.json`)
+  if (!fs.existsSync(schemaFilePath)) {
+    throw Error(`Could not find schema file: ${schemaFilePath}.`)
   }
-  const schema = JSON.parse(fs.readFileSync(schemeFilePath, 'utf-8'))
+  const schema = JSON.parse(fs.readFileSync(schemaFilePath, 'utf-8'))
   const ajv = new Ajv()
   const valid = await ajv.validate(schema, config)
   if (!valid) {
@@ -81,9 +81,11 @@ export const validate = async (config: Record<any, any>): Promise<void> => {
     }
   }
   const filterIds = (config as Config).filter.fields.map((field) => field.id)
-  if (!(filterIds.includes('patientId') && filterIds.includes('sampleId'))) {
+  if (
+    !['patientId', 'sampleId', 'dataType'].every((id) => filterIds.includes(id))
+  ) {
     throw new Error(
-      '`filter.fields.[].id need to contain `sampleId` and `patientId`.'
+      '`.filter.fields[].id need to contain `sampleId`, `patientId` and `dataType.'
     )
   }
 }
@@ -240,4 +242,13 @@ export const dumpSchemas = (config: Config): void => {
     `${schemaDirPath}/sample.schema.json`,
     JSON.stringify(sampleSchema, null, 2)
   )
+}
+
+export const flattenDataTypeIds = (field: SelectorField): string[] => {
+  const childIds = field.child?.flatMap((field) => flattenDataTypeIds(field))
+  if (childIds) {
+    return [...childIds]
+  } else {
+    return [field.id]
+  }
 }

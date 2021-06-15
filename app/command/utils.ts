@@ -1,6 +1,5 @@
-import 'dayjs/locale/ja'
 import dayjs from 'dayjs'
-import Ajv from 'ajv'
+import 'dayjs/locale/ja'
 
 dayjs.locale('ja')
 

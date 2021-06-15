@@ -52,6 +52,19 @@ root@478c6ba7f094:/app# ls -lah tests | grep test.json
 -rw-r--r-- 1 root root  56M Jun 11 06:31 sample.test.json
 ```
 
+data の validate
+dataType の id なども確認する。
+
+```bash
+$ yarn bulk:validate data ./tests/config.test.json ./tests/data.test.json
+[2021/06/14 06:54:19] Start to validate the data file.
+[2021/06/14 06:54:19] validating the config file...
+[2021/06/14 06:54:19] dumping data file schemas...
+[2021/06/14 06:54:19] validating the data file...
+[2021/06/14 06:54:19] Finish to validate the data file.
+Done in 4.98s.
+```
+
 ## 設定
 
 設定項目は、`../docker-compose.yml` の environment に集約されている。

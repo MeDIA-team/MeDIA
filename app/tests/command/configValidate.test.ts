@@ -1,5 +1,4 @@
 import path from 'path'
-
 import { main as configValidate } from '../../command/configValidate'
 
 const configTestFile = path.resolve(`${__filename}/../../config.test.json`)

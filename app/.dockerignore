@@ -1,12 +1,19 @@
 # Ignore everything
 **
 
+!.eslintrc.js
+!.prettierrc
 !command
-!es_schema
+!config.schema.json
+!jest.config.ts
 !nuxt.config.ts
 !package.json
 !README.md
 !src
-!tests/generateTestData.ts
+!tests
 !tsconfig.json
 !yarn.lock
+
+tests/data.test.json
+tests/patient.test.json
+tests/sample.test.json
