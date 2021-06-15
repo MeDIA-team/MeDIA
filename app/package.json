@@ -18,6 +18,7 @@
     "bulk:validate": "yarn exec-ts-node ./command/esBulkValidate.ts",
     "test": "jest --silent",
     "test:generateTestEntries": "yarn exec-ts-node ./tests/generateTestEntries.ts",
+    "test:bulk": "yarn test:bulk:data && yarn test:bulk:patient && yarn test:bulk:sample",
     "test:bulk:data": "yarn bulk data ./tests/config.test.json ./tests/data.test.json",
     "test:bulk:patient": "yarn bulk patient ./tests/config.test.json ./tests/patient.test.json",
     "test:bulk:sample": "yarn bulk sample ./tests/config.test.json ./tests/sample.test.json"

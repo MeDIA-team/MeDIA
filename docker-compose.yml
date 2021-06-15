@@ -7,13 +7,13 @@ services:
     image: ghcr.io/media-team/media_app:${MEDIA_DOCKER_IMAGE_TAG}
     container_name: media_app
     environment:
-      BASIC_AUTH_PASS: "pass"
-      BASIC_AUTH_USER: "media"
-      BASIC_ENABLED: "true"
-      BROWSER_BASE_URL: "http://127.0.0.1:8888"
-      ES_URL: "http://db:9200"
-      NUXT_HOST: "0.0.0.0"
-      NUXT_PORT: "8080"
+      BASIC_AUTH_PASS: "pass" # Basic 認証の password
+      BASIC_AUTH_USER: "media" # Basic 認証の user name
+      BASIC_ENABLED: "true" # Basic 認証をかけるかどうか (true or false)
+      BROWSER_BASE_URL: "http://127.0.0.1:8888" # クライアントから見た MeDIA App の URL
+      ES_URL: "http://db:9200" # Elasticsearch の URL (docker network を使っているため変更する必要がない)
+      NUXT_HOST: "0.0.0.0" # MeDIA App を起動する Host (docker network を使っているため変更する必要がない)
+      NUXT_PORT: "8080" # MeDIA App を起動する Port (docker network を使っているため変更する必要がない)
     networks:
       - default
     ports:

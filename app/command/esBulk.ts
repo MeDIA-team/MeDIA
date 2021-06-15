@@ -301,21 +301,21 @@ export const updateIndexFielddata = async (
     })
     const mappings = res.body[index].mappings
     if (index === 'patient') {
-      for (const dataType of mappings.properties.samples.properties.dataTypes) {
-        for (const [key, value] of Object.entries(dataType.properties)) {
-          if ((value as { type: string }).type === 'text') {
-            mappings.properties.samples.properties.dataTypes.properties[
-              key
-            ].fielddata = true
-          }
+      for (const [key, value] of Object.entries(
+        mappings.properties.samples.properties.dataTypes.properties
+      )) {
+        if ((value as { type: string }).type === 'text') {
+          mappings.properties.samples.properties.dataTypes.properties[
+            key
+          ].fielddata = true
         }
       }
     } else if (index === 'sample') {
-      for (const dataType of mappings.properties.dataTypes) {
-        for (const [key, value] of Object.entries(dataType.properties)) {
-          if ((value as { type: string }).type === 'text') {
-            mappings.properties.dataTypes.properties[key].fielddata = true
-          }
+      for (const [key, value] of Object.entries(
+        mappings.properties.dataTypes.properties
+      )) {
+        if ((value as { type: string }).type === 'text') {
+          mappings.properties.dataTypes.properties[key].fielddata = true
         }
       }
     }

@@ -17,25 +17,33 @@
 環境構築として、[Docker](https://www.docker.com)、[docker-compose](https://docs.docker.com/compose/) を使用している。
 
 ```bash
-# [追記] 先に Elasticsearch/data の directory を作成したほうが良い
-# Elasticsearch docker image の問題であるが、書き込み権限周りで ES container が起動しないケースがある
-$ mkdir Elasticsearch/data
+$ git clone git@github.com:MeDIA-team/MeDIA.git
+$ cd MeDIA
+
+# Elasticsearch の data directory の存在や権限を先に確認する
+$ ls -l ./Elasticsearch/ | grep data
+drwxrwxr-x 3 ubuntu ubuntu 4096 Jun 15 17:22 data
+# 存在しない場合や root:root の場合は作成・変更する必要がある
+$ mkdir -p -m 777 Elasticsearch/data
+# or
+$ chmod 777 Elasticsearch/data
 
 # Docker network の作成
 $ docker network create media_network
+
 # 全てのコンポーネントの起動
 $ docker-compose up -d --build
 ```
 
-`docker-compose.yml` 内で、Elasticsearch のヒープメモリとして `-Xms16g -Xmx16g` を指定しているため、通常のサーバではメモリ不足で落ちる場合がある。
-そのため、`docker-compose.dev.yml` を使って開発環境を用いると良い。
+## 設定
 
-```bash
-$ docker-compose -f docker-compose.dev.yml up -d --build
-$ docker-compose -f docker-compose.dev.yml exec app yarn dev
-```
+[`docker-compose.yml`](./docker-compose.yml) 内で、Elasticsearch のヒープメモリとして `-Xms16g -Xmx16g` を指定している。
+そのため、通常のサーバではメモリ不足で落ちる場合がある。
+その場合、`-Xms4g -Xmx4g` のように少なめに指定する。
 
-また、Elasticsearch、Nuxt.js のために HostOS の Kernel Option を変更しておく必要がある。
+---
+
+Elasticsearch、Nuxt.js のために HostOS の Kernel Option を変更する。
 
 ```bash
 # 仮想メモリの上限を変更する (for Elasticsearch)
@@ -48,7 +56,7 @@ $ sysctl -w fs.inotify.max_user_watches=524288
 $ sysctl -p
 ```
 
-より詳細なドキュメントとして以下を参照する。
+## 詳細なドキュメント
 
-- [MeDIA App](https://github.com/suecharo/MeDIA/blob/develop/app/README.md)
-- [Elasticsearch](https://github.com/suecharo/MeDIA/blob/develop/Elasticsearch/README.md)
+- [MeDIA App](./app/README.md)
+- [Elasticsearch](./Elasticsearch/README.md)

@@ -1,6 +1,6 @@
 import path from 'path'
 import { main as esBulkValidate } from '../../command/esBulkValidate'
-import { main as generateTestData } from '../generateTestData'
+import { main as generateTestEntries } from '../generateTestEntries'
 
 const configTestFile = path.resolve(`${__filename}/../../config.test.json`)
 
@@ -11,7 +11,7 @@ describe.each(['data', 'patient', 'sample'])(
   (entryFileType) => {
     beforeAll(() => {
       process.argv = [PRE_ARGV[0], PRE_ARGV[1], '1']
-      generateTestData()
+      generateTestEntries()
     })
 
     afterEach(() => {

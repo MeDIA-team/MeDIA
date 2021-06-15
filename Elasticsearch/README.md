@@ -3,26 +3,27 @@
 - RESTful な API を提供する分散型検索/分析エンジン
 - データを格納する DB として動作
 
-Elasticsearch Container Image として `docker.elastic.co/elasticsearch/elasticsearch:7.13.1` を使っている。
+Elasticsearch container image として `docker.elastic.co/elasticsearch/elasticsearch:7.13.1` を使用している。
 
-## Settings
+## 設定
 
 基本的に single node での稼働を想定している。
 
-いくつかの設定は `../docker-compose.yml` の environment において指定している。
+いくつかの設定は [`docker-compose.yml`](../docker-compose.yml) の `environment` において指定している。
 
 ```yaml
 environment:
   discovery.type: "single-node"
   ELASTIC_PASSWORD: "media_elasticsearch_passwd"
-  ES_JAVA_OPTS: "-Xms1g -Xmx16g -Xlog:disable -Xlog:all=warning:stderr:utctime,level,tags -Xlog:gc=warning:stderr:utctime"
+  ES_JAVA_OPTS: "-Xms16g -Xmx16g -Xlog:disable -Xlog:all=warning:stderr:utctime,level,tags -Xlog:gc=warning:stderr:utctime"
 ```
 
-また、 `./elasticsearch.yml` や `./log4j2.properties` においてもいくつかの設定を行い、Container 内の `/usr/share/elasticsearch/config` 内に mount している。
+また、 [`elasticsearch.yml`](./elasticsearch.yml) や [`log4j2.properties`](log4j2.properties) においてもいくつか設定し、container 内の `/usr/share/elasticsearch/config` に mount している。
 
-## REST API
+## REST API Request
 
-Port を bind していないため、Host Machine から REST API Request を送ることは出来ない。もし、送りたい場合は、下記の記述を `docker-compose.yml` に追加する。
+Port を host os に bind していないため、host os から REST API Request を送ることは出来ない。
+送りたい場合は、下記を [`docker-compose.yml`](../docker-compose.yml) に追加する。
 
 ```yaml
 ports:
@@ -30,7 +31,7 @@ ports:
   - 9300:9300
 ```
 
-または、docker-compose において、それぞれの Container 間で同一の Docker Network を使用しているため、MeDIA app Container から `db:9200` で REST API リクエストを送ることが出来る。
+また、それぞれの Container 間で同一の Docker Network を使用しているため、MeDIA app Container から `db:9200` で REST API Request を送ることが出来る。
 
 ```yaml
 $ docker-compose exec app curl http://db:9200/
@@ -43,17 +44,17 @@ $ docker-compose exec app curl http://db:9200/
 ```bash
 $ docker-compose exec app curl http://db:9200/
 {
-  "name" : "aeb36f253c49",
+  "name" : "5a8bee462b1f",
   "cluster_name" : "docker-cluster",
-  "cluster_uuid" : "AB1SuJZOQjmJID530qogSw",
+  "cluster_uuid" : "D1yvTefQTJa1yujdDpctZw",
   "version" : {
-    "number" : "7.6.1",
+    "number" : "7.13.1",
     "build_flavor" : "default",
     "build_type" : "docker",
-    "build_hash" : "aa751e09be0a5072e8570670309b1f12348f023b",
-    "build_date" : "2020-02-29T00:15:25.529771Z",
+    "build_hash" : "9a7758028e4ea59bcab41c12004603c5a7dd84a9",
+    "build_date" : "2021-05-28T17:40:59.346932922Z",
     "build_snapshot" : false,
-    "lucene_version" : "8.4.0",
+    "lucene_version" : "8.8.2",
     "minimum_wire_compatibility_version" : "6.8.0",
     "minimum_index_compatibility_version" : "6.0.0-beta1"
   },
@@ -63,14 +64,14 @@ $ docker-compose exec app curl http://db:9200/
 
 ## 初期化
 
-Host Server 側の `./data` を Container 側の `/usr/share/elasticsearch/data` に mount することによりデータの永続化を行っている。
+Host os 側の `./data` を container 側の `/usr/share/elasticsearch/data` に mount することでデータの永続化を行っている。
 
-Data を初期化したい場合は、以下の Dir を削除すれば良い
+Data を初期化したい場合は、`./data` の中身を削除する
 
 ```bash
 # 消去される file, dir の確認
-$ git clean -nd Elasticsearch
+$ git clean -nd Elasticsearch/data
 
 # 消去
-$ git clean -fd Elasticsearch
+$ git clean -fd Elasticsearch/data
 ```

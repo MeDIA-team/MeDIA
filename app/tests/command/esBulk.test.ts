@@ -7,7 +7,7 @@ import {
   parseAndValidateArgs,
   validateEntryFile,
 } from '../../command/esBulk'
-import { main as generateTestData } from '../generateTestData'
+import { main as generateTestEntries } from '../generateTestEntries'
 
 const configTestFile = path.resolve(`${__filename}/../../config.test.json`)
 
@@ -18,7 +18,7 @@ describe.each(['data', 'patient', 'sample'])(
   (entryFileType) => {
     beforeAll(() => {
       process.argv = [PRE_ARGV[0], PRE_ARGV[1], '1']
-      generateTestData()
+      generateTestEntries()
     })
 
     afterEach(() => {
@@ -50,7 +50,7 @@ describe.each(['data', 'patient', 'sample'])(
   (entryFileType) => {
     beforeAll(() => {
       process.argv = [PRE_ARGV[0], PRE_ARGV[1], '1']
-      generateTestData()
+      generateTestEntries()
       const config = JSON.parse(fs.readFileSync(configTestFile, 'utf-8'))
       dumpSchemas(config)
     })
