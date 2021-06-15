@@ -52,9 +52,9 @@ Elasticsearch や UI を汎用化するために、config file と entry file �
   - 'data', 'patient', 'sample' の 3 種類
   - elasticsearch に bulk insert される
   - schema は config から自動生成される
-    - [test 用の data schema](./tests/data.test.json)
-    - [test 用の patient schema](./tests/patient.test.json)
-    - [test 用の sample schema](./tests/sample.test.json)
+    - [test 用の data schema](./tests/data.schema.test.json)
+    - [test 用の patient schema](./tests/patient.schema.test.json)
+    - [test 用の sample schema](./tests/sample.schema.test.json)
 
 以上より、elasticsearch に entry を投入する手順として以下のようになる
 
