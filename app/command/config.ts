@@ -1,15 +1,6 @@
-import Ajv, { ValidationError } from 'ajv'
 import fs from 'fs'
 import path from 'path'
-
-export interface Config {
-  filter: {
-    fields: Array<CheckboxField | ChipField | TextField>
-  }
-  selector: {
-    dataType: Array<SelectorField>
-  }
-}
+import Ajv, { ValidationError } from 'ajv'
 
 export interface CheckboxField {
   id: string
@@ -48,17 +39,26 @@ export interface SelectorField {
   child?: SelectorField[]
 }
 
+export interface Config {
+  filter: {
+    fields: Array<CheckboxField | ChipField | TextField>
+  }
+  selector: {
+    dataType: Array<SelectorField>
+  }
+}
+
 export const parseAndValidateArgs = (): string => {
   let configFilePath: string
   if (process.argv.length < 3) {
-    throw Error(
+    throw new Error(
       'The config file path is required as an argument.\n    `ts-node <script> <configFilePath>`'
     )
   } else {
     configFilePath = path.resolve(process.argv[2])
   }
   if (!fs.existsSync(configFilePath)) {
-    throw Error(
+    throw new Error(
       `The inputted config file path: ${configFilePath} does not exist.`
     )
   }
@@ -66,9 +66,9 @@ export const parseAndValidateArgs = (): string => {
 }
 
 export const validate = async (config: Record<any, any>): Promise<void> => {
-  const schemaFilePath = path.resolve(`${__filename}/../../config.schema.json`)
+  const schemaFilePath = path.resolve(__dirname, '../config.schema.json')
   if (!fs.existsSync(schemaFilePath)) {
-    throw Error(`Could not find schema file: ${schemaFilePath}.`)
+    throw new Error(`Could not find schema file: ${schemaFilePath}.`)
   }
   const schema = JSON.parse(fs.readFileSync(schemaFilePath, 'utf-8'))
   const ajv = new Ajv()
@@ -226,7 +226,7 @@ export const dumpSchemas = (config: Config): void => {
   const dataSchema = generateDataSchema(config)
   const patientSchema = generatePatientSchema(config)
   const sampleSchema = generateSampleSchema(config)
-  const schemaDirPath = path.resolve(`${__filename}/../../schema`)
+  const schemaDirPath = path.resolve(__dirname, '../schema')
   if (!fs.existsSync(schemaDirPath)) {
     fs.mkdirSync(schemaDirPath)
   }

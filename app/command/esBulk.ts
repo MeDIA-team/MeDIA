@@ -1,16 +1,16 @@
-import { Client } from '@elastic/elasticsearch'
-import Ajv, { ValidationError } from 'ajv'
-import dayjs from 'dayjs'
 import 'dayjs/locale/ja'
 import fs from 'fs'
 import path from 'path'
+import { Client } from '@elastic/elasticsearch'
+import Ajv, { ValidationError } from 'ajv'
+import dayjs from 'dayjs'
+import { logStdout } from './utils'
 import {
   Config,
   dumpSchemas as configDumpSchemas,
   flattenDataTypeIds,
   validate as configValidate,
 } from './config'
-import { logStdout } from './utils'
 
 dayjs.locale('ja')
 
@@ -48,7 +48,7 @@ interface SampleEntry {
 // ts-node <script> ['data' | 'patient' | 'sample'] <configFilePath> <entryFilePath>
 export const parseAndValidateArgs = (): [EntryFileType, string, string] => {
   if (process.argv.length < 5) {
-    throw Error(
+    throw new Error(
       "The argument is incorrect.\n    `ts-node <script> ['data' | 'patient' | 'sample'] <configFilePath> <entryFilePath>`"
     )
   }
@@ -56,17 +56,17 @@ export const parseAndValidateArgs = (): [EntryFileType, string, string] => {
   const configFilePath = path.resolve(process.argv[3])
   const entryFilePath = path.resolve(process.argv[4])
   if (!['data', 'patient', 'sample'].includes(entryFileType)) {
-    throw Error(
+    throw new Error(
       'For entry file type, specify one of [data, patient, or sample].'
     )
   }
   if (!fs.existsSync(configFilePath)) {
-    throw Error(
+    throw new Error(
       `The inputted config file path: ${configFilePath} does not exist.`
     )
   }
   if (!fs.existsSync(entryFilePath)) {
-    throw Error(
+    throw new Error(
       `The inputted entry file path: ${entryFilePath} does not exist.`
     )
   }
@@ -79,10 +79,11 @@ export const validateEntryFile = async (
   entryFilePath: string
 ) => {
   const schemaFilePath = path.resolve(
-    `${__filename}/../../schema/${entryFileType}.schema.json`
+    __dirname,
+    `../schema/${entryFileType}.schema.json`
   )
   if (!fs.existsSync(schemaFilePath)) {
-    throw Error(`Could not find schema file: ${schemaFilePath}.`)
+    throw new Error(`Could not find schema file: ${schemaFilePath}.`)
   }
   const schema = JSON.parse(fs.readFileSync(schemaFilePath, 'utf-8'))
   const entries = JSON.parse(fs.readFileSync(entryFilePath, 'utf-8'))
@@ -206,15 +207,15 @@ export const esMappings = (
       mappings.properties[field.id] = { type: esType(field.type) }
     }
   } else if (entryFileType === 'patient') {
-    mappings.properties['samples'] = {
+    mappings.properties.samples = {
       type: 'nested',
       properties: {} as Record<string, unknown>,
     }
     for (const field of config.filter.fields) {
       if (field.id === 'patientId') {
-        mappings.properties['patientId'] = { type: esType(field.type) }
+        mappings.properties.patientId = { type: esType(field.type) }
       } else if (field.id === 'dataType') {
-        ;(mappings.properties.samples as NestedObj).properties['dataTypes'] = {
+        ;(mappings.properties.samples as NestedObj).properties.dataTypes = {
           type: 'nested',
           properties: {
             name: { type: esType(field.type) },
@@ -229,7 +230,7 @@ export const esMappings = (
   } else if (entryFileType === 'sample') {
     for (const field of config.filter.fields) {
       if (field.id === 'dataType') {
-        mappings.properties['dataTypes'] = {
+        mappings.properties.dataTypes = {
           type: 'nested',
           properties: {
             name: { type: esType(field.type) },
@@ -275,7 +276,7 @@ export const bulkData = async (
     })
     if (bulkResponse.errors) {
       const errorDocs = bulkResponse.items.flatMap(
-        (action: Record<string, { error?: any; status?: any }>, i: number) => {
+        (action: Record<string, { error?: any; status?: any }>, i: number) =>
           Object.values(action)
             .filter((val) => !!val.error)
             .map((val) => ({
@@ -284,7 +285,6 @@ export const bulkData = async (
               operation: body[i * 2],
               document: body[i * 2 + 1],
             }))
-        }
       )
       throw new Error(`[Bulk Error]\n${JSON.stringify(errorDocs, null, 2)}`)
     }

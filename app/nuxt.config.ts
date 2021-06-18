@@ -6,6 +6,9 @@ const config: NuxtConfig = {
   ssr: false,
   head: {
     title: 'MeDIA',
+    htmlAttrs: {
+      lang: 'en',
+    },
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
@@ -20,6 +23,7 @@ const config: NuxtConfig = {
   loading: { color: colors.blue.darken2 },
   css: ['~/assets/fonts.css'],
   plugins: ['~/plugins/vuetify.ts', '~/plugins/vuetifyColors.ts'],
+  components: true,
   buildModules: ['@nuxt/typescript-build', '@nuxtjs/vuetify'],
   modules: [
     '@nuxtjs/axios',

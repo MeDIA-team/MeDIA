@@ -1,15 +1,15 @@
 import fs from 'fs'
 import path from 'path'
-import { dumpSchemas } from '../../command/config'
+import { main as generateTestEntries } from '~/tests/generateTestEntries'
+import { dumpSchemas } from '~/command/config'
 import {
   EntryFileType,
   esMappings,
   parseAndValidateArgs,
   validateEntryFile,
-} from '../../command/esBulk'
-import { main as generateTestEntries } from '../generateTestEntries'
+} from '~/command/esBulk'
 
-const configTestFile = path.resolve(`${__filename}/../../config.test.json`)
+const configTestFile = path.resolve(__dirname, '../config.test.json')
 
 const PRE_ARGV = [...process.argv]
 
@@ -27,7 +27,8 @@ describe.each(['data', 'patient', 'sample'])(
 
     test(`ok in the case of ${entryFileType}`, () => {
       const entryFilePath = path.resolve(
-        `${__filename}/../../${entryFileType}.test.json`
+        __dirname,
+        `../${entryFileType}.test.json`
       )
       process.argv = [
         PRE_ARGV[0],
@@ -59,9 +60,10 @@ describe.each(['data', 'patient', 'sample'])(
       process.argv = [...PRE_ARGV]
     })
 
-    test(`ok in the case of ${entryFileType}`, async () => {
+    test(`ok in the case of ${entryFileType}`, () => {
       const entryFilePath = path.resolve(
-        `${__filename}/../../${entryFileType}.test.json`
+        __dirname,
+        `../${entryFileType}.test.json`
       )
       expect(
         validateEntryFile(

@@ -1,7 +1,7 @@
-import dayjs from 'dayjs'
 import fs from 'fs'
 import path from 'path'
-import { logStdout } from '../command/utils'
+import dayjs from 'dayjs'
+import { logStdout } from '~/command/utils'
 
 const RESEARCHES: string[] = [
   'Retrospective clinical data',

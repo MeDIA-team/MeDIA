@@ -1,17 +1,17 @@
-import { ValidationError } from 'ajv'
 import fs from 'fs'
 import path from 'path'
-import * as commandConfig from '../../command/config'
+import { ValidationError } from 'ajv'
+import * as commandConfig from '~/command/config'
 
-const configTestFile = path.resolve(`${__filename}/../../config.test.json`)
-const dataSchemaTestFile = path.resolve(
-  `${__filename}/../../data.schema.test.json`
-)
+const configTestFile = path.resolve(__dirname, '../config.test.json')
+const dataSchemaTestFile = path.resolve(__dirname, '../data.schema.test.json')
 const patientSchemaTestFile = path.resolve(
-  `${__filename}/../../patient.schema.test.json`
+  __dirname,
+  '../patient.schema.test.json'
 )
 const sampleSchemaTestFile = path.resolve(
-  `${__filename}/../../sample.schema.test.json`
+  __dirname,
+  '../sample.schema.test.json'
 )
 
 const PRE_ARGV = [...process.argv]
@@ -85,10 +85,10 @@ describe('dumpSchemas', () => {
     expect(() => {
       commandConfig.dumpSchemas(config)
     }).not.toThrow()
-    const schemaDirPath = path.resolve(`${__filename}/../../../schema`)
-    expect(fs.existsSync(`${schemaDirPath}/data.schema.json`)).toBe(true)
-    expect(fs.existsSync(`${schemaDirPath}/patient.schema.json`)).toBe(true)
-    expect(fs.existsSync(`${schemaDirPath}/sample.schema.json`)).toBe(true)
+    const schemaDirPath = path.resolve(__dirname, '../../schema')
+    expect(fs.existsSync(`${schemaDirPath}/data.schema.json`)).toBeTruthy()
+    expect(fs.existsSync(`${schemaDirPath}/patient.schema.json`)).toBeTruthy()
+    expect(fs.existsSync(`${schemaDirPath}/sample.schema.json`)).toBeTruthy()
   })
 })
 

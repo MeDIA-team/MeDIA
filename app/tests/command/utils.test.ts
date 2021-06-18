@@ -1,4 +1,4 @@
-import * as utils from '../../command/utils'
+import * as utils from '~/command/utils'
 
 describe('logStdout', () => {
   test('ok by string', () => {

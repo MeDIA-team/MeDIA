@@ -1,8 +1,8 @@
 import path from 'path'
-import { main as esBulkValidate } from '../../command/esBulkValidate'
-import { main as generateTestEntries } from '../generateTestEntries'
+import { main as generateTestEntries } from '~/tests/generateTestEntries'
+import { main as esBulkValidate } from '~/command/esBulkValidate'
 
-const configTestFile = path.resolve(`${__filename}/../../config.test.json`)
+const configTestFile = path.resolve(__dirname, '../config.test.json')
 
 const PRE_ARGV = [...process.argv]
 
@@ -18,9 +18,10 @@ describe.each(['data', 'patient', 'sample'])(
       process.argv = [...PRE_ARGV]
     })
 
-    test(`ok in the case of ${entryFileType}`, async () => {
+    test(`ok in the case of ${entryFileType}`, () => {
       const entryFilePath = path.resolve(
-        `${__filename}/../../${entryFileType}.test.json`
+        __dirname,
+        `../${entryFileType}.test.json`
       )
       process.argv = [
         PRE_ARGV[0],
