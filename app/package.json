@@ -11,7 +11,7 @@
     "generate": "nuxt-ts generate",
     "start": "nuxt-ts start",
     "lint": "eslint --ext .ts,.js,.vue .",
-    "exec-ts-node": "ts-node --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\"",
+    "exec-ts-node": "ts-node -r tsconfig-paths/register --compiler-options=\"{\\\"module\\\": \\\"commonjs\\\"}\"",
     "config:validate": "yarn exec-ts-node ./command/configValidate.ts",
     "config:dumpSchemas": "yarn exec-ts-node ./command/configDumpSchemas.ts",
     "bulk": "yarn exec-ts-node ./command/esBulk.ts",
@@ -49,6 +49,7 @@
     "prettier": "^2.3.1",
     "ts-jest": "^27.0.3",
     "ts-node": "^10.0.0",
+    "tsconfig-paths": "^3.9.0",
     "vue-chartjs": "^3.5.1",
     "vue-jest": "^3.0.7"
   }

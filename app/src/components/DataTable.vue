@@ -19,7 +19,7 @@
         v-for="parentDataType in parentDataTypes"
         #[parentDataType]="{ value }"
       >
-        <v-icon v-if="value" :key="parentDataType">mdi-check</v-icon>
+        <v-icon v-if="value" :key="parentDataType"> mdi-check </v-icon>
       </template>
       <template v-for="header in copyableHeaders" #[header]="{ value }">
         <div :key="header" @click="copyText(value)">
