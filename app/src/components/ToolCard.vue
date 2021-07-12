@@ -13,10 +13,10 @@
       </v-tabs>
       <v-tabs-items v-model="selectedTabIndex">
         <v-tab-item>
-          <filter-tool :view-type="viewType" class="px-10 py-4" />
+          <filter-tool class="px-10 py-4" />
         </v-tab-item>
         <v-tab-item>
-          <selector-tool :view-type="viewType" class="px-10 py-4" />
+          <selector-tool class="px-10 py-4" />
         </v-tab-item>
       </v-tabs-items>
     </v-card>
@@ -29,37 +29,26 @@ import FilterTool from '@/components/FilterTool.vue'
 import SelectorTool from '@/components/SelectorTool.vue'
 import Vue from 'vue'
 
-type Data = {
+interface Data {
   selectedTabIndex: number
   tabKeys: string[]
 }
 
-type Methods = Record<string, never>
-
-type Computed = {
-  color: string
-}
-
-type Props = {
+interface Computed {
   viewType: string
+  color: string
 }
 
 const options: ThisTypedComponentOptionsWithRecordProps<
   Vue,
   Data,
-  Methods,
+  Record<string, never>,
   Computed,
-  Props
+  Record<string, never>
 > = {
-  components: { FilterTool, SelectorTool },
-  props: {
-    viewType: {
-      type: String,
-      required: true,
-      validator: (val: string) => {
-        return ['sample', 'patient'].includes(val)
-      },
-    },
+  components: {
+    FilterTool,
+    SelectorTool,
   },
 
   data() {
@@ -70,6 +59,10 @@ const options: ThisTypedComponentOptionsWithRecordProps<
   },
 
   computed: {
+    viewType() {
+      return this.$route.path.split('/')[1]
+    },
+
     color() {
       return this.viewType === 'sample' ? 'primary' : 'secondary'
     },

@@ -4,48 +4,39 @@
     max-width="160"
     min-width="160"
     outlined
-    @click="resetSelector"
-  >
-    Reset Selector
-  </v-btn>
+    @click="reset"
+    v-text="'Reset Selector'"
+  />
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 
-type Data = Record<string, never>
-
-type Methods = {
-  resetSelector: () => void
+interface Methods {
+  reset: () => void
 }
 
-type Computed = Record<string, never>
-
-type Props = {
+interface Computed {
   viewType: string
 }
 
 const options: ThisTypedComponentOptionsWithRecordProps<
   Vue,
-  Data,
+  Record<string, never>,
   Methods,
   Computed,
-  Props
+  Record<string, never>
 > = {
-  props: {
-    viewType: {
-      type: String,
-      required: true,
-      validator: (val: string) => {
-        return ['sample', 'patient'].includes(val)
-      },
+  computed: {
+    viewType() {
+      return this.$route.path.split('/')[1]
     },
   },
 
   methods: {
-    resetSelector() {
-      this.$store.commit('selector/resetSelector', { viewType: this.viewType })
+    reset() {
+      this.$store.commit('selector/reset', { viewType: this.viewType })
     },
   },
 }

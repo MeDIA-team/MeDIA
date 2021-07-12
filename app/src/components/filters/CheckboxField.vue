@@ -6,75 +6,71 @@
       v-model="selected"
       :color="color"
       :label="content"
+      :style="{ height: '52px' }"
       :value="content"
       class="shrink my-0 mr-12 pt-0 align-center"
       hide-details
-      style="height: 52px"
     />
   </div>
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
-import { TypedStore } from '@/store'
+import Vue from 'vue'
 
-type Data = Record<string, never>
-
-type Methods = Record<string, never>
-
-type Computed = {
+interface Computed {
+  viewType: string
   color: string
   contents: string[]
   selected: string[]
 }
 
-type Props = {
-  viewType: string
-  contentKey: string
+interface Props {
+  id: string
 }
 
 const options: ThisTypedComponentOptionsWithRecordProps<
   Vue,
-  Data,
-  Methods,
+  Record<string, never>,
+  Record<string, never>,
   Computed,
   Props
 > = {
   props: {
-    viewType: {
-      type: String,
-      required: true,
-      validator: (val: string) => {
-        return ['sample', 'patient'].includes(val)
-      },
-    },
-    contentKey: {
+    id: {
       type: String,
       required: true,
     },
   },
 
   computed: {
+    viewType() {
+      return this.$route.path.split('/')[1]
+    },
+
     color() {
       return this.viewType === 'sample' ? 'primary' : 'secondary'
     },
+
     contents() {
-      return (this.$store as TypedStore).state.filter[
-        this.viewType as 'sample' | 'patient'
-      ][this.contentKey as 'projects' | 'sexes' | 'diseases'].contents
+      return (
+        this.$store.state.filter[this.viewType].fields[this.id].contents || []
+      )
     },
+
     selected: {
       get() {
-        return (this.$store as TypedStore).state.filter[
-          this.viewType as 'sample' | 'patient'
-        ][this.contentKey as 'projects' | 'sexes' | 'diseases'].selected
+        return (
+          this.$store.state.filter[this.viewType].fields[this.id].selected || []
+        )
       },
+
       set(value: string[]) {
-        this.$store.commit('filter/setFilterCheckBoxField', {
+        this.$store.commit('filter/setValue', {
           viewType: this.viewType,
-          value,
-          contentKey: this.contentKey,
+          id: this.id,
+          formType: 'checkbox',
+          value: { selected: value },
         })
       },
     },

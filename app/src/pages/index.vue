@@ -4,11 +4,11 @@
       <v-container fluid>
         <div class="d-flex justify-center align-center">
           <v-card
-            class="d-flex flex-column align-center"
             :color="$colors.grey.lighten5"
+            :style="{ borderRadius: '24px', marginTop: '100px' }"
+            class="d-flex flex-column align-center"
             elevation="24"
             height="300"
-            style="border-radius: 24px; margin-top: 100px"
             width="480"
           >
             <div class="mt-12">
@@ -32,7 +32,7 @@
                 width="175"
               >
                 <v-icon>mdi-flask-outline</v-icon>
-                <div class="ml-1">Sample View</div>
+                <div class="ml-1" v-text="'Sample View'" />
               </v-btn>
               <v-btn
                 color="secondary"
@@ -44,7 +44,7 @@
                 width="175"
               >
                 <v-icon>mdi-account-outline</v-icon>
-                <div class="ml-1">Patient View</div>
+                <div class="ml-1" v-text="'Patient View'" />
               </v-btn>
             </div>
           </v-card>

@@ -3,18 +3,18 @@ import Vue from 'vue'
 
 declare module '@nuxt/vue-app' {
   interface Context {
-    $copyText(text: string): void
+    $dataConfig: Config
   }
 }
 
 declare module '@nuxt/types' {
   interface Context {
-    $copyText(text: string): void
+    $dataConfig: Config
   }
 }
 
 declare module 'vue/types/vue' {
   interface Vue {
-    $copyText(text: string): void
+    $dataConfig: Config
   }
 }

@@ -4,7 +4,7 @@
       v-model="selected"
       :footer-props="footerProps"
       :headers="headers"
-      :item-key="itemKey"
+      :item-key="`${viewType}Id`"
       :items="contents"
       :loading="loading"
       :options.sync="options"
@@ -23,7 +23,8 @@
       </template>
       <template v-for="header in copyableHeaders" #[header]="{ value }">
         <div :key="header" @click="copyText(value)">
-          {{ shortenText(value) }}
+          {{ value }}
+          <!-- {{ value | shortenText }} -->
         </div>
       </template>
     </v-data-table>
@@ -35,39 +36,32 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { TypedStore } from '@/store'
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import { DataOptions, DataTableHeader } from 'vuetify'
-import { Entry } from '@/types/entry'
 
-type Data = {
+interface Data {
   snackbar: boolean
   snackbarText: string
   footerProps: {
     'items-per-page-options': number[]
   }
-}
-
-type Methods = {
-  copyText(text: string): void
-  shortenText(text: string): string
-}
-
-type Computed = {
-  color: string
   loading: boolean
+}
+
+interface Methods {
+  copyText(text: string): void
+}
+
+interface Computed {
+  viewType: string
+  color: string
   options: DataOptions
   count: number
   headers: DataTableHeader[]
-  contents: Entry[]
-  itemKey: string
-  selected: Entry[]
+  contents: DataEntry[]
+  selected: DataEntry[]
   parentDataTypes: string[]
   copyableHeaders: string[]
-}
-
-type Props = {
-  viewType: string
 }
 
 const options: ThisTypedComponentOptionsWithRecordProps<
@@ -75,18 +69,8 @@ const options: ThisTypedComponentOptionsWithRecordProps<
   Data,
   Methods,
   Computed,
-  Props
+  Record<string, never>
 > = {
-  props: {
-    viewType: {
-      type: String,
-      required: true,
-      validator: (val: string) => {
-        return ['sample', 'patient'].includes(val)
-      },
-    },
-  },
-
   data() {
     return {
       snackbar: false,
@@ -94,26 +78,19 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       footerProps: {
         'items-per-page-options': [10, 30, 100],
       },
+      loading: false,
     }
   },
 
   computed: {
+    viewType() {
+      return this.$route.path.split('/')[1]
+    },
+
     color() {
       return this.viewType === 'sample' ? 'primary' : 'secondary'
     },
-    loading: {
-      set(value) {
-        this.$store.commit('entry/setLoading', {
-          viewType: this.viewType,
-          value,
-        })
-      },
-      get() {
-        return (this.$store as TypedStore).state.entry[
-          this.viewType as 'sample' | 'patient'
-        ].loading
-      },
-    },
+
     options: {
       set(value) {
         this.$store.commit('entry/setOptions', {
@@ -121,48 +98,53 @@ const options: ThisTypedComponentOptionsWithRecordProps<
           value,
         })
       },
+
       get() {
-        return (this.$store as TypedStore).state.entry[
-          this.viewType as 'sample' | 'patient'
-        ].options
+        return this.$store.state.entry[this.viewType].options
       },
     },
+
     count() {
-      return (this.$store as TypedStore).state.entry[
-        this.viewType as 'sample' | 'patient'
-      ].count
+      return this.$store.state.filter[this.viewType].counts[this.viewType]
+        .filtered
     },
+
     headers() {
-      return this.$store.getters['selector/headers']({
-        viewType: this.viewType,
-      })
+      return [
+        ...this.$store.getters['selector/requiredFieldHeaders']({
+          viewType: this.viewType,
+          dataConfig: this.$dataConfig,
+        }),
+        ...this.$store.getters['selector/dataTypeFieldHeaders']({
+          viewType: this.viewType,
+        }),
+      ]
     },
+
     contents() {
-      return (this.$store as TypedStore).state.entry[
-        this.viewType as 'sample' | 'patient'
-      ].contents
+      return this.$store.state.entry[this.viewType].contents
     },
-    itemKey() {
-      return `${this.viewType}ID`
-    },
+
     selected: {
       set(value) {
-        this.$store.commit('entry/setSelected', {
+        this.$store.commit('entry/setValue', {
           viewType: this.viewType,
+          fieldType: 'selected',
           value,
         })
       },
+
       get() {
-        return (this.$store as TypedStore).state.entry[
-          this.viewType as 'sample' | 'patient'
-        ].selected
+        return this.$store.state.entry[this.viewType].selected
       },
     },
+
     parentDataTypes() {
       return this.$store.getters['selector/parentDataTypes']({
         viewType: this.viewType,
       })
     },
+
     copyableHeaders() {
       return this.$store.getters['selector/copyableHeaders']({
         viewType: this.viewType,
@@ -174,16 +156,16 @@ const options: ThisTypedComponentOptionsWithRecordProps<
     this.$store.dispatch('entry/updateEntries', {
       viewType: this.viewType,
       axios: this.$axios,
+      dataConfig: this.$dataConfig,
     })
     this.$store.dispatch('entry/updateEntryCount', {
       viewType: this.viewType,
       axios: this.$axios,
+      dataConfig: this.$dataConfig,
     })
     const subscribeMutations = [
-      'filter/setFilterTextField',
-      'filter/setFilterCheckBoxField',
-      'filter/setFilterChipField',
-      'filter/resetFilter',
+      'filter/setValue',
+      'filter/reset',
       'entry/setOptions',
     ]
     this.$store.subscribe((mutation) => {
@@ -191,10 +173,12 @@ const options: ThisTypedComponentOptionsWithRecordProps<
         this.$store.dispatch('entry/updateEntries', {
           viewType: this.viewType,
           axios: this.$axios,
+          dataConfig: this.$dataConfig,
         })
         this.$store.dispatch('entry/updateEntryCount', {
           viewType: this.viewType,
           axios: this.$axios,
+          dataConfig: this.$dataConfig,
         })
       }
     })
@@ -206,12 +190,15 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       this.snackbarText = `Copied: ${text}`
       this.$copyText(text)
     },
+  },
 
-    shortenText(text: string) {
-      if (typeof text !== 'string') {
-        return text
+  filters: {
+    shortenText(value: string) {
+      if (typeof value !== 'string') {
+        return value
+      } else {
+        return value.length > 20 ? value.slice(0, 20) + '...' : value
       }
-      return text.length > 20 ? text.slice(0, 20) + '...' : text
     },
   },
 }

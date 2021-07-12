@@ -1,4 +1,4 @@
-import { NuxtConfig } from '@nuxt/types'
+import { NuxtConfig } from '@nuxt/types/config'
 import colors from 'vuetify/es5/util/colors'
 
 const config: NuxtConfig = {
@@ -22,7 +22,11 @@ const config: NuxtConfig = {
   },
   loading: { color: colors.blue.darken2 },
   css: ['~/assets/fonts.css'],
-  plugins: ['~/plugins/vuetify.ts', '~/plugins/vuetifyColors.ts'],
+  plugins: [
+    '~/plugins/vuetify.ts',
+    '~/plugins/vuetifyColors.ts',
+    '~/plugins/dataConfig.ts',
+  ],
   components: true,
   buildModules: ['@nuxt/typescript-build', '@nuxtjs/vuetify'],
   modules: [

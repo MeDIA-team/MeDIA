@@ -1,49 +1,22 @@
 import 'dayjs/locale/ja'
+
 import fs from 'fs'
 import path from 'path'
-import { Client } from '@elastic/elasticsearch'
-import Ajv, { ValidationError } from 'ajv'
 import dayjs from 'dayjs'
-import { logStdout } from './utils'
+import Ajv, { ValidationError } from 'ajv'
+
+import { Client } from '@elastic/elasticsearch'
+
 import {
-  Config,
   dumpSchemas as configDumpSchemas,
   flattenDataTypeIds,
   validate as configValidate,
 } from './config'
+import { logStdout } from './utils'
 
 dayjs.locale('ja')
 
 export type EntryFileType = 'data' | 'patient' | 'sample'
-
-interface DataEntry {
-  patientId: string
-  sampleId: string
-  dataType: string
-  [k: string]: unknown
-}
-
-interface PatientEntry {
-  patientId: string
-  samples: {
-    sampleId: string
-    dataTypes: {
-      name: string
-      [k: string]: unknown
-    }[]
-    [k: string]: unknown
-  }[]
-}
-
-interface SampleEntry {
-  sampleId: string
-  patientId: string
-  dataTypes: {
-    name: string
-    [k: string]: unknown
-  }[]
-  [k: string]: unknown
-}
 
 // ts-node <script> ['data' | 'patient' | 'sample'] <configFilePath> <entryFilePath>
 export const parseAndValidateArgs = (): [EntryFileType, string, string] => {
@@ -77,7 +50,7 @@ export const validateEntryFile = async (
   entryFileType: EntryFileType,
   configFilePath: string,
   entryFilePath: string
-) => {
+): Promise<void> => {
   const schemaFilePath = path.resolve(
     __dirname,
     `../schema/${entryFileType}.schema.json`
@@ -102,7 +75,7 @@ export const validateEntryFile = async (
   )
   if (entryFileType === 'data') {
     for (const entry of entries as DataEntry[]) {
-      if (!dataTypeIds.includes(entry.dataType)) {
+      if (!dataTypeIds.includes(entry.dataType as string)) {
         throw new Error(
           `[Validation Error] The inputted entry file contained an invalid id: ${entry.dataType}, which is not included in the inputted config file.`
         )
@@ -133,7 +106,7 @@ export const validateEntryFile = async (
   }
 }
 
-export const newEsClient = () => {
+export const newEsClient = (): Client => {
   const esClient = new Client({
     node: process.env.ES_URL || 'http://db:9200',
   })
@@ -166,7 +139,7 @@ const INDEX_SETTINGS_FOR_ENTRIES = {
 export const existsIndex = async (
   esClient: Client,
   index: EntryFileType | 'config'
-) => {
+): Promise<boolean> => {
   const res = await esClient.indices.exists({ index })
   return !!res.body
 }
@@ -176,7 +149,7 @@ export const createIndex = async (
   index: EntryFileType | 'config',
   settings: typeof INDEX_SETTINGS | typeof INDEX_SETTINGS_FOR_ENTRIES,
   mappings: Record<string, unknown>
-) => {
+): Promise<void> => {
   if (!(await existsIndex(esClient, index))) {
     await esClient.indices.create({
       index,
@@ -197,7 +170,7 @@ const esType = (jsonSchemaType: 'string' | 'integer' | 'date') => {
 export const esMappings = (
   entryFileType: EntryFileType,
   configFilePath: string
-) => {
+): { properties: Record<string, unknown> } => {
   const config: Config = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'))
   const mappings = {
     properties: {} as Record<string, unknown>,
@@ -259,7 +232,7 @@ export const bulkData = async (
   esClient: Client,
   index: EntryFileType,
   entryFilePath: string
-) => {
+): Promise<void> => {
   const originalEntries = JSON.parse(fs.readFileSync(entryFilePath, 'utf-8'))
   const fileSize = fs.statSync(entryFilePath).size
   for (const entries of splitEntries(
@@ -276,7 +249,10 @@ export const bulkData = async (
     })
     if (bulkResponse.errors) {
       const errorDocs = bulkResponse.items.flatMap(
-        (action: Record<string, { error?: any; status?: any }>, i: number) =>
+        (
+          action: Record<string, { error?: unknown; status?: unknown }>,
+          i: number
+        ) =>
           Object.values(action)
             .filter((val) => !!val.error)
             .map((val) => ({
@@ -294,7 +270,7 @@ export const bulkData = async (
 export const updateIndexFielddata = async (
   esClient: Client,
   index: EntryFileType
-) => {
+): Promise<void> => {
   if (['patient', 'sample'].includes(index)) {
     const res = await esClient.indices.getMapping({
       index,
@@ -334,7 +310,7 @@ const insertConfigData = async (esClient: Client, configFilePath: string) => {
   })
 }
 
-export const main = async () => {
+export const main = async (): Promise<void> => {
   logStdout('Start to bulk the entry file.')
   const esClient: Client = newEsClient()
   const [entryFileType, configFilePath, entryFilePath] = parseAndValidateArgs()

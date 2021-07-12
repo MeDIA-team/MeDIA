@@ -1,52 +1,7 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import fs from 'fs'
 import path from 'path'
 import Ajv, { ValidationError } from 'ajv'
-
-export interface CheckboxField {
-  id: string
-  label: string
-  form: {
-    type: 'checkbox'
-  }
-  type: 'string'
-}
-
-export interface ChipField {
-  id: string
-  label: string
-  form: {
-    type: 'chip'
-    logic: 'OR' | 'AND'
-    boxWidth?: string
-    boxLabel?: string
-  }
-  type: 'string'
-}
-
-export interface TextField {
-  id: string
-  label: string
-  form: {
-    type: 'text'
-    boxWidth?: string
-  }
-  type: 'integer' | 'date'
-}
-
-export interface SelectorField {
-  id: string
-  label: string
-  child?: SelectorField[]
-}
-
-export interface Config {
-  filter: {
-    fields: Array<CheckboxField | ChipField | TextField>
-  }
-  selector: {
-    dataType: Array<SelectorField>
-  }
-}
 
 export const parseAndValidateArgs = (): string => {
   let configFilePath: string
@@ -65,7 +20,7 @@ export const parseAndValidateArgs = (): string => {
   return configFilePath
 }
 
-export const validate = async (config: Record<any, any>): Promise<void> => {
+export const validate = async (config: Config): Promise<void> => {
   const schemaFilePath = path.resolve(__dirname, '../config.schema.json')
   if (!fs.existsSync(schemaFilePath)) {
     throw new Error(`Could not find schema file: ${schemaFilePath}.`)
@@ -80,7 +35,7 @@ export const validate = async (config: Record<any, any>): Promise<void> => {
       throw new Error('Unexpected error occurred in validation.')
     }
   }
-  const filterIds = (config as Config).filter.fields.map((field) => field.id)
+  const filterIds = config.filter.fields.map((field) => field.id)
   if (
     !['patientId', 'sampleId', 'dataType'].every((id) => filterIds.includes(id))
   ) {
@@ -98,7 +53,7 @@ interface GeneratedSchema {
     type: 'object'
     required: string[]
     additionalProperties: boolean
-    properties: Record<any, any>
+    properties: Record<string | number | symbol, unknown>
   }
 }
 
@@ -110,7 +65,7 @@ class SchemaTemplate implements GeneratedSchema {
     type: 'object'
     required: string[]
     additionalProperties: boolean
-    properties: Record<any, any>
+    properties: Record<string | number | symbol, unknown>
   }
 
   constructor() {
@@ -175,6 +130,7 @@ export const generatePatientSchema = (config: Config): GeneratedSchema => {
     if (['patientId', 'sampleId', 'dataType'].includes(field.id)) {
       continue
     }
+    // @ts-ignore
     patientSchema.items.properties.samples.items.properties[field.id] = {
       type: 'array',
       additionalItems: false,

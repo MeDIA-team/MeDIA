@@ -1,8 +1,9 @@
 import fs from 'fs'
+
 import { dumpSchemas, parseAndValidateArgs, validate } from './config'
 import { logStdout } from './utils'
 
-export const main = async () => {
+export const main = async (): Promise<void> => {
   logStdout('Start to dump entry file schemas.')
   const configFilePath = parseAndValidateArgs()
   const config = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'))

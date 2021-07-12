@@ -1,13 +1,13 @@
 <template>
   <v-app>
-    <header-bar view-type="patient" />
+    <header-bar />
     <v-main class="background">
       <v-container fluid>
-        <tool-card class="mb-6" view-type="patient" />
-        <data-table class="mb-6" view-type="patient" />
+        <tool-card class="mb-6" />
+        <data-table class="mb-6" />
       </v-container>
     </v-main>
-    <footer-bar view-type="patient" />
+    <footer-bar />
   </v-app>
 </template>
 
@@ -26,12 +26,18 @@ export default Vue.extend({
     ToolCard,
   },
 
-  async middleware({ store, $axios }) {
-    const initActionQueue = ['filter/initialize', 'selector/initialize']
-    for (const initAction of initActionQueue) {
-      await store.dispatch(initAction, { viewType: 'patient', axios: $axios })
-    }
-    store.dispatch('filter/setSelectedIDs', {
+  async middleware({ store, $dataConfig, $axios }) {
+    await store.dispatch('filter/initialize', {
+      viewType: 'patient',
+      dataConfig: $dataConfig,
+      axios: $axios,
+    })
+    await store.dispatch('selector/initialize', {
+      viewType: 'patient',
+      dataConfig: $dataConfig,
+      axios: $axios,
+    })
+    store.dispatch('filter/setSelectedIds', {
       viewType: 'patient',
     })
   },

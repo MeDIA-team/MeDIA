@@ -1,20 +1,34 @@
-import { DataOptions } from 'vuetify'
 import { NuxtAxiosInstance } from '@nuxtjs/axios'
-import { requiredFields } from '@/store/selector'
+import { DataOptions } from 'vuetify'
 import {
-  SampleEntry,
-  PatientEntry,
-  SampleFilterQuery,
-  PatientFilterQuery,
-  NestedFilterQuery,
-} from '@/types/entry'
-import { State as FilterState } from '@/store/filter'
+  CheckboxFieldValue,
+  ChipFieldValue,
+  TextFieldValue,
+  State as FilterState,
+} from '@/store/filter'
+
+export const fetchConfig = async (
+  axios: NuxtAxiosInstance
+): Promise<Config> => {
+  const res = await axios.$get('/api/config/_search', {
+    params: {
+      source: JSON.stringify({
+        query: {
+          match_all: {},
+        },
+      }),
+      source_content_type: 'application/json',
+    },
+  })
+
+  return res.hits.hits[0]._source
+}
 
 export const fetchUniqueValues = async (
   axios: NuxtAxiosInstance,
   field: string
 ): Promise<string[]> => {
-  const res = await axios.$get('/api/entry/_search', {
+  const res = await axios.$get('/api/data/_search', {
     params: {
       source: JSON.stringify({
         track_total_hits: true,
@@ -41,7 +55,7 @@ const fetchDataTypeHaveMetadataField = async (
   axios: NuxtAxiosInstance,
   field: string
 ): Promise<string[]> => {
-  const res = await axios.$get('/api/entry/_search', {
+  const res = await axios.$get('/api/data/_search', {
     params: {
       source: JSON.stringify({
         track_total_hits: true,
@@ -66,10 +80,11 @@ const fetchDataTypeHaveMetadataField = async (
 }
 
 export const fetchDataTypeToMetadataFields = async (
-  axios: NuxtAxiosInstance
+  axios: NuxtAxiosInstance,
+  requiredFields: string[]
 ): Promise<Record<string, string[]>> => {
-  const res = await axios.$get('/api/entry/_mapping')
-  const allFields: string[] = Object.keys(res.entry.mappings.properties)
+  const res = await axios.$get('/api/data/_mapping')
+  const allFields: string[] = Object.keys(res.data.mappings.properties)
   const metadataFields = allFields.filter(
     (field) => ![...requiredFields, 'dataType'].includes(field)
   )
@@ -99,11 +114,12 @@ export const fetchDataTypeToMetadataFields = async (
 export const fetchEntries = async (
   viewType: 'sample' | 'patient',
   axios: NuxtAxiosInstance,
+  dataConfig: Config,
   options: DataOptions,
   filterState: FilterState
 ): Promise<Array<SampleEntry | PatientEntry>> => {
   const sort = dataOptionsToQuery(viewType, options)
-  const query = filterStateToQuery(viewType, viewType, filterState)
+  const query = filterStateToQuery(viewType, viewType, dataConfig, filterState)
   const res = await axios.$get(`/api/${viewType}/_search`, {
     params: {
       source: JSON.stringify({
@@ -128,9 +144,10 @@ export const fetchCount = async (
   viewType: 'sample' | 'patient',
   indexType: 'sample' | 'patient',
   axios: NuxtAxiosInstance,
+  dataConfig: Config,
   filterState: FilterState
 ): Promise<number> => {
-  const query = filterStateToQuery(viewType, indexType, filterState)
+  const query = filterStateToQuery(viewType, indexType, dataConfig, filterState)
   const res = await axios.$get(`/api/${indexType}/_count`, {
     params: {
       source: JSON.stringify({
@@ -150,85 +167,63 @@ const dataOptionsToQuery = (
   const { sortBy, sortDesc } = options
   const sort = []
   for (let i = 0; i < sortBy.length; i++) {
-    let key = sortBy[i]
+    const key = sortBy[i]
     const desc = sortDesc[i]
-    let dataType: string
-    switch (key) {
-      case 'patientID':
+    if (viewType === 'sample') {
+      if (key.includes('_')) {
+        const dataType = key.split('_')[0]
+        const metaKey = key.split('_')[1]
+        sort.push({
+          [`dataTypes.${metaKey}`]: {
+            order: desc ? 'desc' : 'asc',
+            nested: {
+              path: 'dataTypes',
+              filter: {
+                term: {
+                  'dataTypes.name': dataType,
+                },
+              },
+            },
+          },
+        })
+      } else {
         sort.push({
           [key]: {
             order: desc ? 'desc' : 'asc',
           },
         })
-        break
-      case 'projectID':
-      case 'projectName':
+      }
+    } else if (viewType === 'patient') {
+      if (key.includes('_')) {
+        const dataType = key.split('_')[0]
+        const metaKey = key.split('_')[1]
         sort.push({
-          ['projects.' + key]: {
+          [`samples.dataTypes.${metaKey}`]: {
             order: desc ? 'desc' : 'asc',
-            nested_path: 'projects',
-          },
-        })
-        break
-      case 'projectPatientID':
-        sort.push({
-          projectPatientIDs: {
-            order: desc ? 'desc' : 'asc',
-          },
-        })
-        break
-      case 'sex':
-      case 'age':
-      case 'disease':
-      case 'sampleID':
-      case 'samplingDate':
-        if (viewType === 'patient') {
-          sort.push({
-            ['samples.' + key]: {
-              order: desc ? 'desc' : 'asc',
-              nested_path: 'samples',
-            },
-          })
-        } else {
-          sort.push({
-            [key]: {
-              order: desc ? 'desc' : 'asc',
-            },
-          })
-        }
-        break
-      default:
-        dataType = key.split('_')[0]
-        key = key.split('_')[1]
-        if (viewType === 'sample') {
-          sort.push({
-            ['dataTypes.' + key]: {
-              order: desc ? 'desc' : 'asc',
-              nested: {
-                path: 'dataTypes',
-                filter: {
-                  term: {
-                    'dataTypes.name': dataType,
-                  },
+            nested: {
+              path: 'samples.dataTypes',
+              filter: {
+                term: {
+                  'samples.dataTypes.name': dataType,
                 },
               },
             },
-          })
-        } else if (viewType === 'patient') {
-          sort.push({
-            ['samples.dataTypes.' + key]: {
-              order: desc ? 'desc' : 'asc',
-              nested: {
-                path: 'samples.dataTypes',
-                filter: {
-                  term: {
-                    'samples.dataTypes.name': dataType,
-                  },
-                },
-              },
-            },
-          })
-        }
+          },
+        })
+      } else if (key === 'patientId') {
+        sort.push({
+          patientId: {
+            order: desc ? 'desc' : 'asc',
+          },
+        })
+      } else {
+        sort.push({
+          [`samples.${key}`]: {
+            order: desc ? 'desc' : 'asc',
+            nested_path: 'samples',
+          },
+        })
+      }
     }
   }
 
@@ -238,170 +233,161 @@ const dataOptionsToQuery = (
 const filterStateToQuery = (
   viewType: 'sample' | 'patient',
   queryType: 'sample' | 'patient',
+  dataConfig: Config,
   filterState: FilterState
-) => {
+): FilterQuery | NestedFilterQuery => {
   const state = filterState[viewType]
-
-  let query: SampleFilterQuery | PatientFilterQuery
-
   if (queryType === 'sample') {
-    query = {
+    const query: FilterQuery = {
       bool: {
-        filter: [
-          {
-            terms: {
-              sex: state.sexes.selected,
-            },
-          },
-          {
-            range: {
-              age: {
-                gte: state.age.bottom || null,
-                lte: state.age.upper || null,
-              },
-            },
-          },
-          {
-            terms: {
-              disease: state.diseases.selected,
-            },
-          },
-          {
-            range: {
-              samplingDate: {
-                gte: state.samplingDate.bottom || null,
-                lte: state.samplingDate.upper || null,
-              },
-            },
-          },
-          {
-            nested: {
-              path: 'projects',
-              query: {
-                terms: {
-                  'projects.projectName': state.projects.selected,
-                },
-              },
-            },
-          },
-        ],
+        filter: [],
       },
     }
-    if (state.sampleIDs.selected.length) {
-      query.bool.filter.push({
-        terms: {
-          sampleID: state.sampleIDs.selected,
-        },
-      })
-    }
-    if (state.dataTypes.selected.length) {
-      for (const dataType of state.dataTypes.selected) {
-        query.bool.filter.push({
-          nested: {
-            path: 'dataTypes',
-            query: {
-              term: {
-                'dataTypes.name': dataType,
+    for (const field of dataConfig.filter.fields) {
+      if (field.id === 'dataType') {
+        field as ChipField
+        const fieldValue = state.fields[field.id] as ChipFieldValue
+        if (fieldValue.selected.length) {
+          for (const dataType of fieldValue.selected) {
+            query.bool.filter.push({
+              nested: {
+                path: 'dataTypes',
+                query: {
+                  term: {
+                    'dataTypes.name': dataType,
+                  },
+                },
               },
+            })
+          }
+        }
+        continue
+      }
+      if (field.form.type === 'checkbox') {
+        field as CheckboxField
+        const fieldValue = state.fields[field.id] as CheckboxFieldValue
+        if (fieldValue.selected.length) {
+          query.bool.filter.push({
+            terms: { [field.id]: fieldValue.selected },
+          })
+        }
+      } else if (field.form.type === 'chip') {
+        field as ChipField
+        const fieldValue = state.fields[field.id] as ChipFieldValue
+        if (field.form.logic === 'OR') {
+          if (fieldValue.selected.length) {
+            query.bool.filter.push({
+              terms: { [field.id]: fieldValue.selected },
+            })
+          }
+        } else if (field.form.logic === 'AND') {
+          if (fieldValue.selected.length) {
+            for (const value of fieldValue.selected) {
+              query.bool.filter.push({
+                term: {
+                  [field.id]: value,
+                },
+              })
+            }
+          }
+        }
+      } else if (field.form.type === 'text') {
+        field as TextField
+        const fieldValue = state.fields[field.id] as TextFieldValue
+        query.bool.filter.push({
+          range: {
+            [field.id]: {
+              gte: fieldValue.bottom || null,
+              lte: fieldValue.upper || null,
             },
           },
         })
       }
     }
+
+    return query
   } else {
-    const nestedQuery: NestedFilterQuery = {
+    const query: NestedFilterQuery = {
       nested: {
         path: 'samples',
         query: {
           bool: {
-            filter: [
-              {
-                terms: {
-                  'samples.sex': state.sexes.selected,
-                },
-              },
-              {
-                range: {
-                  'samples.age': {
-                    gte: state.age.bottom || null,
-                    lte: state.age.upper || null,
-                  },
-                },
-              },
-              {
-                terms: {
-                  'samples.disease': state.diseases.selected,
-                },
-              },
-              {
-                range: {
-                  'samples.samplingDate': {
-                    gte: state.samplingDate.bottom || null,
-                    lte: state.samplingDate.upper || null,
-                  },
-                },
-              },
-            ],
+            filter: [],
           },
         },
       },
     }
-
-    if (state.sampleIDs.selected.length) {
-      nestedQuery.nested.query.bool.filter.push({
-        terms: {
-          'samples.sampleID': state.sampleIDs.selected,
-        },
-      })
-    }
-    if (state.dataTypes.selected.length) {
-      for (const dataType of state.dataTypes.selected) {
-        nestedQuery.nested.query.bool.filter.push({
-          nested: {
-            path: 'samples.dataTypes',
-            query: {
-              term: {
-                'samples.dataTypes.name': dataType,
+    for (const field of dataConfig.filter.fields) {
+      if (field.id === 'dataType') {
+        field as ChipField
+        const fieldValue = state.fields[field.id] as ChipFieldValue
+        if (fieldValue.selected.length) {
+          for (const dataType of fieldValue.selected) {
+            query.nested.query.bool.filter.push({
+              nested: {
+                path: 'samples.dataTypes',
+                query: {
+                  term: {
+                    'samples.dataTypes.name': dataType,
+                  },
+                },
               },
+            })
+          }
+        }
+        continue
+      } else if (field.id === 'patientId') {
+        field as ChipField
+        const fieldValue = state.fields[field.id] as ChipFieldValue
+        if (fieldValue.selected.length) {
+          query.nested.query.bool.filter.push({
+            terms: { [field.id]: fieldValue.selected },
+          })
+        }
+        continue
+      }
+      if (field.form.type === 'checkbox') {
+        field as CheckboxField
+        const fieldValue = state.fields[field.id] as CheckboxFieldValue
+        if (fieldValue.selected.length) {
+          query.nested.query.bool.filter.push({
+            terms: { [`samples.${field.id}`]: fieldValue.selected },
+          })
+        }
+      } else if (field.form.type === 'chip') {
+        field as ChipField
+        const fieldValue = state.fields[field.id] as ChipFieldValue
+        if (field.form.logic === 'OR') {
+          if (fieldValue.selected.length) {
+            query.nested.query.bool.filter.push({
+              terms: { [`samples.${field.id}`]: fieldValue.selected },
+            })
+          }
+        } else if (field.form.logic === 'AND') {
+          if (fieldValue.selected.length) {
+            for (const value of fieldValue.selected) {
+              query.nested.query.bool.filter.push({
+                term: {
+                  [`samples.${field.id}`]: value,
+                },
+              })
+            }
+          }
+        }
+      } else if (field.form.type === 'text') {
+        field as TextField
+        const fieldValue = state.fields[field.id] as TextFieldValue
+        query.nested.query.bool.filter.push({
+          range: {
+            [`samples.${field.id}`]: {
+              gte: fieldValue.bottom || null,
+              lte: fieldValue.upper || null,
             },
           },
         })
       }
     }
 
-    query = {
-      bool: {
-        filter: [
-          nestedQuery,
-          {
-            nested: {
-              path: 'projects',
-              query: {
-                terms: {
-                  'projects.projectName': state.projects.selected,
-                },
-              },
-            },
-          },
-        ],
-      },
-    }
+    return query
   }
-
-  if (state.patientIDs.selected.length) {
-    query.bool.filter.push({
-      terms: {
-        patientID: state.patientIDs.selected,
-      },
-    })
-  }
-  if (state.projectPatientIDs.selected.length) {
-    query.bool.filter.push({
-      terms: {
-        projectPatientIDs: state.projectPatientIDs.selected,
-      },
-    })
-  }
-
-  return query
 }

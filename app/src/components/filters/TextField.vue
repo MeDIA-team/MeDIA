@@ -1,12 +1,12 @@
 <template>
   <div class="d-flex">
     <v-text-field
-      v-model="bottomModel"
+      v-model="bottom"
       :color="color"
-      :rules="[bottomNumberRule(bottomModel)]"
       :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
-      :type="textFieldType"
+      :type="boxType"
       class="my-1"
+      clearable
       dense
       hide-details
       outlined
@@ -16,11 +16,12 @@
       <span class="font-weight-medium headline info--text" v-text="' ~ '" />
     </div>
     <v-text-field
-      v-model="upperModel"
+      v-model="upper"
       :color="color"
       :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
-      :type="textFieldType"
+      :type="boxType"
       class="my-1"
+      clearable
       dense
       hide-details
       outlined
@@ -31,101 +32,89 @@
 
 <script lang="ts">
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
-import { TypedStore } from '@/store'
 import Vue from 'vue'
 
-type Data = {
-  bottomNumberRule: (value: number) => string | boolean
-}
+const BOX_WIDTH = '200px' // age: 80px, date: 200px
 
-type Methods = Record<string, never>
-
-type Computed = {
-  color: string
-  bottomModel: string | number
-  upperModel: string | number
-}
-
-type Props = {
+interface Computed {
   viewType: string
+  color: string
+  bottom: number | string | null
+  upper: number | string | null
+  field: TextField | undefined
+  boxType: string
   boxWidth: string
-  contentKey: string
-  textFieldType: string
+}
+
+interface Props {
+  id: string
 }
 
 const options: ThisTypedComponentOptionsWithRecordProps<
   Vue,
-  Data,
-  Methods,
+  Record<string, never>,
+  Record<string, never>,
   Computed,
   Props
 > = {
   props: {
-    viewType: {
-      type: String,
-      required: true,
-      validator: (val: string) => {
-        return ['sample', 'patient'].includes(val)
-      },
-    },
-    boxWidth: {
+    id: {
       type: String,
       required: true,
     },
-    contentKey: {
-      type: String,
-      required: true,
-    },
-    textFieldType: {
-      type: String,
-      required: true,
-    },
-  },
-
-  data() {
-    return {
-      bottomNumberRule: (value: number) => {
-        if (this.textFieldType === 'number' && value < 0) {
-          return 'Please enter a value greater than zero.'
-        }
-        return true
-      },
-    }
   },
 
   computed: {
+    viewType() {
+      return this.$route.path.split('/')[1]
+    },
+
     color() {
       return this.viewType === 'sample' ? 'primary' : 'secondary'
     },
-    bottomModel: {
+
+    bottom: {
       get() {
-        return (this.$store as TypedStore).state.filter[
-          this.viewType as 'sample' | 'patient'
-        ][this.contentKey as 'age' | 'samplingDate'].bottom
+        return this.$store.state.filter[this.viewType].fields[this.id].bottom
       },
+
       set(value: string | number) {
-        this.$store.commit('filter/setFilterTextField', {
+        this.$store.commit('filter/setValue', {
           viewType: this.viewType,
-          value,
-          contentKey: this.contentKey,
-          direction: 'bottom',
+          id: this.id,
+          formType: 'text',
+          value: { bottom: value },
         })
       },
     },
-    upperModel: {
+
+    upper: {
       get() {
-        return (this.$store as TypedStore).state.filter[
-          this.viewType as 'sample' | 'patient'
-        ][this.contentKey as 'age' | 'samplingDate'].upper
+        return this.$store.state.filter[this.viewType].fields[this.id].upper
       },
+
       set(value: string | number) {
-        this.$store.commit('filter/setFilterTextField', {
+        this.$store.commit('filter/setValue', {
           viewType: this.viewType,
-          value,
-          contentKey: this.contentKey,
-          direction: 'upper',
+          id: this.id,
+          formType: 'text',
+          value: { upper: value },
         })
       },
+    },
+
+    field() {
+      return this.$dataConfig.filter.fields.filter(
+        (field) => field.id === this.id
+      )[0] as TextField
+    },
+
+    boxType() {
+      return this.field?.type === 'integer' ? 'number' : 'date'
+    },
+
+    boxWidth() {
+      return this.field?.form.boxWidth || BOX_WIDTH
     },
   },
 }

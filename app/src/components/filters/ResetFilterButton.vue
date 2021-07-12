@@ -4,7 +4,7 @@
     max-width="160"
     min-width="160"
     outlined
-    @click="resetFilter"
+    @click="reset"
     v-text="'Reset Filter'"
   />
 </template>
@@ -13,38 +13,30 @@
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 
-type Data = Record<string, never>
-
-type Methods = {
-  resetFilter(): void
+interface Methods {
+  reset(): void
 }
 
-type Computed = Record<string, never>
-
-type Props = {
+interface Computed {
   viewType: string
 }
 
 const options: ThisTypedComponentOptionsWithRecordProps<
   Vue,
-  Data,
+  Record<string, never>,
   Methods,
   Computed,
-  Props
+  Record<string, never>
 > = {
-  props: {
-    viewType: {
-      type: String,
-      required: true,
-      validator: (val: string) => {
-        return ['sample', 'patient'].includes(val)
-      },
+  methods: {
+    reset() {
+      this.$store.commit('filter/reset', { viewType: this.viewType })
     },
   },
 
-  methods: {
-    resetFilter() {
-      this.$store.commit('filter/resetFilter', { viewType: this.viewType })
+  computed: {
+    viewType() {
+      return this.$route.path.split('/')[1]
     },
   },
 }

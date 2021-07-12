@@ -1,4 +1,5 @@
 import fs from 'fs'
+
 import {
   dumpSchemas as configDumpSchemas,
   validate as configValidate,
@@ -6,7 +7,7 @@ import {
 import { parseAndValidateArgs, validateEntryFile } from './esBulk'
 import { logStdout } from './utils'
 
-export const main = async () => {
+export const main = async (): Promise<void> => {
   logStdout('Start to validate the entry file.')
   const [entryFileType, configFilePath, entryFilePath] = parseAndValidateArgs()
   const config = JSON.parse(fs.readFileSync(configFilePath, 'utf-8'))

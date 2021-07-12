@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import fs from 'fs'
 import path from 'path'
 import { ValidationError } from 'ajv'
@@ -44,6 +45,7 @@ describe('validate', () => {
   })
 
   test('error by schema', () => {
+    // @ts-ignore
     expect(commandConfig.validate({ foo: 'bar' })).rejects.toThrowError(
       ValidationError
     )
@@ -94,9 +96,7 @@ describe('dumpSchemas', () => {
 
 describe('dataTypeIds', () => {
   test('ok', () => {
-    const config: commandConfig.Config = JSON.parse(
-      fs.readFileSync(configTestFile, 'utf-8')
-    )
+    const config: Config = JSON.parse(fs.readFileSync(configTestFile, 'utf-8'))
     const dataTypeIds = config.selector.dataType.flatMap((field) =>
       commandConfig.flattenDataTypeIds(field)
     )

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import fs from 'fs'
 import path from 'path'
 import dayjs from 'dayjs'
@@ -351,7 +352,7 @@ const generateTestEntries = (
   }
 }
 
-export const main = () => {
+export const main = (): void => {
   logStdout('Start to generate test entry files.')
   const patientNum = parseInt(process.argv[2]) || 100
   logStdout(`PatientNum: ${patientNum}`)

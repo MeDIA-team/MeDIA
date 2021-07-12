@@ -6,52 +6,38 @@
     min-width="160"
     outlined
     @click="operateTreeview"
-  >
-    {{ buttonText }}
-  </v-btn>
+    v-text="buttonText"
+  />
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import { TypedStore } from '@/store'
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 
-type Data = Record<string, never>
-
-type Methods = {
+interface Methods {
   operateTreeview: () => void
 }
 
-type Computed = {
-  buttonText: string
-}
-
-type Props = {
+interface Computed {
   viewType: string
+  buttonText: string
 }
 
 const options: ThisTypedComponentOptionsWithRecordProps<
   Vue,
-  Data,
+  Record<string, never>,
   Methods,
   Computed,
-  Props
+  Record<string, never>
 > = {
-  props: {
-    viewType: {
-      type: String,
-      required: true,
-      validator: (val: string) => {
-        return ['sample', 'patient'].includes(val)
-      },
-    },
-  },
-
   computed: {
+    viewType() {
+      return this.$route.path.split('/')[1]
+    },
+
     buttonText() {
-      return (this.$store as TypedStore).state.selector[
-        this.viewType as 'sample' | 'patient'
-      ].dataTypeFields.opened.length === 0
+      return this.$store.state.selector[this.viewType].dataTypeFields.opened
+        .length === 0
         ? 'Expand Tree'
         : 'Collapse Tree'
     },
@@ -60,9 +46,8 @@ const options: ThisTypedComponentOptionsWithRecordProps<
   methods: {
     operateTreeview() {
       if (
-        (this.$store as TypedStore).state.selector[
-          this.viewType as 'sample' | 'patient'
-        ].dataTypeFields.opened.length === 0
+        this.$store.state.selector[this.viewType].dataTypeFields.opened
+          .length === 0
       ) {
         this.$store.commit('selector/expandTreeview', {
           viewType: this.viewType,

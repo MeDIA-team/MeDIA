@@ -1,51 +1,59 @@
 <template>
-  <v-autocomplete
-    v-model="selected"
-    :color="color"
-    :items="contents"
-    :label="boxLabel"
-    :search-input.sync="searchInput"
-    :style="{ minWidth: fieldWidth, maxWidth: fieldWidth }"
-    clearable
-    hide-details
-    hide-selected
-    multiple
-    outlined
-    single-line
-    @input="searchInput = null"
-  >
-    <template #selection="{ item }">
-      <v-chip :color="color" close label @click:close="remove(item)">
-        {{ item }}
-      </v-chip>
-    </template>
-  </v-autocomplete>
+  <div>
+    <v-autocomplete
+      v-model="selected"
+      :color="color"
+      :items="contents"
+      :label="boxLabel"
+      :search-input.sync="searchInput"
+      :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
+      clearable
+      hide-details
+      hide-selected
+      multiple
+      outlined
+      single-line
+      @input="searchInput = null"
+    >
+      <template #selection="{ item }">
+        <v-chip
+          :color="color"
+          close
+          label
+          @click:close="remove(item)"
+          v-text="item"
+        />
+      </template>
+    </v-autocomplete>
+  </div>
 </template>
 
 <script lang="ts">
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
-import { TypedStore } from '@/store'
 
-type Data = {
+const BOX_WIDTH = '660px'
+
+interface Data {
   searchInput: null | string
 }
 
-type Methods = {
+interface Methods {
   remove(item: string): void
 }
 
-type Computed = {
+interface Computed {
+  viewType: string
   color: string
   contents: string[]
   selected: string[]
+  field: ChipField | undefined
+  boxWidth: string
+  boxLabel: string
 }
 
-type Props = {
-  viewType: string
-  fieldWidth: string
-  contentKey: string
-  boxLabel: string
+interface Props {
+  id: string
 }
 
 const options: ThisTypedComponentOptionsWithRecordProps<
@@ -56,22 +64,7 @@ const options: ThisTypedComponentOptionsWithRecordProps<
   Props
 > = {
   props: {
-    viewType: {
-      type: String,
-      required: true,
-      validator: (val: string) => {
-        return ['sample', 'patient'].includes(val)
-      },
-    },
-    fieldWidth: {
-      type: String,
-      required: true,
-    },
-    contentKey: {
-      type: String,
-      required: true,
-    },
-    boxLabel: {
+    id: {
       type: String,
       required: true,
     },
@@ -84,45 +77,59 @@ const options: ThisTypedComponentOptionsWithRecordProps<
   },
 
   computed: {
+    viewType() {
+      return this.$route.path.split('/')[1]
+    },
+
     color() {
       return this.viewType === 'sample' ? 'primary' : 'secondary'
     },
+
     contents() {
-      return (this.$store as TypedStore).state.filter[
-        this.viewType as 'sample' | 'patient'
-      ][
-        this.contentKey as
-          | 'patientIDs'
-          | 'projectPatientIDs'
-          | 'sampleIDs'
-          | 'dataTypes'
-      ].contents
+      return (
+        this.$store.state.filter[this.viewType].fields[this.id].contents || []
+      )
     },
+
     selected: {
       get() {
-        return (this.$store as TypedStore).state.filter[
-          this.viewType as 'sample' | 'patient'
-        ][
-          this.contentKey as
-            | 'patientIDs'
-            | 'projectPatientIDs'
-            | 'sampleIDs'
-            | 'dataTypes'
-        ].selected
+        return (
+          this.$store.state.filter[this.viewType].fields[this.id].selected || []
+        )
       },
+
       set(value: string[]) {
-        this.$store.commit('filter/setFilterChipField', {
+        this.$store.commit('filter/setValue', {
           viewType: this.viewType,
-          value,
-          contentKey: this.contentKey,
+          id: this.id,
+          formType: 'chip',
+          value: { selected: value },
         })
       },
+    },
+
+    field() {
+      return this.$dataConfig.filter.fields.filter(
+        (field) => field.id === this.id
+      )[0] as ChipField
+    },
+
+    boxWidth() {
+      return this.field?.form.boxWidth || BOX_WIDTH
+    },
+
+    boxLabel() {
+      if (this.field?.form.boxLabel) {
+        return this.field?.form.boxLabel
+      } else {
+        return this.field?.form.logic === 'AND' ? 'must have' : 'is'
+      }
     },
   },
 
   methods: {
-    remove(item: string) {
-      this.selected = this.selected.filter((ele: string) => ele !== item)
+    remove(value: string) {
+      this.selected = this.selected.filter((ele: string) => ele !== value)
     },
   },
 }

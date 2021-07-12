@@ -2,14 +2,14 @@
   <div class="d-flex flex-wrap">
     <v-checkbox
       v-for="content in contents"
-      :key="content.value"
+      :key="content.id"
       v-model="selected"
       :color="color"
-      :label="content.text"
-      :value="content.value"
+      :label="content.label"
+      :style="{ width: '200px', height: '52px' }"
+      :value="content.id"
       class="shrink my-0 mr-4 pt-0 align-center"
       hide-details
-      style="width: 200px; height: 52px"
     />
   </div>
 </template>
@@ -17,57 +17,45 @@
 <script lang="ts">
 import { DataTableHeader } from 'vuetify'
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
-import { TypedStore } from '@/store'
 import Vue from 'vue'
 
-type Data = Record<string, never>
-
-type Methods = Record<string, never>
-
-type Computed = {
+interface Computed {
+  viewType: string
   color: string
   contents: DataTableHeader[]
-  selected: string[]
-}
-
-type Props = {
-  viewType: string
+  selected: DataTableHeader[]
 }
 
 const options: ThisTypedComponentOptionsWithRecordProps<
   Vue,
-  Data,
-  Methods,
+  Record<string, never>,
+  Record<string, never>,
   Computed,
-  Props
+  Record<string, never>
 > = {
-  props: {
-    viewType: {
-      type: String,
-      required: true,
-      validator: (val: string) => {
-        return ['sample', 'patient'].includes(val)
-      },
-    },
-  },
   computed: {
+    viewType() {
+      return this.$route.path.split('/')[1]
+    },
+
     color() {
       return this.viewType === 'sample' ? 'primary' : 'secondary'
     },
+
     contents() {
-      return (this.$store as TypedStore).state.selector[
-        this.viewType as 'sample' | 'patient'
-      ].requiredFields.contents
+      return this.$store.state.selector[this.viewType].requiredFields.contents
     },
+
     selected: {
       get() {
-        return this.$store.getters['selector/requiredFieldsSelected']({
-          viewType: this.viewType,
-        })
+        return this.$store.state.selector[this.viewType].requiredFields.selected
       },
-      set(value) {
-        this.$store.commit('selector/setRequiredFields', {
+
+      set(value: DataTableHeader[]) {
+        this.$store.commit('selector/setValue', {
           viewType: this.viewType,
+          fieldType: 'requiredFields',
+          valueType: 'selected',
           value,
         })
       },

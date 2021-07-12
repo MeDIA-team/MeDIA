@@ -1,13 +1,13 @@
 <template>
   <v-app>
-    <header-bar view-type="sample" />
+    <header-bar />
     <v-main class="background">
       <v-container fluid>
-        <tool-card class="mb-6" view-type="sample" />
-        <data-table class="mb-6" view-type="sample" />
+        <tool-card class="mb-6" />
+        <data-table class="mb-6" />
       </v-container>
     </v-main>
-    <footer-bar view-type="sample" />
+    <footer-bar />
   </v-app>
 </template>
 
@@ -26,12 +26,18 @@ export default Vue.extend({
     ToolCard,
   },
 
-  async middleware({ store, $axios }) {
-    const initActionQueue = ['filter/initialize', 'selector/initialize']
-    for (const initAction of initActionQueue) {
-      await store.dispatch(initAction, { viewType: 'sample', axios: $axios })
-    }
-    store.dispatch('filter/setSelectedIDs', {
+  async middleware({ store, $dataConfig, $axios }) {
+    await store.dispatch('filter/initialize', {
+      viewType: 'sample',
+      dataConfig: $dataConfig,
+      axios: $axios,
+    })
+    await store.dispatch('selector/initialize', {
+      viewType: 'sample',
+      dataConfig: $dataConfig,
+      axios: $axios,
+    })
+    store.dispatch('filter/setSelectedIds', {
       viewType: 'sample',
     })
   },

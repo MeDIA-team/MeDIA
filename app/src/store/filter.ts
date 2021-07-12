@@ -1,35 +1,31 @@
+import Vue from 'vue'
 import { ActionTree, MutationTree } from 'vuex'
+
+import { RootState } from '@/store'
 import { fetchUniqueValues } from '@/utils/dataFetcher'
 import { NuxtAxiosInstance } from '@nuxtjs/axios'
-import { RootState } from '@/store'
 
-type TextBoxFieldType = {
-  bottom: number | string
-  upper: number | string
-}
-
-type CheckBoxFieldType = {
+export interface CheckboxFieldValue {
   contents: string[]
   selected: string[]
 }
 
-type ChipFieldType = CheckBoxFieldType
-
-type FilterType = {
-  projects: CheckBoxFieldType
-  patientIDs: ChipFieldType
-  projectPatientIDs: ChipFieldType
-  sexes: CheckBoxFieldType
-  age: TextBoxFieldType
-  diseases: CheckBoxFieldType
-  sampleIDs: ChipFieldType
-  samplingDate: TextBoxFieldType
-  dataTypes: ChipFieldType
+export interface ChipFieldValue {
+  contents: string[]
+  selected: string[]
 }
 
+export interface TextFieldValue {
+  bottom: number | string | null
+  upper: number | string | null
+}
+
+type FieldValue = CheckboxFieldValue | ChipFieldValue | TextFieldValue
+
 export type State = {
-  sample: FilterType & {
-    count: {
+  sample: {
+    fields: Record<string, FieldValue>
+    counts: {
       sample: {
         filtered: number
         total: number
@@ -40,8 +36,9 @@ export type State = {
       }
     }
   }
-  patient: FilterType & {
-    count: {
+  patient: {
+    fields: Record<string, FieldValue>
+    counts: {
       sample: {
         filtered: number
         total: number
@@ -56,43 +53,8 @@ export type State = {
 
 export const state = (): State => ({
   sample: {
-    projects: {
-      contents: [],
-      selected: [],
-    },
-    patientIDs: {
-      contents: [],
-      selected: [],
-    },
-    projectPatientIDs: {
-      contents: [],
-      selected: [],
-    },
-    sexes: {
-      contents: [],
-      selected: [],
-    },
-    age: {
-      bottom: '',
-      upper: '',
-    },
-    diseases: {
-      contents: [],
-      selected: [],
-    },
-    sampleIDs: {
-      contents: [],
-      selected: [],
-    },
-    samplingDate: {
-      bottom: '',
-      upper: '',
-    },
-    dataTypes: {
-      contents: [],
-      selected: [],
-    },
-    count: {
+    fields: {},
+    counts: {
       sample: {
         filtered: 0,
         total: 0,
@@ -104,43 +66,8 @@ export const state = (): State => ({
     },
   },
   patient: {
-    projects: {
-      contents: [],
-      selected: [],
-    },
-    patientIDs: {
-      contents: [],
-      selected: [],
-    },
-    projectPatientIDs: {
-      contents: [],
-      selected: [],
-    },
-    sexes: {
-      contents: [],
-      selected: [],
-    },
-    age: {
-      bottom: '',
-      upper: '',
-    },
-    diseases: {
-      contents: [],
-      selected: [],
-    },
-    sampleIDs: {
-      contents: [],
-      selected: [],
-    },
-    samplingDate: {
-      bottom: '',
-      upper: '',
-    },
-    dataTypes: {
-      contents: [],
-      selected: [],
-    },
-    count: {
+    fields: {},
+    counts: {
       sample: {
         filtered: 0,
         total: 0,
@@ -154,156 +81,183 @@ export const state = (): State => ({
 })
 
 export const mutations: MutationTree<State> = {
-  setFilterTextField(
+  initializeField(
     state,
     payload: {
       viewType: keyof State
-      value: string | number
-      contentKey: 'age' | 'samplingDate'
-      direction: 'bottom' | 'upper'
+      id: string
+      formType: 'checkbox' | 'chip' | 'text'
     }
   ) {
-    state[payload.viewType][payload.contentKey][payload.direction] =
-      payload.value
+    if (payload.formType === 'text') {
+      Vue.set(state[payload.viewType].fields, payload.id, {
+        bottom: null,
+        upper: null,
+      })
+    } else {
+      Vue.set(state[payload.viewType].fields, payload.id, {
+        contents: [],
+        selected: [],
+      })
+    }
   },
 
-  setFilterCheckBoxField(
+  setValue(
     state,
     payload: {
       viewType: keyof State
-      value: string[]
-      contentKey: 'projects' | 'sexes' | 'diseases'
+      id: string
+      formType: 'checkbox' | 'chip' | 'text'
+      value: Partial<FieldValue>
     }
   ) {
-    state[payload.viewType][payload.contentKey].selected = payload.value
-  },
-
-  setFilterChipField(
-    state,
-    payload: {
-      viewType: keyof State
-      value: string[]
-      contentKey: 'patientIDs' | 'projectPatientIDs' | 'sampleIDs' | 'dataTypes'
+    if (payload.formType === 'text') {
+      if ('bottom' in payload.value) {
+        Vue.set(
+          state[payload.viewType].fields[payload.id],
+          'bottom',
+          payload.value.bottom
+        )
+      }
+      if ('upper' in payload.value) {
+        Vue.set(
+          state[payload.viewType].fields[payload.id],
+          'upper',
+          payload.value.upper
+        )
+      }
+    } else {
+      if ('contents' in payload.value && payload.value.contents) {
+        Vue.set(
+          state[payload.viewType].fields[payload.id],
+          'contents',
+          payload.value.contents
+        )
+      }
+      if ('selected' in payload.value && payload.value.selected) {
+        Vue.set(
+          state[payload.viewType].fields[payload.id],
+          'selected',
+          payload.value.selected
+        )
+      }
     }
-  ) {
-    state[payload.viewType][payload.contentKey].selected = payload.value
-  },
-
-  setSelectedIDs(
-    state,
-    payload: {
-      viewType: keyof State
-      anotherViewType: keyof State
-      value: string[]
-    }
-  ) {
-    const idKey =
-      payload.anotherViewType === 'sample' ? 'sampleIDs' : 'patientIDs'
-    state[payload.viewType][idKey].selected = payload.value
-  },
-
-  resetFilter(state, payload: { viewType: keyof State }) {
-    state[payload.viewType].projects.selected =
-      state[payload.viewType].projects.contents
-    state[payload.viewType].patientIDs.selected = []
-    state[payload.viewType].projectPatientIDs.selected = []
-    state[payload.viewType].sexes.selected =
-      state[payload.viewType].sexes.contents
-    state[payload.viewType].age.bottom = ''
-    state[payload.viewType].age.upper = ''
-    state[payload.viewType].diseases.selected =
-      state[payload.viewType].diseases.contents
-    state[payload.viewType].sampleIDs.selected = []
-    state[payload.viewType].samplingDate.bottom = ''
-    state[payload.viewType].samplingDate.upper = ''
-    state[payload.viewType].dataTypes.selected = []
-  },
-
-  setInitialState(
-    state,
-    payload: {
-      viewType: keyof State
-      projects: string[]
-      patientIDs: string[]
-      projectPatientIDs: string[]
-      sexes: string[]
-      diseases: string[]
-      sampleIDs: string[]
-      dataTypes: string[]
-    }
-  ) {
-    state[payload.viewType].projects.contents = payload.projects
-    state[payload.viewType].projects.selected = payload.projects
-    state[payload.viewType].patientIDs.contents = payload.patientIDs
-    state[payload.viewType].projectPatientIDs.contents =
-      payload.projectPatientIDs
-    state[payload.viewType].sexes.contents = payload.sexes
-    state[payload.viewType].sexes.selected = payload.sexes
-    state[payload.viewType].diseases.contents = payload.diseases
-    state[payload.viewType].diseases.selected = payload.diseases
-    state[payload.viewType].sampleIDs.contents = payload.sampleIDs
-    state[payload.viewType].dataTypes.contents = payload.dataTypes
-
-    state[payload.viewType].count.sample.total = payload.sampleIDs.length
-    state[payload.viewType].count.patient.total = payload.patientIDs.length
   },
 
   setCount(
     state,
     payload: {
       viewType: keyof State
-      sample: number
-      patient: number
+      countCategory: 'sample' | 'patient'
+      countType: 'total' | 'filtered'
+      value: number
     }
   ) {
-    state[payload.viewType].count.sample.filtered = payload.sample
-    state[payload.viewType].count.patient.filtered = payload.patient
+    Vue.set(
+      state[payload.viewType].counts[payload.countCategory],
+      payload.countType,
+      payload.value
+    )
+  },
+
+  reset(state, payload: { viewType: keyof State }) {
+    for (const key of Object.keys(state[payload.viewType].fields)) {
+      if ('selected' in state[payload.viewType].fields[key]) {
+        Vue.set(state[payload.viewType].fields[key], 'selected', [])
+      } else {
+        Vue.set(state[payload.viewType].fields[key], 'bottom', null)
+        Vue.set(state[payload.viewType].fields[key], 'upper', null)
+      }
+    }
   },
 }
 
 export const actions: ActionTree<State, RootState> = {
   async initialize(
     { commit },
-    payload: { viewType: keyof State; axios: NuxtAxiosInstance }
+    payload: {
+      viewType: keyof State
+      dataConfig: Config
+      axios: NuxtAxiosInstance
+    }
   ) {
-    const fieldNames = [
-      'projectName',
-      'patientID',
-      'projectPatientID',
-      'sex',
-      'disease',
-      'sampleID',
-      'dataType',
-    ]
-    const queue = fieldNames.map((field) =>
-      fetchUniqueValues(payload.axios, field)
-    )
-    const results = await Promise.all(queue)
-
-    commit('setInitialState', {
-      viewType: payload.viewType,
-      projects: results[0],
-      patientIDs: results[1],
-      projectPatientIDs: results[2],
-      sexes: results[3],
-      diseases: results[4],
-      sampleIDs: results[5],
-      dataTypes: results[6],
-    })
+    for (const field of payload.dataConfig.filter.fields) {
+      commit('initializeField', {
+        viewType: payload.viewType,
+        id: field.id,
+        formType: field.form.type,
+      })
+      const value: Partial<FieldValue> = {}
+      if (field.form.type === 'text') {
+        if (field.type === 'integer') {
+          ;(value as TextFieldValue).bottom = null
+          ;(value as TextFieldValue).upper = null
+        } else if (field.type === 'date') {
+          ;(value as TextFieldValue).bottom = null
+          ;(value as TextFieldValue).upper = null
+        }
+      } else {
+        ;(value as CheckboxFieldValue | ChipFieldValue).contents =
+          await fetchUniqueValues(payload.axios, field.id)
+      }
+      commit('setValue', {
+        viewType: payload.viewType,
+        id: field.id,
+        formType: field.form.type,
+        value,
+      })
+      if (field.id === 'sampleId') {
+        commit('setCount', {
+          viewType: payload.viewType,
+          countCategory: 'sample',
+          countType: 'total',
+          value:
+            (value as CheckboxFieldValue | ChipFieldValue).contents.length || 0,
+        })
+      } else if (field.id === 'patientId') {
+        commit('setCount', {
+          viewType: payload.viewType,
+          countCategory: 'patient',
+          countType: 'total',
+          value:
+            (value as CheckboxFieldValue | ChipFieldValue).contents.length || 0,
+        })
+      }
+    }
   },
 
-  setSelectedIDs({ commit, rootState }, payload: { viewType: keyof State }) {
+  setSelectedIds({ commit, rootState }, payload: { viewType: keyof State }) {
     // sample view で呼び出されたら、
-    // patient view の selected の中の patientIDs を sample filter state の
-    // patientID.selected に set する
-
-    const anotherViewType = payload.viewType === 'sample' ? 'patient' : 'sample'
-    commit('setSelectedIDs', {
-      viewType: payload.viewType,
-      anotherViewType,
-      value: rootState.entry[anotherViewType].selected.map((entry) =>
-        anotherViewType === 'sample' ? entry.sampleID : entry.patientID
-      ),
-    })
+    // patient view の selected entry における patientId を
+    // sample view の filter patientId.selected に set する
+    //
+    // patient view で呼び出されたら、
+    // sample view の selected entry における sampleId を
+    // patient view の filter sampleId.selected に set する
+    if (payload.viewType === 'sample') {
+      const selectedPatientIds = rootState.entry.patient.selected.map(
+        (entry) => entry.patientId
+      )
+      commit('setValue', {
+        viewType: 'sample',
+        id: 'patientId',
+        formType: 'chip',
+        value: {
+          selected: selectedPatientIds,
+        },
+      })
+    } else if (payload.viewType === 'patient') {
+      const selectedSampleIds = rootState.entry.sample.selected.map(
+        (entry) => entry.sampleId
+      )
+      commit('setValue', {
+        viewType: 'patient',
+        id: 'sampleId',
+        formType: 'chip',
+        value: {
+          selected: selectedSampleIds,
+        },
+      })
+    }
   },
 }
