@@ -152,38 +152,6 @@ const options: ThisTypedComponentOptionsWithRecordProps<
     },
   },
 
-  mounted() {
-    this.$store.dispatch('entry/updateEntries', {
-      viewType: this.viewType,
-      axios: this.$axios,
-      dataConfig: this.$dataConfig,
-    })
-    this.$store.dispatch('entry/updateEntryCount', {
-      viewType: this.viewType,
-      axios: this.$axios,
-      dataConfig: this.$dataConfig,
-    })
-    const subscribeMutations = [
-      'filter/setValue',
-      'filter/reset',
-      'entry/setOptions',
-    ]
-    this.$store.subscribe((mutation) => {
-      if (subscribeMutations.includes(mutation.type)) {
-        this.$store.dispatch('entry/updateEntries', {
-          viewType: this.viewType,
-          axios: this.$axios,
-          dataConfig: this.$dataConfig,
-        })
-        this.$store.dispatch('entry/updateEntryCount', {
-          viewType: this.viewType,
-          axios: this.$axios,
-          dataConfig: this.$dataConfig,
-        })
-      }
-    })
-  },
-
   methods: {
     copyText(text: string) {
       this.snackbar = true

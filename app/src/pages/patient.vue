@@ -27,6 +27,11 @@ export default Vue.extend({
   },
 
   async middleware({ store, $dataConfig, $axios }) {
+    // initinalize subscriptions
+    store.state.unsubscribe.patient && store.state.unsubscribe.patient()
+    store.state.unsubscribe.sample && store.state.unsubscribe.sample()
+
+    // initialize store
     await store.dispatch('filter/initialize', {
       viewType: 'patient',
       dataConfig: $dataConfig,
@@ -37,8 +42,33 @@ export default Vue.extend({
       dataConfig: $dataConfig,
       axios: $axios,
     })
-    store.dispatch('filter/setSelectedIds', {
+    await store.dispatch('filter/setSelectedIds', {
       viewType: 'patient',
+    })
+
+    // set subscriptions
+    const subscribeMutations = [
+      'filter/setValue',
+      'filter/reset',
+      'entry/setOptions',
+    ]
+    const unsubscribeFunc = store.subscribe(async (mutation) => {
+      if (subscribeMutations.includes(mutation.type)) {
+        await store.dispatch('entry/updateEntries', {
+          viewType: 'patient',
+          axios: $axios,
+          dataConfig: $dataConfig,
+        })
+        await store.dispatch('entry/updateEntryCount', {
+          viewType: 'patient',
+          axios: $axios,
+          dataConfig: $dataConfig,
+        })
+      }
+    })
+    store.commit('unsubscribe/setValue', {
+      viewType: 'patient',
+      value: unsubscribeFunc,
     })
   },
 })

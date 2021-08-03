@@ -238,26 +238,31 @@ export const actions: ActionTree<State, RootState> = {
       const selectedPatientIds = rootState.entry.patient.selected.map(
         (entry) => entry.patientId
       )
-      commit('setValue', {
-        viewType: 'sample',
-        id: 'patientId',
-        formType: 'chip',
-        value: {
-          selected: selectedPatientIds,
-        },
-      })
+      if (selectedPatientIds.length) {
+        commit('setValue', {
+          viewType: 'sample',
+          id: 'patientId',
+          formType: 'chip',
+          value: {
+            selected: selectedPatientIds,
+          },
+        })
+      }
     } else if (payload.viewType === 'patient') {
       const selectedSampleIds = rootState.entry.sample.selected.map(
         (entry) => entry.sampleId
       )
-      commit('setValue', {
-        viewType: 'patient',
-        id: 'sampleId',
-        formType: 'chip',
-        value: {
-          selected: selectedSampleIds,
-        },
-      })
+      if (selectedSampleIds.length) {
+        commit('setValue', {
+          viewType: 'patient',
+          id: 'sampleId',
+          formType: 'chip',
+          value: {
+            selected: selectedSampleIds,
+          },
+        })
+      }
     }
+    Promise.resolve()
   },
 }

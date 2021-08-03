@@ -235,14 +235,14 @@ const filterStateToQuery = (
   queryType: 'sample' | 'patient',
   dataConfig: Config,
   filterState: FilterState
-): FilterQuery | NestedFilterQuery => {
+): FilterQuery => {
   const state = filterState[viewType]
+  const query: FilterQuery = {
+    bool: {
+      filter: [],
+    },
+  }
   if (queryType === 'sample') {
-    const query: FilterQuery = {
-      bool: {
-        filter: [],
-      },
-    }
     for (const field of dataConfig.filter.fields) {
       if (field.id === 'dataType') {
         field as ChipField
@@ -253,8 +253,14 @@ const filterStateToQuery = (
               nested: {
                 path: 'dataTypes',
                 query: {
-                  term: {
-                    'dataTypes.name': dataType,
+                  bool: {
+                    filter: [
+                      {
+                        term: {
+                          'dataTypes.name': dataType,
+                        },
+                      },
+                    ],
                   },
                 },
               },
@@ -304,10 +310,9 @@ const filterStateToQuery = (
         })
       }
     }
-
     return query
-  } else {
-    const query: NestedFilterQuery = {
+  } else if (queryType === 'patient') {
+    const nestedQuery: NestedQuery = {
       nested: {
         path: 'samples',
         query: {
@@ -323,24 +328,30 @@ const filterStateToQuery = (
         const fieldValue = state.fields[field.id] as ChipFieldValue
         if (fieldValue.selected.length) {
           for (const dataType of fieldValue.selected) {
-            query.nested.query.bool.filter.push({
+            nestedQuery.nested.query.bool.filter.push({
               nested: {
                 path: 'samples.dataTypes',
                 query: {
-                  term: {
-                    'samples.dataTypes.name': dataType,
+                  bool: {
+                    filter: [
+                      {
+                        term: {
+                          'samples.dataTypes.name': dataType,
+                        },
+                      },
+                    ],
                   },
                 },
               },
             })
           }
+          continue
         }
-        continue
       } else if (field.id === 'patientId') {
         field as ChipField
         const fieldValue = state.fields[field.id] as ChipFieldValue
         if (fieldValue.selected.length) {
-          query.nested.query.bool.filter.push({
+          query.bool.filter.push({
             terms: { [field.id]: fieldValue.selected },
           })
         }
@@ -350,7 +361,7 @@ const filterStateToQuery = (
         field as CheckboxField
         const fieldValue = state.fields[field.id] as CheckboxFieldValue
         if (fieldValue.selected.length) {
-          query.nested.query.bool.filter.push({
+          nestedQuery.nested.query.bool.filter.push({
             terms: { [`samples.${field.id}`]: fieldValue.selected },
           })
         }
@@ -359,14 +370,14 @@ const filterStateToQuery = (
         const fieldValue = state.fields[field.id] as ChipFieldValue
         if (field.form.logic === 'OR') {
           if (fieldValue.selected.length) {
-            query.nested.query.bool.filter.push({
+            nestedQuery.nested.query.bool.filter.push({
               terms: { [`samples.${field.id}`]: fieldValue.selected },
             })
           }
         } else if (field.form.logic === 'AND') {
           if (fieldValue.selected.length) {
             for (const value of fieldValue.selected) {
-              query.nested.query.bool.filter.push({
+              nestedQuery.nested.query.bool.filter.push({
                 term: {
                   [`samples.${field.id}`]: value,
                 },
@@ -377,7 +388,7 @@ const filterStateToQuery = (
       } else if (field.form.type === 'text') {
         field as TextField
         const fieldValue = state.fields[field.id] as TextFieldValue
-        query.nested.query.bool.filter.push({
+        nestedQuery.nested.query.bool.filter.push({
           range: {
             [`samples.${field.id}`]: {
               gte: fieldValue.bottom || null,
@@ -387,7 +398,7 @@ const filterStateToQuery = (
         })
       }
     }
-
-    return query
+    query.bool.filter.push(nestedQuery)
   }
+  return query
 }

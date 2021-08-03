@@ -48,19 +48,16 @@ interface RangeQuery {
 interface NestedQuery {
   nested: {
     path: string
-    query: TermQuery | TermsQuery | RangeQuery
+    query: {
+      bool: {
+        filter: Array<TermQuery | TermsQuery | RangeQuery | NestedQuery>
+      }
+    }
   }
 }
 
 interface FilterQuery {
   bool: {
     filter: Array<TermQuery | TermsQuery | RangeQuery | NestedQuery>
-  }
-}
-
-interface NestedFilterQuery {
-  nested: {
-    path: string
-    query: FilterQuery
   }
 }
