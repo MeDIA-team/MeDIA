@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import Vue from 'vue'
 import { ActionTree, GetterTree, MutationTree } from 'vuex'
 import { RootState } from '@/store'
@@ -87,32 +88,31 @@ export const getters: GetterTree<State, RootState> = {
         }))
     },
 
-  dataTypeFieldHeaders: (state) => (payload: { viewType: keyof State }) => {
-    const ids: string[] = []
-    const orderedIds = extractTreeviewLeafItemIds(
-      state[payload.viewType].dataTypeFields.contents
-    )
-    const orderedFilteredIds = orderedIds.filter((id) =>
-      state[payload.viewType].dataTypeFields.selected.includes(id)
-    )
-    for (const id of orderedFilteredIds) {
-      const parent = id.split('_')[0]
-      if (!ids.includes(parent)) {
-        ids.push(parent)
+  dataTypeFieldHeaders:
+    (state) => (payload: { viewType: keyof State; dataConfig: Config }) => {
+      const ids: string[] = []
+      const orderedIds = extractTreeviewLeafItemIds(
+        state[payload.viewType].dataTypeFields.contents
+      )
+      const orderedFilteredIds = orderedIds.filter((id) =>
+        state[payload.viewType].dataTypeFields.selected.includes(id)
+      )
+      for (const id of orderedFilteredIds) {
+        const parent = id.split(': ')[0]
+        if (!ids.includes(parent)) {
+          ids.push(parent)
+        }
+        if (!ids.includes(id)) {
+          ids.push(id)
+        }
       }
-      if (!ids.includes(id)) {
-        ids.push(id)
-      }
-    }
-    return ids
-      .map((id) => ({
-        text: id.includes('_') ? id.replace('_', ': ') : id,
+      return ids.map((id) => ({
+        text: id,
         value: id,
-        align: id.includes('_') ? 'start' : 'center',
-        sortable: id.includes('_'),
+        align: id.includes(': ') ? 'start' : 'center',
+        sortable: id.includes(': '),
       }))
-      .sort((a, b) => (a.value > b.value ? 1 : b.value > a.value ? -1 : 0))
-  },
+    },
 
   parentDataTypes: (state) => (payload: { viewType: keyof State }) => {
     return state[payload.viewType].dataTypes.map(
@@ -127,7 +127,7 @@ export const getters: GetterTree<State, RootState> = {
     for (const dataTypeField of state[
       payload.viewType
     ].dataTypeFields.contents.map((field) => field.id)) {
-      if (dataTypeField.includes('_')) {
+      if (dataTypeField.includes(': ')) {
         headers.push(`item.dataTypeField`)
       }
     }
@@ -213,10 +213,12 @@ const generateTreeviewItems = (
       return {
         id: field.id,
         name: field.label,
-        children: dataTypeToMetadataFields[field.id].map((metadataField) => ({
-          id: field.id + '_' + metadataField,
-          name: metadataField,
-        })),
+        children: dataTypeToMetadataFields[field.id]
+          ? dataTypeToMetadataFields[field.id].map((metadataField) => ({
+              id: field.id + ': ' + metadataField,
+              name: metadataField,
+            }))
+          : [],
       }
     }
   })
@@ -226,7 +228,8 @@ const extractTreeviewLeafItemIds = (
   treeviewItems: TreeviewItem[]
 ): string[] => {
   return treeviewItems.flatMap((treeviewItem) => {
-    if ('children' in treeviewItem) {
+    // @ts-ignore
+    if ('children' in treeviewItem && treeviewItem.children.length > 0) {
       return [...extractTreeviewLeafItemIds(treeviewItem.children || [])]
     } else {
       return [treeviewItem.id]

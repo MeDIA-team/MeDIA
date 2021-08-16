@@ -102,7 +102,7 @@ export const actions: ActionTree<State, RootState> = {
                 dataType
               )) {
                 if (metaDataTypeKey !== 'name') {
-                  entry[`${dataType.name}_${metaDataTypeKey}`] =
+                  entry[`${dataType.name}: ${metaDataTypeKey}`] =
                     metaDataTypeValue
                 }
               }
@@ -141,12 +141,12 @@ export const actions: ActionTree<State, RootState> = {
               dataType
             )) {
               if (metaDataTypeKey !== 'name') {
-                if (`${dataType.name}_${metaDataTypeKey}` in dataTypeValues) {
-                  dataTypeValues[`${dataType.name}_${metaDataTypeKey}`].push(
+                if (`${dataType.name}: ${metaDataTypeKey}` in dataTypeValues) {
+                  dataTypeValues[`${dataType.name}: ${metaDataTypeKey}`].push(
                     metaDataTypeValue as string | number
                   )
                 } else {
-                  dataTypeValues[`${dataType.name}_${metaDataTypeKey}`] = [
+                  dataTypeValues[`${dataType.name}: ${metaDataTypeKey}`] = [
                     metaDataTypeValue as string | number,
                   ]
                 }
@@ -249,7 +249,8 @@ export const allEntries = async (payload: {
               dataType
             )) {
               if (metaDataTypeKey !== 'name') {
-                entry[`${dataType.name}_${metaDataTypeKey}`] = metaDataTypeValue
+                entry[`${dataType.name}: ${metaDataTypeKey}`] =
+                  metaDataTypeValue
               }
             }
           }
@@ -287,12 +288,12 @@ export const allEntries = async (payload: {
             dataType
           )) {
             if (metaDataTypeKey !== 'name') {
-              if (`${dataType.name}_${metaDataTypeKey}` in dataTypeValues) {
-                dataTypeValues[`${dataType.name}_${metaDataTypeKey}`].push(
+              if (`${dataType.name}: ${metaDataTypeKey}` in dataTypeValues) {
+                dataTypeValues[`${dataType.name}: ${metaDataTypeKey}`].push(
                   metaDataTypeValue as string | number
                 )
               } else {
-                dataTypeValues[`${dataType.name}_${metaDataTypeKey}`] = [
+                dataTypeValues[`${dataType.name}: ${metaDataTypeKey}`] = [
                   metaDataTypeValue as string | number,
                 ]
               }

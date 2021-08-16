@@ -170,9 +170,9 @@ const dataOptionsToQuery = (
     const key = sortBy[i]
     const desc = sortDesc[i]
     if (viewType === 'sample') {
-      if (key.includes('_')) {
-        const dataType = key.split('_')[0]
-        const metaKey = key.split('_')[1]
+      if (key.includes(': ')) {
+        const dataType = key.split(': ')[0]
+        const metaKey = key.split(': ')[1]
         sort.push({
           [`dataTypes.${metaKey}`]: {
             order: desc ? 'desc' : 'asc',
@@ -194,9 +194,9 @@ const dataOptionsToQuery = (
         })
       }
     } else if (viewType === 'patient') {
-      if (key.includes('_')) {
-        const dataType = key.split('_')[0]
-        const metaKey = key.split('_')[1]
+      if (key.includes(': ')) {
+        const dataType = key.split(': ')[0]
+        const metaKey = key.split(': ')[1]
         sort.push({
           [`samples.dataTypes.${metaKey}`]: {
             order: desc ? 'desc' : 'asc',

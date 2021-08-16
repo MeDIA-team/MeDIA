@@ -117,6 +117,7 @@ const options: ThisTypedComponentOptionsWithRecordProps<
         }),
         ...this.$store.getters['selector/dataTypeFieldHeaders']({
           viewType: this.viewType,
+          dataConfig: this.$dataConfig,
         }),
       ]
     },

@@ -51,6 +51,7 @@ const options: ThisTypedComponentOptionsWithRecordProps<
         }),
         ...this.$store.getters['selector/dataTypeFieldHeaders']({
           viewType: this.viewType,
+          dataConfig: this.$dataConfig,
         }),
       ]
       content += `${headers.map((header) => header.value).join('\t')}\n`
