@@ -133,7 +133,7 @@ const INDEX_SETTINGS_FOR_ENTRIES = {
   ...INDEX_SETTINGS,
   max_result_window: 10000000,
   'index.mapping.total_fields.limit': 10000,
-  'index.mapping.nested_objects.limit': 50000,
+  'index.mapping.nested_objects.limit': 100000,
 }
 
 export const existsIndex = async (
