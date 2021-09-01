@@ -40,6 +40,7 @@ interface Config {
     fields: Array<CheckboxField | ChipField | TextField>
   }
   selector: {
+    dataAvailabilityLabel: string
     dataType: Array<SelectorField>
   }
 }

@@ -88,6 +88,7 @@
     ]
   },
   "selector": {
+    "dataAvailabilityLabel": "Data availability",
     "dataType": [
       {
         "id": "categoryA",

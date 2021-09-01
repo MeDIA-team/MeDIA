@@ -35,6 +35,7 @@ services:
       discovery.type: "single-node"
       ELASTIC_PASSWORD: "media_elasticsearch_passwd"
       ES_JAVA_OPTS: "-Xms16g -Xmx16g -Xlog:disable -Xlog:all=warning:stderr:utctime,level,tags -Xlog:gc=warning:stderr:utctime"
+      TAKE_FILE_OWNERSHIP: "true"
     ulimits:
       memlock:
         soft: -1
