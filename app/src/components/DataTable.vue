@@ -22,10 +22,14 @@
         <v-icon v-if="value" :key="parentDataType"> mdi-check </v-icon>
       </template>
       <template v-for="header in copyableHeaders" #[header]="{ value }">
-        <div :key="header" @click="copyText(value)">
-          {{ value }}
-          <!-- {{ value | shortenText }} -->
-        </div>
+        <v-tooltip :key="header" top open-delay="300">
+          <template #activator="{ on }">
+            <div @click="copyText(value)" v-on="on">
+              {{ value | shortenText }}
+            </div>
+          </template>
+          <span>Click to copy</span>
+        </v-tooltip>
       </template>
     </v-data-table>
     <v-snackbar v-model="snackbar" :color="color" :timeout="1000" bottom>
@@ -110,7 +114,7 @@ const options: ThisTypedComponentOptionsWithRecordProps<
     },
 
     headers() {
-      return [
+      const headers = [
         ...this.$store.getters['selector/requiredFieldHeaders']({
           viewType: this.viewType,
           dataConfig: this.$dataConfig,
@@ -120,6 +124,18 @@ const options: ThisTypedComponentOptionsWithRecordProps<
           dataConfig: this.$dataConfig,
         }),
       ]
+      for (let i = 0; i < headers.length; i++) {
+        if (
+          !this.$store.state.selector.patient.dataTypes.includes(
+            headers[i].value
+          )
+        ) {
+          headers[i].class = 'header-min-width'
+        } else {
+          headers[i].width = '120px'
+        }
+      }
+      return headers
     },
 
     contents() {
@@ -174,3 +190,9 @@ const options: ThisTypedComponentOptionsWithRecordProps<
 
 export default Vue.extend(options)
 </script>
+
+<style>
+.header-min-width {
+  min-width: 200px;
+}
+</style>
