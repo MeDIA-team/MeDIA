@@ -98,11 +98,9 @@ export const getters: GetterTree<State, RootState> = {
         state[payload.viewType].dataTypeFields.selected.includes(id)
       )
       for (const id of orderedFilteredIds) {
-        const parent = id.split(': ')[0]
-        if (!ids.includes(parent)) {
-          ids.push(parent)
-        }
-        if (!ids.includes(id)) {
+        if (id.includes(': dataAvailability')) {
+          ids.push(id.split(': ')[0])
+        } else {
           ids.push(id)
         }
       }
@@ -124,11 +122,11 @@ export const getters: GetterTree<State, RootState> = {
     const headers = state[payload.viewType].requiredFields.contents.map(
       (field) => `item.${field.id}`
     )
-    for (const dataTypeField of state[
-      payload.viewType
-    ].dataTypeFields.contents.map((field) => field.id)) {
-      if (dataTypeField.includes(': ')) {
-        headers.push(`item.dataTypeField`)
+    for (const dataTypeFieldId of extractTreeviewLeafItemIds(
+      state[payload.viewType].dataTypeFields.contents
+    )) {
+      if (!dataTypeFieldId.includes(': dataAvailability')) {
+        headers.push(`item.${dataTypeFieldId}`)
       }
     }
     return headers
@@ -166,7 +164,7 @@ export const mutations: MutationTree<State> = {
       'selected',
       extractTreeviewLeafItemIds(
         state[payload.viewType].dataTypeFields.contents
-      )
+      ).filter((id) => id.includes(': dataAvailability'))
     )
   },
 
@@ -197,7 +195,8 @@ export const mutations: MutationTree<State> = {
 
 const generateTreeviewItems = (
   fields: SelectorField[],
-  dataTypeToMetadataFields: Record<string, string[]>
+  dataTypeToMetadataFields: Record<string, string[]>,
+  dataConfig: Config
 ): TreeviewItem[] => {
   return fields.map((field) => {
     if ('child' in field) {
@@ -206,19 +205,27 @@ const generateTreeviewItems = (
         name: field.label,
         children: generateTreeviewItems(
           field?.child || [],
-          dataTypeToMetadataFields
+          dataTypeToMetadataFields,
+          dataConfig
         ),
       }
     } else {
+      const children = dataTypeToMetadataFields[field.id]
+        ? dataTypeToMetadataFields[field.id].map((metadataField) => ({
+            id: field.id + ': ' + metadataField,
+            name: metadataField,
+          }))
+        : []
       return {
         id: field.id,
         name: field.label,
-        children: dataTypeToMetadataFields[field.id]
-          ? dataTypeToMetadataFields[field.id].map((metadataField) => ({
-              id: field.id + ': ' + metadataField,
-              name: metadataField,
-            }))
-          : [],
+        children: [
+          {
+            id: field.id + ': dataAvailability',
+            name: dataConfig.selector.dataAvailabilityLabel,
+          },
+          ...children,
+        ],
       }
     }
   })
@@ -282,7 +289,8 @@ export const actions: ActionTree<State, RootState> = {
     )
     const treeviewItems = generateTreeviewItems(
       payload.dataConfig.selector.dataType,
-      dataTypeToMetadataFields
+      dataTypeToMetadataFields,
+      payload.dataConfig
     )
     commit('setValue', {
       viewType: payload.viewType,
@@ -294,7 +302,9 @@ export const actions: ActionTree<State, RootState> = {
       viewType: payload.viewType,
       fieldType: 'dataTypeFields',
       valueType: 'selected',
-      value: extractTreeviewLeafItemIds(treeviewItems),
+      value: extractTreeviewLeafItemIds(treeviewItems).filter((id) =>
+        id.includes(': dataAvailability')
+      ),
     })
     commit('setDataTypes', {
       viewType: payload.viewType,

@@ -24,9 +24,10 @@
     },
     "selector": {
       "type": "object",
-      "required": ["dataType"],
+      "required": ["dataAvailabilityLabel", "dataType"],
       "additionalProperties": false,
       "properties": {
+        "dataAvailabilityLabel": { "type": "string" },
         "dataType": {
           "type": "array",
           "additionalItems": false,
