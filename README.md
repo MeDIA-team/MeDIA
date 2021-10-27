@@ -35,7 +35,7 @@ $ docker network create media_network
 $ docker-compose up -d --build
 ```
 
-## 設定
+## 起動前に確認したほうが良い設定
 
 [`docker-compose.yml`](./docker-compose.yml) 内で、Elasticsearch のヒープメモリとして `-Xms16g -Xmx16g` を指定している。
 そのため、通常のサーバではメモリ不足で落ちる場合がある。
@@ -56,7 +56,16 @@ $ sysctl -w fs.inotify.max_user_watches=524288
 $ sysctl -p
 ```
 
-## 詳細なドキュメント
+## より詳細なドキュメント
+
+システム管理者向けのドキュメントとして下記が挙げられる。
 
 - [MeDIA App](./app/README.md)
 - [Elasticsearch](./Elasticsearch/README.md)
+
+また、それぞれの環境ごとの Deploy 用のドキュメントとして下記が挙げられる。
+
+- [GitHub - MeDIA-team/MeDIA-data-keio - deployment.md](https://github.com/MeDIA-team/MeDIA-data-keio/blob/master/docs/deployment.md)
+- [GitHub - MeDIA-team/MeDIA-data-riken - deployment.md](https://github.com/MeDIA-team/MeDIA-data-riken/blob/master/docs/deployment.md)
+
+最後に、システム利用者向けのドキュメントとして、[ui-docs.md](./ui-docs.md) が用意されている。

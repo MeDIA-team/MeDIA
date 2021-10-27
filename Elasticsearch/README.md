@@ -66,7 +66,7 @@ $ docker-compose exec app curl http://db:9200/
 
 Host os 側の `./data` を container 側の `/usr/share/elasticsearch/data` に mount することでデータの永続化を行っている。
 
-Data を初期化したい場合は、`./data` の中身を削除する
+Data を初期化したい場合は、`./data` の中身を削除する。
 
 ```bash
 # 消去される file, dir の確認

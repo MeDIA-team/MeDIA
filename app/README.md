@@ -56,7 +56,7 @@ Elasticsearch や UI を汎用化するために、config file と entry file �
     - [test 用の patient schema](./tests/patient.schema.test.json)
     - [test 用の sample schema](./tests/sample.schema.test.json)
 
-以上より、elasticsearch に entry を投入する手順として以下のようになる
+以上より、elasticsearch に entry を投入する手順として以下のようになる。
 
 1. config file を書く
 2. config file を validate して、config file から entry file 用の schema を生成する
