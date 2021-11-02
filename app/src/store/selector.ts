@@ -108,7 +108,7 @@ export const getters: GetterTree<State, RootState> = {
         text: id,
         value: id,
         align: id.includes(': ') ? 'start' : 'center',
-        sortable: id.includes(': '),
+        sortable: true,
       }))
     },
 

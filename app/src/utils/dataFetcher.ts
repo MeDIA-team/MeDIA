@@ -111,6 +111,16 @@ export const fetchDataTypeToMetadataFields = async (
   return dataTypeToMetadataFields
 }
 
+const extractDataTypeIds = (dataTypes: SelectorField[]): string[] => {
+  return dataTypes.flatMap((dataType) => {
+    if ('child' in dataType && dataType.child?.length) {
+      return [...extractDataTypeIds(dataType.child || [])]
+    } else {
+      return [dataType.id]
+    }
+  })
+}
+
 export const fetchEntries = async (
   viewType: 'sample' | 'patient',
   axios: NuxtAxiosInstance,
@@ -118,7 +128,7 @@ export const fetchEntries = async (
   options: DataOptions,
   filterState: FilterState
 ): Promise<Array<SampleEntry | PatientEntry>> => {
-  const sort = dataOptionsToQuery(viewType, options)
+  const sort = dataOptionsToQuery(viewType, options, dataConfig)
   const query = filterStateToQuery(viewType, viewType, dataConfig, filterState)
   const res = await axios.$get(`/api/${viewType}/_search`, {
     params: {
@@ -162,8 +172,10 @@ export const fetchCount = async (
 
 const dataOptionsToQuery = (
   viewType: 'sample' | 'patient',
-  options: DataOptions
+  options: DataOptions,
+  dataConfig: Config
 ) => {
+  const dataTypes = extractDataTypeIds(dataConfig.selector.dataType)
   const { sortBy, sortDesc } = options
   const sort = []
   for (let i = 0; i < sortBy.length; i++) {
@@ -183,6 +195,23 @@ const dataOptionsToQuery = (
                   'dataTypes.name': dataType,
                 },
               },
+            },
+          },
+        })
+      } else if (dataTypes.includes(key)) {
+        sort.push({
+          _script: {
+            type: 'number',
+            order: desc ? 'desc' : 'asc',
+            script: {
+              lang: 'painless',
+              inline: `
+                for (item in params._source.dataTypes) {
+                  if (item.name == '${key}') {
+                    return 1;
+                  }
+                } return 0;
+              `,
             },
           },
         })
@@ -214,6 +243,25 @@ const dataOptionsToQuery = (
         sort.push({
           patientId: {
             order: desc ? 'desc' : 'asc',
+          },
+        })
+      } else if (dataTypes.includes(key)) {
+        sort.push({
+          _script: {
+            type: 'number',
+            order: desc ? 'desc' : 'asc',
+            script: {
+              lang: 'painless',
+              inline: `
+                for (sample in params._source.samples) {
+                  for (item in sample.dataTypes) {
+                    if (item.name == '${key}') {
+                      return 1;
+                    }
+                  }
+                } return 0;
+              `,
+            },
           },
         })
       } else {
