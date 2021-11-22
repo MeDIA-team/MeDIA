@@ -3,14 +3,14 @@
 
 !.eslintrc.js
 !.prettierrc
-!command
+!command/**/*
 !config.schema.json
 !jest.config.ts
 !nuxt.config.ts
 !package.json
 !README.md
-!src
-!tests
+!src/**/*
+!tests/**/*
 !tsconfig.json
 !yarn.lock
 
