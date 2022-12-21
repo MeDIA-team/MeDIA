@@ -49,7 +49,7 @@ const DATA_TYPE: string[] = [
   'cytokine',
   'nerveImaging',
 ]
-const LIBRARY_PREP: string[] = ['Kazusa', 'Riken']
+const LIBRARY_PREP: string[] = ['Lab A', 'Lab B']
 const BODY_REGION: string[] = ['Back', 'Thigh', 'Arm', 'Others']
 
 const DEFAULT_FIELDS: string[] = [
