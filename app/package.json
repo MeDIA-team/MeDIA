@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Web application for microflora information and clinical multimodal data",
   "repository": "https://github.com/MeDIA-team/MeDIA",
-  "author": "RIKEN",
+  "author": "MeDIA-team",
   "private": true,
   "scripts": {
     "dev": "nuxt",
