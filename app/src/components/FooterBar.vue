@@ -12,7 +12,6 @@
 </template>
 
 <script lang="ts">
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 
 interface Computed {
@@ -20,13 +19,7 @@ interface Computed {
   color: string
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Record<string, never>,
-  Record<string, never>,
-  Computed,
-  Record<string, never>
-> = {
+export default Vue.extend({
   computed: {
     viewType() {
       return this.$route.path.split('/')[1]
@@ -36,7 +29,5 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       return this.viewType === 'sample' ? 'primary' : 'secondary'
     },
   },
-}
-
-export default Vue.extend(options)
+})
 </script>

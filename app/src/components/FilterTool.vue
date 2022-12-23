@@ -29,7 +29,6 @@
 </template>
 
 <script lang="ts">
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 import CheckboxField from '@/components/filters/CheckboxField.vue'
 import ChipField from '@/components/filters/ChipField.vue'
@@ -42,13 +41,7 @@ interface Computed {
   fields: Array<CheckboxField | ChipField | TextField>
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Record<string, never>,
-  Record<string, never>,
-  Computed,
-  Record<string, never>
-> = {
+export default Vue.extend({
   components: {
     CheckboxField,
     ChipField,
@@ -66,7 +59,5 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       return this.$dataConfig.filter.fields
     },
   },
-}
-
-export default Vue.extend(options)
+})
 </script>

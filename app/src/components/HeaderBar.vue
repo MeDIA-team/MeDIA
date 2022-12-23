@@ -14,7 +14,6 @@
 </template>
 
 <script lang="ts">
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 import ExportAllEntriesButton from '@/components/ExportAllEntriesButton.vue'
 import ExportSelectedEntriesButton from '@/components/ExportSelectedEntriesButton.vue'
@@ -28,13 +27,7 @@ interface Computed {
   anotherViewButtonText: string
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Record<string, never>,
-  Record<string, never>,
-  Computed,
-  Record<string, never>
-> = {
+export default Vue.extend({
   components: {
     ExportAllEntriesButton,
     ExportSelectedEntriesButton,
@@ -67,9 +60,7 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       return this.viewType === 'sample' ? 'To Patient View' : 'To Sample View'
     },
   },
-}
-
-export default Vue.extend(options)
+})
 </script>
 
 <style scoped>

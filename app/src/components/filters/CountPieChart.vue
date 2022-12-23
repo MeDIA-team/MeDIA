@@ -21,7 +21,6 @@
 
 <script lang="ts">
 import { ChartOptions, ChartData } from 'chart.js'
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 import PieChart from '@/components/filters/PieChart.vue'
 
@@ -42,13 +41,7 @@ interface Props {
   chartType: string
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Data,
-  Record<string, never>,
-  Computed,
-  Props
-> = {
+export default Vue.extend({
   components: {
     PieChart,
   },
@@ -113,7 +106,5 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       }
     },
   },
-}
-
-export default Vue.extend(options)
+})
 </script>

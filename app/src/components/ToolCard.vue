@@ -24,7 +24,6 @@
 </template>
 
 <script lang="ts">
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 import FilterTool from '@/components/FilterTool.vue'
 import SelectorTool from '@/components/SelectorTool.vue'
@@ -39,13 +38,7 @@ interface Computed {
   color: string
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Data,
-  Record<string, never>,
-  Computed,
-  Record<string, never>
-> = {
+export default Vue.extend({
   components: {
     FilterTool,
     SelectorTool,
@@ -67,7 +60,5 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       return this.viewType === 'sample' ? 'primary' : 'secondary'
     },
   },
-}
-
-export default Vue.extend(options)
+})
 </script>

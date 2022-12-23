@@ -10,27 +10,18 @@
 </template>
 
 <script lang="ts">
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 import DataTypeFields from '@/components/selectors/DataTypeFields.vue'
 import OperateTreeviewButton from '@/components/selectors/OperateTreeviewButton.vue'
 import RequiredFields from '@/components/selectors/RequiredFields.vue'
 import ResetSelectorButton from '@/components/selectors/ResetSelectorButton.vue'
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Record<string, never>,
-  Record<string, never>,
-  Record<string, never>,
-  Record<string, never>
-> = {
+export default Vue.extend({
   components: {
     DataTypeFields,
     OperateTreeviewButton,
     RequiredFields,
     ResetSelectorButton,
   },
-}
-
-export default Vue.extend(options)
+})
 </script>

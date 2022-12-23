@@ -15,7 +15,6 @@
 </template>
 
 <script lang="ts">
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 
 interface Computed {
@@ -29,13 +28,7 @@ interface Props {
   id: string
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Record<string, never>,
-  Record<string, never>,
-  Computed,
-  Props
-> = {
+export default Vue.extend({
   props: {
     id: {
       type: String,
@@ -75,7 +68,5 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       },
     },
   },
-}
-
-export default Vue.extend(options)
+})
 </script>

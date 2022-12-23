@@ -29,7 +29,6 @@
 </template>
 
 <script lang="ts">
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 
 const BOX_WIDTH = '660px'
@@ -56,13 +55,7 @@ interface Props {
   id: string
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Data,
-  Methods,
-  Computed,
-  Props
-> = {
+export default Vue.extend({
   props: {
     id: {
       type: String,
@@ -132,7 +125,5 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       this.selected = this.selected.filter((ele: string) => ele !== value)
     },
   },
-}
-
-export default Vue.extend(options)
+})
 </script>

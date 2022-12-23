@@ -40,7 +40,6 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import { DataOptions, DataTableHeader } from 'vuetify'
 
 interface Data {
@@ -68,13 +67,16 @@ interface Computed {
   copyableHeaders: string[]
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Data,
-  Methods,
-  Computed,
-  Record<string, never>
-> = {
+export default Vue.extend({
+  filters: {
+    shortenText(value: string) {
+      if (typeof value !== 'string') {
+        return value
+      } else {
+        return value.length > 20 ? value.slice(0, 20) + '...' : value
+      }
+    },
+  },
   data() {
     return {
       snackbar: false,
@@ -176,19 +178,7 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       this.$copyText(text)
     },
   },
-
-  filters: {
-    shortenText(value: string) {
-      if (typeof value !== 'string') {
-        return value
-      } else {
-        return value.length > 20 ? value.slice(0, 20) + '...' : value
-      }
-    },
-  },
-}
-
-export default Vue.extend(options)
+})
 </script>
 
 <style>

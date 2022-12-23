@@ -31,7 +31,6 @@
 </template>
 
 <script lang="ts">
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 
 const BOX_WIDTH = '200px' // age: 80px, date: 200px
@@ -50,13 +49,7 @@ interface Props {
   id: string
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Record<string, never>,
-  Record<string, never>,
-  Computed,
-  Props
-> = {
+export default Vue.extend({
   props: {
     id: {
       type: String,
@@ -117,7 +110,5 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       return this.field?.form.boxWidth || BOX_WIDTH
     },
   },
-}
-
-export default Vue.extend(options)
+})
 </script>

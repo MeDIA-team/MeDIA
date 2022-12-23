@@ -16,7 +16,6 @@
 
 <script lang="ts">
 import { DataTableHeader } from 'vuetify'
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 
 interface Computed {
@@ -26,13 +25,7 @@ interface Computed {
   selected: DataTableHeader[]
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Record<string, never>,
-  Record<string, never>,
-  Computed,
-  Record<string, never>
-> = {
+export default Vue.extend({
   computed: {
     viewType() {
       return this.$route.path.split('/')[1]
@@ -61,7 +54,5 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       },
     },
   },
-}
-
-export default Vue.extend(options)
+})
 </script>

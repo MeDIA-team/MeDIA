@@ -18,7 +18,6 @@
 </template>
 
 <script lang="ts">
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 import { TreeviewItem } from '@/store/selector'
 
@@ -30,13 +29,7 @@ interface Computed {
   opened: TreeviewItem[]
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Record<string, never>,
-  Record<string, never>,
-  Computed,
-  Record<string, never>
-> = {
+export default Vue.extend({
   computed: {
     viewType() {
       return this.$route.path.split('/')[1]
@@ -80,7 +73,5 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       },
     },
   },
-}
-
-export default Vue.extend(options)
+})
 </script>

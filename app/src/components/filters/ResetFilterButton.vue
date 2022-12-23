@@ -10,7 +10,6 @@
 </template>
 
 <script lang="ts">
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import Vue from 'vue'
 
 interface Methods {
@@ -21,25 +20,16 @@ interface Computed {
   viewType: string
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Record<string, never>,
-  Methods,
-  Computed,
-  Record<string, never>
-> = {
-  methods: {
-    reset() {
-      this.$store.commit('filter/reset', { viewType: this.viewType })
-    },
-  },
-
+export default Vue.extend({
   computed: {
     viewType() {
       return this.$route.path.split('/')[1]
     },
   },
-}
-
-export default Vue.extend(options)
+  methods: {
+    reset() {
+      this.$store.commit('filter/reset', { viewType: this.viewType })
+    },
+  },
+})
 </script>

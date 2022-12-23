@@ -9,7 +9,6 @@
 
 <script lang="ts">
 import { DataTableHeader } from 'vuetify'
-import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
 import dayjs from 'dayjs'
 import Vue from 'vue'
 
@@ -24,13 +23,7 @@ interface Computed {
   color: string
 }
 
-const options: ThisTypedComponentOptionsWithRecordProps<
-  Vue,
-  Record<string, never>,
-  Methods,
-  Computed,
-  Record<string, never>
-> = {
+export default Vue.extend({
   computed: {
     viewType() {
       return this.$route.path.split('/')[1]
@@ -76,7 +69,5 @@ const options: ThisTypedComponentOptionsWithRecordProps<
       document.body.removeChild(link)
     },
   },
-}
-
-export default Vue.extend(options)
+})
 </script>
