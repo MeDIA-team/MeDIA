@@ -21,7 +21,15 @@ services:
     volumes:
       - ${PWD}/app/data:/app/data
     restart: on-failure
-    command: ["wait-for-it", "-s", "db:9200", "--", "yarn", "start"]
+    command:
+      [
+        "wait-for-it",
+        "-s",
+        "db:9200",
+        "--",
+        "yarn",
+        "start"
+      ]
     logging:
       driver: syslog
       options:
@@ -58,5 +66,4 @@ services:
 
 networks:
   default:
-    external:
-      name: media_network
+    name: media_network
