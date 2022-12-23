@@ -25,9 +25,9 @@
 
 <script lang="ts">
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
+import Vue from 'vue'
 import FilterTool from '@/components/FilterTool.vue'
 import SelectorTool from '@/components/SelectorTool.vue'
-import Vue from 'vue'
 
 interface Data {
   selectedTabIndex: number

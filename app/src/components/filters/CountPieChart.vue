@@ -22,8 +22,8 @@
 <script lang="ts">
 import { ChartOptions, ChartData } from 'chart.js'
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
-import PieChart from '@/components/filters/PieChart.vue'
 import Vue from 'vue'
+import PieChart from '@/components/filters/PieChart.vue'
 
 interface Data {
   chartOptions: ChartOptions

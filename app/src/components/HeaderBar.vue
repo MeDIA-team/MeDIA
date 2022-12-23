@@ -15,9 +15,9 @@
 
 <script lang="ts">
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
+import Vue from 'vue'
 import ExportAllEntriesButton from '@/components/ExportAllEntriesButton.vue'
 import ExportSelectedEntriesButton from '@/components/ExportSelectedEntriesButton.vue'
-import Vue from 'vue'
 
 interface Computed {
   viewType: string

@@ -19,8 +19,8 @@
 
 <script lang="ts">
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
-import { TreeviewItem } from '@/store/selector'
 import Vue from 'vue'
+import { TreeviewItem } from '@/store/selector'
 
 interface Computed {
   viewType: string

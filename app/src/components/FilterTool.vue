@@ -30,12 +30,12 @@
 
 <script lang="ts">
 import { ThisTypedComponentOptionsWithRecordProps } from 'vue/types/options'
+import Vue from 'vue'
 import CheckboxField from '@/components/filters/CheckboxField.vue'
 import ChipField from '@/components/filters/ChipField.vue'
 import CountPieChart from '@/components/filters/CountPieChart.vue'
 import ResetFilterButton from '@/components/filters/ResetFilterButton.vue'
 import TextField from '@/components/filters/TextField.vue'
-import Vue from 'vue'
 
 interface Computed {
   viewType: string

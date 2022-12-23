@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 import Vue from 'vue'
 import { ActionTree, GetterTree, MutationTree } from 'vuex'
+import { NuxtAxiosInstance } from '@nuxtjs/axios'
 import { RootState } from '@/store'
 import { fetchDataTypeToMetadataFields } from '@/utils/dataFetcher'
-import { NuxtAxiosInstance } from '@nuxtjs/axios'
 
 export type TreeviewItem = {
   id: string

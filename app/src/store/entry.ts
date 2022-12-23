@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import { ActionTree, MutationTree } from 'vuex'
 import { DataOptions } from 'vuetify'
+import { NuxtAxiosInstance } from '@nuxtjs/axios'
 import { RootState } from '@/store'
 import { fetchEntries, fetchCount } from '@/utils/dataFetcher'
-import { NuxtAxiosInstance } from '@nuxtjs/axios'
 
 const DATA_OPTIONS: DataOptions = {
   page: 1,

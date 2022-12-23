@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import { ActionTree, MutationTree } from 'vuex'
 
+import { NuxtAxiosInstance } from '@nuxtjs/axios'
 import { RootState } from '@/store'
 import { fetchUniqueValues } from '@/utils/dataFetcher'
-import { NuxtAxiosInstance } from '@nuxtjs/axios'
 
 export interface CheckboxFieldValue {
   contents: string[]

@@ -12,11 +12,11 @@
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
 import DataTable from '@/components/DataTable.vue'
 import FooterBar from '@/components/FooterBar.vue'
 import HeaderBar from '@/components/HeaderBar.vue'
 import ToolCard from '@/components/ToolCard.vue'
-import Vue from 'vue'
 
 export default Vue.extend({
   components: {
