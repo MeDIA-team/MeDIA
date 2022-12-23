@@ -13,15 +13,6 @@
 <script lang="ts">
 import Vue from 'vue'
 
-interface Methods {
-  operateTreeview: () => void
-}
-
-interface Computed {
-  viewType: string
-  buttonText: string
-}
-
 export default Vue.extend({
   computed: {
     viewType() {

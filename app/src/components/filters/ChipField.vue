@@ -2,23 +2,23 @@
   <div>
     <v-autocomplete
       v-model="selected"
-      :color="color"
-      :items="contents"
-      :label="boxLabel"
-      :search-input.sync="searchInput"
-      :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
       clearable
+      :color="color"
       hide-details
       hide-selected
+      :items="contents"
+      :label="boxLabel"
       multiple
       outlined
+      :search-input.sync="searchInput"
       single-line
+      :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
       @input="searchInput = null"
     >
       <template #selection="{ item }">
         <v-chip
-          :color="color"
           close
+          :color="color"
           label
           @click:close="remove(item)"
           v-text="item"
@@ -32,28 +32,6 @@
 import Vue from 'vue'
 
 const BOX_WIDTH = '660px'
-
-interface Data {
-  searchInput: null | string
-}
-
-interface Methods {
-  remove(item: string): void
-}
-
-interface Computed {
-  viewType: string
-  color: string
-  contents: string[]
-  selected: string[]
-  field: ChipField | undefined
-  boxWidth: string
-  boxLabel: string
-}
-
-interface Props {
-  id: string
-}
 
 export default Vue.extend({
   props: {

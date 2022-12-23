@@ -1,5 +1,5 @@
 <template>
-  <v-footer app :color="color" padless absolute height="30px">
+  <v-footer absolute app :color="color" height="30px" padless>
     <div
       class="d-flex align-center justify-center"
       :style="{ width: '100%', height: '100%' }"
@@ -13,11 +13,6 @@
 
 <script lang="ts">
 import Vue from 'vue'
-
-interface Computed {
-  viewType: string
-  color: string
-}
 
 export default Vue.extend({
   computed: {

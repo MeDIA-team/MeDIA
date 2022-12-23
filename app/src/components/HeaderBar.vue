@@ -1,10 +1,10 @@
 <template>
-  <v-app-bar app :color="color" absolute>
+  <v-app-bar absolute app :color="color">
     <nuxt-link to="/">
       <v-toolbar-title class="headline white--text" v-text="headerText" />
     </nuxt-link>
     <v-spacer />
-    <v-btn :to="anotherViewTo" color="white" nuxt outlined raise>
+    <v-btn color="white" nuxt outlined raise :to="anotherViewTo">
       <v-icon>{{ anotherViewButtonIcon }}</v-icon>
       <div class="ml-2" v-text="anotherViewButtonText" />
     </v-btn>
@@ -17,15 +17,6 @@
 import Vue from 'vue'
 import ExportAllEntriesButton from '@/components/ExportAllEntriesButton.vue'
 import ExportSelectedEntriesButton from '@/components/ExportSelectedEntriesButton.vue'
-
-interface Computed {
-  viewType: string
-  color: string
-  headerText: string
-  anotherViewTo: string
-  anotherViewButtonIcon: string
-  anotherViewButtonText: string
-}
 
 export default Vue.extend({
   components: {

@@ -2,30 +2,30 @@
   <div class="d-flex">
     <v-text-field
       v-model="bottom"
-      :color="color"
-      :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
-      :type="boxType"
       class="my-1"
       clearable
+      :color="color"
       dense
       hide-details
       outlined
       single-line
+      :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
+      :type="boxType"
     />
     <div class="d-flex align-center mx-4">
       <span class="font-weight-medium headline info--text" v-text="' ~ '" />
     </div>
     <v-text-field
       v-model="upper"
-      :color="color"
-      :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
-      :type="boxType"
       class="my-1"
       clearable
+      :color="color"
       dense
       hide-details
       outlined
       single-line
+      :style="{ minWidth: boxWidth, maxWidth: boxWidth }"
+      :type="boxType"
     />
   </div>
 </template>
@@ -34,20 +34,6 @@
 import Vue from 'vue'
 
 const BOX_WIDTH = '200px' // age: 80px, date: 200px
-
-interface Computed {
-  viewType: string
-  color: string
-  bottom: number | string | null
-  upper: number | string | null
-  field: TextField | undefined
-  boxType: string
-  boxWidth: string
-}
-
-interface Props {
-  id: string
-}
 
 export default Vue.extend({
   props: {

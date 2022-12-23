@@ -3,15 +3,15 @@
     <span class="info--text title" v-text="'Data Type'" />
     <v-treeview
       v-model="selected"
-      :color="color"
-      :items="contents"
-      :open.sync="opened"
-      :selected-color="color"
       class="info--text"
+      :color="color"
       dense
       hoverable
+      :items="contents"
+      :open.sync="opened"
       rounded
       selectable
+      :selected-color="color"
       selection-type="leaf"
     />
   </div>
@@ -20,14 +20,6 @@
 <script lang="ts">
 import Vue from 'vue'
 import { TreeviewItem } from '@/store/selector'
-
-interface Computed {
-  viewType: string
-  color: string
-  contents: TreeviewItem[]
-  selected: TreeviewItem[]
-  opened: TreeviewItem[]
-}
 
 export default Vue.extend({
   computed: {
@@ -39,16 +31,16 @@ export default Vue.extend({
       return this.viewType === 'sample' ? 'primary' : 'secondary'
     },
 
-    contents() {
+    contents(): TreeviewItem[] {
       return this.$store.state.selector[this.viewType].dataTypeFields.contents
     },
 
     selected: {
-      get() {
+      get(): TreeviewItem[] {
         return this.$store.state.selector[this.viewType].dataTypeFields.selected
       },
 
-      set(value) {
+      set(value: TreeviewItem[]) {
         this.$store.commit('selector/setValue', {
           viewType: this.viewType,
           fieldType: 'dataTypeFields',
@@ -59,11 +51,11 @@ export default Vue.extend({
     },
 
     opened: {
-      get() {
+      get(): TreeviewItem[] {
         return this.$store.state.selector[this.viewType].dataTypeFields.opened
       },
 
-      set(value) {
+      set(value: TreeviewItem[]) {
         this.$store.commit('selector/setValue', {
           viewType: this.viewType,
           fieldType: 'dataTypeFields',

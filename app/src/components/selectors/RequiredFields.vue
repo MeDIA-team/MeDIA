@@ -4,12 +4,12 @@
       v-for="content in contents"
       :key="content.id"
       v-model="selected"
+      class="shrink my-0 mr-4 pt-0 align-center"
       :color="color"
+      hide-details
       :label="content.label"
       :style="{ width: '200px', height: '52px' }"
       :value="content.id"
-      class="shrink my-0 mr-4 pt-0 align-center"
-      hide-details
     />
   </div>
 </template>
@@ -17,13 +17,6 @@
 <script lang="ts">
 import { DataTableHeader } from 'vuetify'
 import Vue from 'vue'
-
-interface Computed {
-  viewType: string
-  color: string
-  contents: DataTableHeader[]
-  selected: DataTableHeader[]
-}
 
 export default Vue.extend({
   computed: {
@@ -35,12 +28,12 @@ export default Vue.extend({
       return this.viewType === 'sample' ? 'primary' : 'secondary'
     },
 
-    contents() {
+    contents(): DataTableHeader[] {
       return this.$store.state.selector[this.viewType].requiredFields.contents
     },
 
     selected: {
-      get() {
+      get(): DataTableHeader[] {
         return this.$store.state.selector[this.viewType].requiredFields.selected
       },
 

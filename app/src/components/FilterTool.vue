@@ -36,11 +36,6 @@ import CountPieChart from '@/components/filters/CountPieChart.vue'
 import ResetFilterButton from '@/components/filters/ResetFilterButton.vue'
 import TextField from '@/components/filters/TextField.vue'
 
-interface Computed {
-  viewType: string
-  fields: Array<CheckboxField | ChipField | TextField>
-}
-
 export default Vue.extend({
   components: {
     CheckboxField,

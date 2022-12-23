@@ -12,14 +12,6 @@
 <script lang="ts">
 import Vue from 'vue'
 
-interface Methods {
-  reset: () => void
-}
-
-interface Computed {
-  viewType: string
-}
-
 export default Vue.extend({
   computed: {
     viewType() {

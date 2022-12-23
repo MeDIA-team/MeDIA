@@ -2,17 +2,15 @@
   <div>
     <v-data-table
       v-model="selected"
+      disable-filtering
       :footer-props="footerProps"
       :headers="headers"
       :item-key="`${viewType}Id`"
       :items="contents"
       :loading="loading"
+      multi-sort
       :options.sync="options"
       :server-items-length="count"
-      calculate-widths
-      class="elevation-2"
-      disable-filtering
-      multi-sort
       show-select
     >
       <template
@@ -22,9 +20,9 @@
         <v-icon v-if="value" :key="parentDataType"> mdi-check </v-icon>
       </template>
       <template v-for="header in copyableHeaders" #[header]="{ value }">
-        <v-tooltip :key="header" top open-delay="300">
+        <v-tooltip :key="header" open-delay="300" top>
           <template #activator="{ on }">
-            <div @click="copyText(value)" v-on="on">
+            <div v-on="on" @click="copyText(value)">
               {{ value | shortenText }}
             </div>
           </template>
@@ -32,7 +30,7 @@
         </v-tooltip>
       </template>
     </v-data-table>
-    <v-snackbar v-model="snackbar" :color="color" :timeout="1000" bottom>
+    <v-snackbar v-model="snackbar" bottom :color="color" :timeout="1000">
       {{ snackbarText }}
     </v-snackbar>
   </div>
@@ -41,31 +39,6 @@
 <script lang="ts">
 import Vue from 'vue'
 import { DataOptions, DataTableHeader } from 'vuetify'
-
-interface Data {
-  snackbar: boolean
-  snackbarText: string
-  footerProps: {
-    'items-per-page-options': number[]
-  }
-  loading: boolean
-}
-
-interface Methods {
-  copyText(text: string): void
-}
-
-interface Computed {
-  viewType: string
-  color: string
-  options: DataOptions
-  count: number
-  headers: DataTableHeader[]
-  contents: DataEntry[]
-  selected: DataEntry[]
-  parentDataTypes: string[]
-  copyableHeaders: string[]
-}
 
 export default Vue.extend({
   filters: {
@@ -98,24 +71,24 @@ export default Vue.extend({
     },
 
     options: {
-      set(value) {
+      set(value: DataOptions) {
         this.$store.commit('entry/setOptions', {
           viewType: this.viewType,
           value,
         })
       },
 
-      get() {
+      get(): DataOptions {
         return this.$store.state.entry[this.viewType].options
       },
     },
 
-    count() {
+    count(): number {
       return this.$store.state.filter[this.viewType].counts[this.viewType]
         .filtered
     },
 
-    headers() {
+    headers(): DataTableHeader[] {
       const headers = [
         ...this.$store.getters['selector/requiredFieldHeaders']({
           viewType: this.viewType,
@@ -140,12 +113,12 @@ export default Vue.extend({
       return headers
     },
 
-    contents() {
+    contents(): DataEntry[] {
       return this.$store.state.entry[this.viewType].contents
     },
 
     selected: {
-      set(value) {
+      set(value: DataEntry[]) {
         this.$store.commit('entry/setValue', {
           viewType: this.viewType,
           fieldType: 'selected',
@@ -153,18 +126,18 @@ export default Vue.extend({
         })
       },
 
-      get() {
+      get(): DataEntry[] {
         return this.$store.state.entry[this.viewType].selected
       },
     },
 
-    parentDataTypes() {
+    parentDataTypes(): string[] {
       return this.$store.getters['selector/parentDataTypes']({
         viewType: this.viewType,
       })
     },
 
-    copyableHeaders() {
+    copyableHeaders(): string[] {
       return this.$store.getters['selector/copyableHeaders']({
         viewType: this.viewType,
       })

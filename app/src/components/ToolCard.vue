@@ -1,12 +1,12 @@
 <template>
   <div>
     <v-card color="white">
-      <v-tabs v-model="selectedTabIndex" :color="color" class="pl-4">
+      <v-tabs v-model="selectedTabIndex" class="pl-4" :color="color">
         <v-tab
           v-for="tabKey in tabKeys"
           :key="tabKey"
-          :color="color"
           class="subtitle-1"
+          :color="color"
         >
           {{ tabKey }}
         </v-tab>
@@ -27,16 +27,6 @@
 import Vue from 'vue'
 import FilterTool from '@/components/FilterTool.vue'
 import SelectorTool from '@/components/SelectorTool.vue'
-
-interface Data {
-  selectedTabIndex: number
-  tabKeys: string[]
-}
-
-interface Computed {
-  viewType: string
-  color: string
-}
 
 export default Vue.extend({
   components: {

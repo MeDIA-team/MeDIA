@@ -24,23 +24,6 @@ import { ChartOptions, ChartData } from 'chart.js'
 import Vue from 'vue'
 import PieChart from '@/components/filters/PieChart.vue'
 
-interface Data {
-  chartOptions: ChartOptions
-}
-
-interface Computed {
-  viewType: string
-  color: string
-  label: string
-  filtered: number
-  total: number
-  chartData: ChartData
-}
-
-interface Props {
-  chartType: string
-}
-
 export default Vue.extend({
   components: {
     PieChart,
@@ -64,7 +47,7 @@ export default Vue.extend({
         maintainAspectRatio: false,
         responsive: false,
         tooltips: { enabled: false },
-      },
+      } as ChartOptions,
     }
   },
 
@@ -93,7 +76,7 @@ export default Vue.extend({
         .total
     },
 
-    chartData() {
+    chartData(): ChartData {
       return {
         datasets: [
           {

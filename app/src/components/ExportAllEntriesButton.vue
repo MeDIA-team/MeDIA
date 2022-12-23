@@ -15,15 +15,6 @@ import { allEntries } from '@/store/entry'
 
 dayjs.locale('ja')
 
-interface Methods {
-  exportTable: () => void
-}
-
-interface Computed {
-  viewType: string
-  color: string
-}
-
 export default Vue.extend({
   computed: {
     viewType() {
