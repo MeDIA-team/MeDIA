@@ -1,4 +1,4 @@
-FROM node:16.3.0-buster-slim
+FROM node:18.12.1-bullseye-slim
 
 RUN apt update && \
   apt install -y --no-install-recommends \
