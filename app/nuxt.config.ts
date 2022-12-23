@@ -1,8 +1,7 @@
-import { NuxtConfig } from '@nuxt/types/config'
+import { NuxtConfig } from '@nuxt/types'
 import colors from 'vuetify/es5/util/colors'
 
 const config: NuxtConfig = {
-  target: 'server',
   ssr: false,
   head: {
     title: 'MeDIA',
@@ -17,16 +16,13 @@ const config: NuxtConfig = {
         name: 'description',
         content: process.env.npm_package_description || '',
       },
+      { name: 'format-detection', content: 'telephone=no' },
     ],
     link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
   },
   loading: { color: colors.blue.darken2 },
   css: ['~/assets/fonts.css'],
-  plugins: [
-    '~/plugins/vuetify.ts',
-    '~/plugins/vuetifyColors.ts',
-    '~/plugins/dataConfig.ts',
-  ],
+  plugins: ['~/plugins/vuetify.ts', '~/plugins/dataConfig.ts'],
   components: true,
   buildModules: ['@nuxt/typescript-build', '@nuxtjs/vuetify'],
   modules: [
@@ -34,6 +30,7 @@ const config: NuxtConfig = {
     '@nuxtjs/proxy',
     'nuxt-basic-auth-module',
     'nuxt-clipboard2',
+    '@nuxtjs/dayjs',
   ],
   axios: {
     browserBaseURL: process.env.BROWSER_BASE_URL || undefined,
